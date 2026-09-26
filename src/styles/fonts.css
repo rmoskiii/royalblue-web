@@ -1,0 +1,26 @@
+/*
+ * Display font
+ * ------------------------------------------------------------------
+ * The Figma uses Erstoria (licensed). Until the web-font files arrive we use
+ * Fraunces from Google Fonts (loaded in index.html).
+ *
+ * To switch to Erstoria:
+ *   1. Put the licensed files in public/fonts/ (e.g. Erstoria-Regular.woff2)
+ *   2. Uncomment the @font-face block below
+ *   3. Change --rb-font-display to 'Erstoria'
+ *   4. Remove Fraunces from the Google Fonts link in index.html
+ */
+
+/*
+@font-face {
+  font-family: 'Erstoria';
+  src: url('/fonts/Erstoria-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+:root {
+  --rb-font-display: 'Fraunces';
+}
