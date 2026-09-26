@@ -7,6 +7,7 @@ import { AuthCard } from '@/components/layout/AuthCard';
 import { paths } from '@/components/layout/navigation';
 import { Button, TextField } from '@/components/ui';
 import { PasswordField } from './components/PasswordField';
+import { demo } from '@/config/demo';
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -15,8 +16,8 @@ export function LoginPage() {
   const location = useLocation();
   const redirectTo = (location.state as { from?: string } | null)?.from ?? paths.home;
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState(demo?.login.email ?? '');
+  const [password, setPassword] = useState(demo?.login.password ?? '');
 
   const submit = useMutation({
     mutationFn: () => login(email.trim(), password),

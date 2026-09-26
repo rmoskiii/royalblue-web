@@ -9,6 +9,7 @@ import { paths } from '@/components/layout/navigation';
 import { Button } from '@/components/ui';
 import { cn } from '@/lib/cn';
 import { PasswordField } from './components/PasswordField';
+import { demo } from '@/config/demo';
 
 // TODO(api): align with the backend password policy.
 const rules = [
@@ -22,8 +23,8 @@ export function CreatePasswordPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const email = (useLocation().state as { email?: string } | null)?.email;
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
+  const [password, setPassword] = useState(demo?.newPassword ?? '');
+  const [confirm, setConfirm] = useState(demo?.newPassword ?? '');
 
   const submit = useMutation({
     mutationFn: () => authService.createPassword(email ?? '', password),

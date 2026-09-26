@@ -5,10 +5,13 @@ import { authService } from '@/api/services/auth';
 import { AuthCard } from '@/components/layout/AuthCard';
 import { paths } from '@/components/layout/navigation';
 import { Button, TextField } from '@/components/ui';
+import { demo } from '@/config/demo';
 
 export function SignUpPage() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '' });
+  const [form, setForm] = useState(
+    demo?.signUp ?? { firstName: '', lastName: '', email: '', phone: '' },
+  );
   const set = (key: keyof typeof form) => (e: ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));
 

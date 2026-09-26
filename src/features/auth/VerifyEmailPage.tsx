@@ -7,12 +7,13 @@ import { AuthCard } from '@/components/layout/AuthCard';
 import { paths } from '@/components/layout/navigation';
 import { Button } from '@/components/ui';
 import { CodeInput } from './components/CodeInput';
+import { demo } from '@/config/demo';
 
 export function VerifyEmailPage() {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const email = (useLocation().state as { email?: string } | null)?.email;
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(demo?.emailCode ?? '');
 
   const submit = useMutation({
     mutationFn: () => authService.verifyEmail(email ?? '', code),
