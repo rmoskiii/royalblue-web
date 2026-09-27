@@ -1,6 +1,7 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import { authService } from '@/api/services/auth';
-import { setAccessToken } from '@/api/client';
+import { setAccessToken, setActiveProfileId } from '@/api/client';
 import type { Session } from '@/api/types';
 import { storage } from '@/lib/storage';
 
@@ -34,6 +35,7 @@ function loadSession(): Session | null {
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(loadSession);
+  const queryClient = useQueryClient();
 
   const login = useCallback(async (email: string, password: string) => {
     const next = await authService.login({ email, password });
@@ -44,9 +46,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     setAccessToken(null);
+    setActiveProfileId(null);
     storage.remove(SESSION_KEY);
+    storage.remove('rb.profile');
+    queryClient.clear();
     setSession(null);
-  }, []);
+  }, [queryClient]);
 
   const value = useMemo(
     () => ({ session, isAuthenticated: Boolean(session), login, logout }),

@@ -6,9 +6,23 @@ import { env } from '@/config/env';
  */
 
 let accessToken: string | null = null;
+let activeProfileId: string | null = null;
 
 export function setAccessToken(token: string | null) {
   accessToken = token;
+}
+
+/**
+ * Personal vs business profile (PRD FR-04). Sent on every request so the API
+ * scopes balances, transactions and merchant data to the active profile.
+ * TODO(api): confirm the header name (or whether profile goes in the path).
+ */
+export function setActiveProfileId(id: string | null) {
+  activeProfileId = id;
+}
+
+export function getActiveProfileId() {
+  return activeProfileId;
 }
 
 export class ApiError extends Error {
@@ -49,6 +63,7 @@ async function request<T>(
       Accept: 'application/json',
       ...(json !== undefined && { 'Content-Type': 'application/json' }),
       ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+      ...(activeProfileId && { 'X-Profile-Id': activeProfileId }),
     },
     body: form ?? (json !== undefined ? JSON.stringify(json) : undefined),
   });

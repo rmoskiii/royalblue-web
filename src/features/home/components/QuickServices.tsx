@@ -12,7 +12,7 @@ const services: { label: string; to: string; icon: LucideIcon; tint: string }[] 
     tint: 'text-tint-airtime',
   },
   { label: 'Data', to: `${paths.payBills}?type=data`, icon: Wifi, tint: 'text-tint-data' },
-  { label: 'Bills', to: paths.payBills, icon: Zap, tint: 'text-tint-bills' },
+  { label: 'Bills', to: `${paths.payBills}?type=electricity`, icon: Zap, tint: 'text-tint-bills' },
   { label: 'Card', to: paths.cards, icon: CreditCard, tint: 'text-tint-card' },
   { label: 'Loans', to: paths.loans, icon: Landmark, tint: 'text-tint-loans' },
 ];

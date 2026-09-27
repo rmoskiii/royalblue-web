@@ -2,17 +2,19 @@ import { LogOut } from 'lucide-react';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { Button, Modal } from '@/components/ui';
 import { NavEntry } from './NavEntry';
-import { moreNav } from './navigation';
+import { useProfile } from '@/app/providers/ProfileProvider';
+import { navigationFor } from './navigation';
 import { ThemeToggle } from './ThemeToggle';
 
 export function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { logout } = useAuth();
+  const { more } = navigationFor(useProfile().profileType);
 
   return (
     <Modal open={open} onClose={onClose} title="More">
       <div className="px-4.5 pt-2.5 pb-5.5">
         <div className="grid grid-cols-3 gap-2">
-          {moreNav.map((item) => {
+          {more.map((item) => {
             const Icon = item.icon;
             return (
               <NavEntry

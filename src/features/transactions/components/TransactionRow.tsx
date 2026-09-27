@@ -21,7 +21,7 @@ export function TransactionIcon({ credit, large }: { credit: boolean; large?: bo
 
 /**
  * Phones: icon · title/meta · amount.
- * md and up: a table-style row with separate time and status columns (PRD View 1).
+ * Wide containers (@xl, 36rem+): a table-style row with separate time and status columns (PRD View 1).
  */
 export function TransactionRow({
   transaction: t,
@@ -36,27 +36,27 @@ export function TransactionRow({
     <button
       type="button"
       onClick={() => onSelect(t)}
-      className="grid w-full grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-3 rounded-xl px-2 py-2.5 text-left hover:bg-surface-2 md:grid-cols-[40px_minmax(0,1.5fr)_minmax(0,0.8fr)_96px_minmax(96px,auto)]"
+      className="grid w-full grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-3 rounded-xl px-2 py-2.5 text-left hover:bg-surface-2 @xl:grid-cols-[40px_minmax(0,1.5fr)_minmax(0,0.8fr)_96px_minmax(96px,auto)]"
     >
       <TransactionIcon credit={credit} />
       <span className="min-w-0">
         <span className="flex min-w-0 items-center gap-2 font-medium">
           <span className="truncate">{t.title}</span>
           {t.status !== 'successful' && (
-            <Chip tone={status.tone} className="md:hidden">
+            <Chip tone={status.tone} className="@xl:hidden">
               {status.label}
             </Chip>
           )}
         </span>
         <span className="block truncate text-xs text-ink-3">
           {t.counterparty}
-          <span className="md:hidden"> · {formatTime(t.createdAt)}</span>
+          <span className="@xl:hidden"> · {formatTime(t.createdAt)}</span>
         </span>
       </span>
-      <span className="hidden text-[13px] text-ink-2 tabular md:block">
+      <span className="hidden text-[13px] text-ink-2 tabular @xl:block">
         {formatTime(t.createdAt)}
       </span>
-      <span className="hidden md:block">
+      <span className="hidden @xl:block">
         <Chip tone={status.tone}>{status.label}</Chip>
       </span>
       <Money

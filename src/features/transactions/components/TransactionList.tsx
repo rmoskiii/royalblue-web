@@ -23,7 +23,8 @@ export function TransactionList({ transactions, isLoading, onSelect }: Transacti
   if (!transactions?.length) return <EmptyState title="No transactions to show" />;
 
   return (
-    <div className="grid gap-2">
+    // Container query: rows switch to the table layout when the list itself is wide enough.
+    <div className="@container grid gap-2">
       {groupByDay(transactions).map(([day, items]) => (
         <section key={day}>
           <h4 className="px-2 pt-2.5 pb-1 text-[11px] font-semibold tracking-wider text-ink-3 uppercase">

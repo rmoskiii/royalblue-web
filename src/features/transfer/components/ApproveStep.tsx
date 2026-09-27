@@ -1,0 +1,57 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/api/hooks';
+import { transferService } from '@/api/services/transfers';
+import type { TransactionAuthorisation, TransferResult } from '@/api/types';
+import { Money, PinApproval } from '@/components/ui';
+import { formatAccountNumber } from '@/lib/format';
+import type { TransferDraft } from '../types';
+
+/** Security check (PRD View 3): 4-digit PIN pad or passkey. */
+export function ApproveStep({
+  draft,
+  onSent,
+}: {
+  draft: TransferDraft;
+  onSent: (result: TransferResult) => void;
+}) {
+  const queryClient = useQueryClient();
+
+  const send = useMutation({
+    mutationFn: (authorisation: TransactionAuthorisation) => {
+      const { destination, bankCode, accountNumber, amount, narration } = draft;
+      return transferService.send({
+        destination,
+        bankCode,
+        accountNumber,
+        amount,
+        narration,
+        authorisation,
+      });
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.account });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      onSent(result);
+    },
+  });
+
+  return (
+    <PinApproval
+      onApprove={send.mutateAsync}
+      summary={
+        <>
+          <p className="text-ink-3">Sending to {draft.accountName}</p>
+          <Money
+            amount={draft.amount + draft.fee}
+            decimals={2}
+            className="mt-1 block text-[32px] leading-tight font-semibold tracking-tight text-brand"
+          />
+          <p className="mt-1 text-xs text-ink-3">
+            {formatAccountNumber(draft.accountNumber)} · {draft.bankName}
+            {draft.fee === 0 ? ' · No fee' : ''}
+          </p>
+        </>
+      }
+    />
+  );
+}

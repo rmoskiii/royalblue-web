@@ -40,6 +40,17 @@ export const mockAccount: Account = {
   freeTransfersPerMonth: 10,
 };
 
+/** Business account shown when the business profile is active */
+export const mockBusinessAccount: Account = {
+  accountNumber: '7823456117',
+  accountName: 'Adeyemi Tech Hub Enterprise',
+  bankName: 'RoyalBlue MFB',
+  balance: 2_140_500,
+  tier: 3,
+  freeTransfersRemaining: 18,
+  freeTransfersPerMonth: 25,
+};
+
 export const mockTransactions: Transaction[] = [
   {
     id: 'tx_01',

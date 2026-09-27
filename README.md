@@ -36,18 +36,25 @@ VS Code will suggest the ESLint, Prettier and Tailwind extensions (see `.vscode/
 
 ## What's built
 
-| Area           | Where                                                                              | Notes                                                                                            |
-| -------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Login          | `/login`                                                                           | Email and password                                                                               |
-| Sign-up        | `/sign-up`                                                                         | PRD FR-01: phone → SMS code → BVN/NIN → confirm fetched details → login details → account number |
-| Home           | `/`                                                                                | Balance with privacy toggle; Send, Receive, Pay bills, Add money; transactions + quick transfer  |
-| Transfers      | Modal (from nav, Home, or `/transfer`)                                             | PRD View 3: searchable banks, name lookup, free-transfer fee indicator, PIN pad or passkey       |
-| Loans          | `/loans`                                                                           | Active loan + schedule, repayment calculator, products, how it works                             |
-| Transactions   | `/transactions`                                                                    | Search, filters, grouped by day, table-style rows on desktop, receipt sheet                      |
-| Account limits | `/verification`                                                                    | PRD View 6: tier limits, 3-step upgrade (BVN, ID + selfie via webcam, proof of address)          |
-| Coming soon    | Pay bills, Savings, Cards, Invest, Insights, Rewards, Refer, Learn, Help, Settings | Placeholder pages, generated from the nav config                                                 |
+| Area            | Where                                                   | Notes                                                                                            |
+| --------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Login           | `/login`                                                | Email and password                                                                               |
+| Sign-up         | `/sign-up`                                              | PRD FR-01: phone → SMS code → BVN/NIN → confirm fetched details → login details → account number |
+| Home            | `/` (personal profile)                                  | Balance with privacy toggle; Send, Receive, Pay bills, Add money; transactions + quick transfer  |
+| Merchant portal | `/` (business profile), `/payments`, `/staff`           | PRD View 2: volume / payout / terminals, live payments table, POS status, cashier access         |
+| Profile switch  | Top bar                                                 | PRD FR-04: Personal ↔ Business. Switching refetches everything for the new profile               |
+| Transfers       | Modal (from nav, Home, or `/transfer`)                  | PRD View 3: searchable banks, name lookup, free-transfer fee indicator, PIN pad or passkey       |
+| Pay bills       | `/pay-bills?type=airtime\|data\|electricity`            | PRD FR-07: networks, data bundles, meter validation, PIN approval, electricity token receipt     |
+| Savings         | `/savings`                                              | PRD View 4: live interest, vault cards with progress rings, new vault, returns calculator        |
+| Cards           | `/cards`                                                | PRD View 5: 3D virtual card, show details/CVV, freeze, controls, physical card order + tracking  |
+| Loans           | `/loans`                                                | Active loan + schedule, repayment calculator, products, how it works                             |
+| Transactions    | `/transactions`                                         | Search, filters, grouped by day, table-style rows when wide, receipt sheet                       |
+| Account limits  | `/verification`                                         | PRD View 6: tier limits, 3-step upgrade (BVN, ID + selfie via webcam, proof of address)          |
+| Coming soon     | Invest, Insights, Rewards, Refer, Learn, Help, Settings | Placeholder pages, generated from the nav config                                                 |
 
-**Layout:** phones get a top bar and bottom tabs (Home, Transfers, Savings, Cards, More), with Loans and everything else under More. At `lg` (1024px) and up, a royal blue sidebar with a profile badge replaces the tabs. At `xl` (1280px), Home splits into transactions (left) and quick transfer (right).
+**Layout:** phones get a top bar and bottom tabs. Personal: Home, Transfers, Savings, Cards, More. Business: Dashboard, Payments, Transfers, Staff access, More. At `lg` (1024px) and up, a royal blue sidebar with a profile badge replaces the tabs. Navigation for both profiles lives in `components/layout/navigation.ts`.
+
+**Demo tips (mock mode):** switch to the business profile from the top bar to see the merchant portal; a new payment arrives in the live table every 8 seconds. Any 4-digit PIN approves a transfer or bill.
 
 ---
 
@@ -56,14 +63,15 @@ VS Code will suggest the ESLint, Prettier and Tailwind extensions (see `.vscode/
 ```
 src/
   api/                 Everything that talks to the backend
-    client.ts          fetch wrapper: base URL, auth header, errors
+    client.ts          fetch wrapper: base URL, auth + profile headers, errors
+    reference.ts       Static reference data (mobile networks)
     types.ts           Domain types the UI uses
     services/          One file per API area (auth, accounts, transfers…)
     mocks/data.ts      Sample data used while VITE_USE_MOCKS is on
     hooks.ts           React Query hooks + query keys
   app/
-    App.tsx, router.tsx, guards.tsx
-    providers/         Theme, auth, toast, React Query
+    App.tsx, router.tsx, guards.tsx   Feature pages are code-split in router.tsx
+    providers/         Theme, auth, toast, React Query, active profile
   components/
     ui/                Design-system primitives (Button, Card, TextField, Modal…)
     layout/            App shell, sidebar, top bar, bottom tabs, auth layout
@@ -129,6 +137,11 @@ Figma sources: navy `#1B194D`, heading navy `#272570`, red `#C93C38`, body grey 
    - `features/auth/lib/passwordRules.ts`: match the backend password rules
    - `features/transfer/lib/passkey.ts`: WebAuthn challenge and assertion for biometric approval
    - `api/types.ts` (`Account.freeTransfersRemaining`): the API needs to return the free-transfer allowance (PRD FR-03)
+   - `api/client.ts` (`X-Profile-Id`): how the API scopes requests to the personal or business profile
+   - `api/services/business.ts`: merchant endpoints and the live payments stream (Server-Sent Events assumed)
+   - `api/services/cards.ts`: card details should come from a PCI-compliant reveal, not plain JSON
+   - `api/services/savings.ts`, `features/savings/lib/savingsMaths.ts`: interest compounding rules
+   - `api/services/bills.ts`: biller endpoints, data plans and meter validation
 4. Mutations (transfer, verification steps) already invalidate the relevant queries, so balances and lists refresh after an action.
 
 Amounts are in **naira**. If the API uses kobo, convert in the services layer.
@@ -148,6 +161,6 @@ Amounts are in **naira**. If the API uses kobo, convert in the services layer.
 
 - **Components:** named exports, PascalCase files, one main component per file.
 - **Styling:** Tailwind classes only. Combine conditional classes with `cn()`. For a link that should look like a button, use `buttonClass()` instead of nesting a `<button>` inside a `<Link>`.
-- **State:** server data lives in React Query. Local UI state uses `useState`. App-wide concerns (theme, auth, toasts, the transfer modal) are React context in `app/providers` or the owning feature.
+- **State:** server data lives in React Query. Local UI state uses `useState`. App-wide concerns (theme, auth, toasts, active profile, the transfer modal) are React context in `app/providers` or the owning feature.
 - **Copy:** sentence case, plain words, and messages that say what happened and what to do next.
 - **Accessibility:** icon-only buttons need an `aria-label`. Toggles use `aria-pressed`. Dialogs use `Modal`, which handles Escape and focus.

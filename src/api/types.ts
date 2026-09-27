@@ -124,8 +124,8 @@ export interface NameEnquiryResult {
   bankCode: string;
 }
 
-/** PRD FR-08 / View 3: approve with the 4-digit PIN or a passkey (WebAuthn). */
-export type TransferAuthorisation =
+/** PRD FR-08: approve money movements with the 4-digit PIN or a passkey (WebAuthn). */
+export type TransactionAuthorisation =
   { method: 'pin'; pin: string } | { method: 'passkey'; assertion: string };
 
 export interface TransferRequest {
@@ -134,7 +134,7 @@ export interface TransferRequest {
   accountNumber: string;
   amount: number;
   narration?: string;
-  authorisation: TransferAuthorisation;
+  authorisation: TransactionAuthorisation;
 }
 
 export interface TransferResult {
@@ -193,4 +193,199 @@ export interface IdDocumentSubmission {
   number: string;
   documentImage: File;
   selfie: File;
+}
+
+// ---------- Profiles (PRD FR-04) ----------
+export type ProfileType = 'personal' | 'business';
+
+export interface Profile {
+  id: string;
+  type: ProfileType;
+  /** "Temidayo Adeyemi" or the registered business name */
+  name: string;
+  accountNumber: string;
+}
+
+// ---------- Merchant portal (PRD View 2) ----------
+export interface BusinessSummary {
+  todayVolume: number;
+  pendingPayout: number;
+  terminalsActive: number;
+  terminalsOnline: number;
+}
+
+export type PaymentChannel = 'pos' | 'web' | 'transfer';
+export type SettlementStatus = 'success' | 'pending';
+
+/** An incoming payment to the business account */
+export interface Settlement {
+  id: string;
+  createdAt: ISODateString;
+  customerName: string;
+  channel: PaymentChannel;
+  amount: number;
+  status: SettlementStatus;
+  terminalId?: string;
+}
+
+export interface PosTerminal {
+  id: string;
+  serial: string;
+  label: string;
+  status: 'online' | 'offline';
+  lastTransactionAt: ISODateString | null;
+}
+
+export type StaffStatus = 'active' | 'invited';
+
+/** Cashiers get read-only access to incoming credit alerts */
+export interface StaffMember {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: 'cashier';
+  status: StaffStatus;
+  addedAt: ISODateString;
+}
+
+export interface AddStaffRequest {
+  name: string;
+  email: string;
+  phone: string;
+}
+
+// ---------- Savings (PRD FR-05, View 4) ----------
+export type VaultType = 'target' | 'fixed';
+export type ContributionFrequency = 'daily' | 'weekly' | 'monthly';
+
+export interface SavingsVault {
+  id: string;
+  name: string;
+  type: VaultType;
+  balance: number;
+  /** Goal amount for target vaults */
+  target: number | null;
+  /** e.g. 0.15 for 15% p.a. */
+  annualRate: number;
+  autoSave: { amount: number; frequency: ContributionFrequency } | null;
+  /** Fixed vaults can't be withdrawn from before this date */
+  lockedUntil: ISODateString | null;
+  createdAt: ISODateString;
+}
+
+export interface SavingsSummary {
+  totalBalance: number;
+  interestEarned: number;
+  annualRate: number;
+  /** When interestEarned was calculated; the UI accrues from here in real time */
+  asOf: ISODateString;
+}
+
+export interface CreateVaultRequest {
+  name: string;
+  type: VaultType;
+  target: number | null;
+  autoSave: { amount: number; frequency: ContributionFrequency } | null;
+  lockedUntil: ISODateString | null;
+}
+
+// ---------- Cards (PRD FR-06, View 5) ----------
+export type CardKind = 'virtual' | 'physical';
+export type CardScheme = 'visa' | 'mastercard' | 'verve';
+
+export interface CardControls {
+  onlinePayments: boolean;
+  international: boolean;
+  dailyLimit: number;
+}
+
+export interface Card {
+  id: string;
+  kind: CardKind;
+  scheme: CardScheme;
+  last4: string;
+  /** MM/YY */
+  expiry: string;
+  nameOnCard: string;
+  frozen: boolean;
+  controls: CardControls;
+}
+
+/** Full card number and CVV, fetched only when the customer taps "Show details" */
+export interface CardSecrets {
+  pan: string;
+  cvv: string;
+}
+
+export interface DeliveryAddress {
+  line1: string;
+  city: string;
+  state: string;
+}
+
+export interface AddressSuggestion extends DeliveryAddress {
+  id: string;
+}
+
+export type PhysicalCardOrderStatus = 'ordered' | 'printing' | 'out-for-delivery' | 'delivered';
+
+export interface PhysicalCardOrder {
+  id: string;
+  status: PhysicalCardOrderStatus;
+  address: DeliveryAddress;
+  phone: string;
+  orderedAt: ISODateString;
+  estimatedDelivery: ISODateString;
+}
+
+export interface PhysicalCardOrderRequest {
+  address: DeliveryAddress;
+  phone: string;
+}
+
+// ---------- Bills (PRD FR-07) ----------
+export type Network = 'mtn' | 'airtel' | 'glo' | '9mobile';
+export type MeterType = 'prepaid' | 'postpaid';
+
+export interface DataPlan {
+  id: string;
+  network: Network;
+  name: string;
+  validity: string;
+  price: number;
+}
+
+export interface Disco {
+  id: string;
+  name: string;
+  shortName: string;
+}
+
+export interface MeterLookup {
+  customerName: string;
+  address: string;
+  meterNumber: string;
+  meterType: MeterType;
+  discoId: string;
+}
+
+export type BillPayment =
+  | { type: 'airtime'; network: Network; phone: string; amount: number }
+  | { type: 'data'; network: Network; phone: string; planId: string; amount: number }
+  | {
+      type: 'electricity';
+      discoId: string;
+      meterNumber: string;
+      meterType: MeterType;
+      amount: number;
+    };
+
+export type BillPaymentRequest = BillPayment & { authorisation: TransactionAuthorisation };
+
+export interface BillPaymentResult {
+  reference: string;
+  /** Prepaid electricity only */
+  token?: string;
+  units?: number;
 }

@@ -1,26 +1,31 @@
 import { Bell, Search, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router';
 import { useAccount, useMe } from '@/api/hooks';
+import { useProfile } from '@/app/providers/ProfileProvider';
 import { useToast } from '@/app/providers/ToastProvider';
-import { Avatar } from '@/components/ui';
 import { formatGreetingDate, greeting } from '@/lib/format';
 import { paths } from './navigation';
+import { PosStatusPill } from './PosStatusPill';
+import { ProfileSwitcher } from './ProfileSwitcher';
 import { ThemeToggle } from './ThemeToggle';
 
 export function TopBar() {
   const { data: user } = useMe();
   const { data: account } = useAccount();
   const { showToast } = useToast();
-  const fullName = user ? `${user.firstName} ${user.lastName}` : '';
+  const { profileType } = useProfile();
   const hello = greeting();
 
   return (
     <header className="flex items-center gap-3 border-b border-line bg-surface px-4 py-3 pt-[max(12px,env(safe-area-inset-top))] lg:px-7 lg:py-3.5">
-      <Avatar name={fullName || ' '} className="lg:hidden" />
+      {/* Phones: avatar opens the profile switcher */}
+      <div className="lg:hidden">
+        <ProfileSwitcher />
+      </div>
 
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1 lg:flex-none">
         {/* Phone: small greeting over the name. Desktop: one line plus the date. */}
-        <p className="text-xs text-ink-3 lg:hidden">{hello}</p>
+        <p className="truncate text-xs text-ink-3 lg:hidden">{hello}</p>
         <p className="truncate text-[15px] font-semibold">
           <span className="hidden lg:inline">{hello}, </span>
           {user?.firstName ?? ' '}
@@ -28,8 +33,13 @@ export function TopBar() {
         <p className="hidden text-xs text-ink-3 lg:block">{formatGreetingDate()}</p>
       </div>
 
-      <div className="ml-auto flex items-center gap-0.5 lg:gap-1.5">
-        <label className="mr-2 hidden h-9.5 w-75 items-center gap-2 rounded-field bg-surface-2 px-3 text-ink-3 xl:flex">
+      <div className="ml-3 hidden items-center gap-2 lg:flex">
+        <ProfileSwitcher />
+        {profileType === 'business' && <PosStatusPill />}
+      </div>
+
+      <div className="ml-auto flex shrink-0 items-center gap-0.5 lg:gap-1.5">
+        <label className="mr-2 hidden h-9.5 w-64 items-center gap-2 rounded-field bg-surface-2 px-3 text-ink-3 2xl:flex">
           <Search className="size-4" />
           <input
             placeholder="Search transactions or people"
@@ -40,10 +50,11 @@ export function TopBar() {
           <Link
             to={paths.verification}
             title="See your limits and upgrade"
-            className="mr-1 inline-flex h-7 items-center gap-1 rounded-full bg-primary-soft px-2.5 text-[11px] font-bold tracking-wider text-primary-text uppercase hover:brightness-95"
+            className="mr-1 inline-flex h-7 shrink-0 items-center gap-1 rounded-full bg-primary-soft px-2 text-[11px] font-bold tracking-wider whitespace-nowrap text-primary-text uppercase hover:brightness-95 sm:px-2.5"
           >
             <ShieldCheck className="size-3.5" />
-            Tier {account.tier}
+            <span className="sr-only sm:not-sr-only">Tier </span>
+            {account.tier}
           </Link>
         )}
         <button

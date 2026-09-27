@@ -7,10 +7,12 @@ import {
   History,
   House,
   Landmark,
+  Receipt,
   Send,
   Settings,
   ShieldCheck,
   TrendingUp,
+  UserCog,
   Users,
   Wallet,
   Zap,
@@ -47,6 +49,8 @@ export const paths = {
   learn: '/learn',
   help: '/help',
   settings: '/settings',
+  payments: '/payments',
+  staff: '/staff',
   login: '/login',
   signUp: '/sign-up',
 } as const;
@@ -67,50 +71,76 @@ const item = {
   learn: { label: 'Learn', to: paths.learn, icon: BookOpen },
   help: { label: 'Help centre', to: paths.help, icon: CircleHelp },
   settings: { label: 'Settings', to: paths.settings, icon: Settings },
+  payments: { label: 'Payments', to: paths.payments, icon: Receipt },
+  staff: { label: 'Staff access', to: paths.staff, icon: UserCog },
 } satisfies Record<string, NavItem>;
 
-/** Desktop sidebar, main group */
-export const primaryNav: NavItem[] = [
-  item.home,
-  item.transfers,
-  item.payBills,
-  item.loans,
-  item.savings,
-  item.cards,
-  item.transactions,
-  item.invest,
-  item.insights,
-];
+export interface NavigationSet {
+  /** Desktop sidebar, main group */
+  primary: NavItem[];
+  /** Desktop sidebar, "Learn and earn" group (personal only) */
+  learnAndEarn: NavItem[];
+  /** Phone bottom tabs; the fifth slot is More */
+  mobileTabs: NavItem[];
+  /** Phone "More" sheet */
+  more: NavItem[];
+}
 
-/** Desktop sidebar, "Learn and earn" group */
-export const learnAndEarnNav: NavItem[] = [item.rewards, item.refer, item.learn, item.help];
+/** Personal profile (PRD View 1). Phone tabs per PRD: Home, Transfers, Savings, Cards. */
+const personalNav: NavigationSet = {
+  primary: [
+    item.home,
+    item.transfers,
+    item.payBills,
+    item.loans,
+    item.savings,
+    item.cards,
+    item.transactions,
+    item.invest,
+    item.insights,
+  ],
+  learnAndEarn: [item.rewards, item.refer, item.learn, item.help],
+  mobileTabs: [item.home, item.transfers, item.savings, item.cards],
+  more: [
+    item.loans,
+    item.payBills,
+    item.transactions,
+    item.invest,
+    item.insights,
+    item.verification,
+    item.rewards,
+    item.refer,
+    item.learn,
+    item.help,
+    item.settings,
+  ],
+};
+
+/** Business profile (PRD View 2 merchant portal). */
+const businessNav: NavigationSet = {
+  primary: [
+    { ...item.home, label: 'Dashboard' },
+    item.payments,
+    item.transfers,
+    item.staff,
+    item.loans,
+    item.cards,
+    item.payBills,
+    item.transactions,
+  ],
+  learnAndEarn: [],
+  mobileTabs: [{ ...item.home, label: 'Dashboard' }, item.payments, item.transfers, item.staff],
+  more: [item.loans, item.cards, item.payBills, item.transactions, item.help, item.settings],
+};
+
+export const navigationFor = (profile: 'personal' | 'business') =>
+  profile === 'business' ? businessNav : personalNav;
 
 /** Desktop sidebar, pinned above the profile badge */
 export const settingsNav = item.settings;
 
-/** Phone bottom tabs (PRD: Home, Transfers, Savings, Cards). The fifth slot is More. */
-export const mobileTabs: NavItem[] = [item.home, item.transfers, item.savings, item.cards];
-
-/** Phone "More" sheet */
-export const moreNav: NavItem[] = [
-  item.loans,
-  item.payBills,
-  item.transactions,
-  item.invest,
-  item.insights,
-  item.verification,
-  item.rewards,
-  item.refer,
-  item.learn,
-  item.help,
-  item.settings,
-];
-
 /** Destinations in the nav that aren't built yet. */
 export const comingSoon: (NavItem & { to: string })[] = [
-  item.payBills,
-  item.savings,
-  item.cards,
   item.invest,
   item.insights,
   item.rewards,

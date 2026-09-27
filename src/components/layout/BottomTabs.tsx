@@ -1,7 +1,8 @@
 import { LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { NavEntry } from './NavEntry';
-import { mobileTabs } from './navigation';
+import { useProfile } from '@/app/providers/ProfileProvider';
+import { navigationFor } from './navigation';
 
 const tabClass = (isActive: boolean) =>
   cn(
@@ -9,8 +10,9 @@ const tabClass = (isActive: boolean) =>
     isActive && 'text-primary-text',
   );
 
-/** Phone navigation (PRD: Home, Transfers, Savings, Cards) plus More. */
+/** Phone navigation for the active profile, plus More. */
 export function BottomTabs({ onMore, className }: { onMore: () => void; className?: string }) {
+  const { mobileTabs } = navigationFor(useProfile().profileType);
   return (
     <nav
       aria-label="Main"

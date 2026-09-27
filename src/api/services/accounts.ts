@@ -1,6 +1,6 @@
 import { env } from '@/config/env';
-import { http, mockResponse } from '../client';
-import { mockAccount, mockUser } from '../mocks/data';
+import { getActiveProfileId, http, mockResponse } from '../client';
+import { mockAccount, mockBusinessAccount, mockUser } from '../mocks/data';
 import type { Account, User } from '../types';
 
 export const accountService = {
@@ -9,8 +9,13 @@ export const accountService = {
     return http.get<User>('/me');
   },
 
+  /** Account for the active profile (personal or business). */
   getAccount(): Promise<Account> {
-    if (env.useMocks) return mockResponse(mockAccount);
+    if (env.useMocks) {
+      return mockResponse(
+        getActiveProfileId() === 'prof_business' ? mockBusinessAccount : mockAccount,
+      );
+    }
     return http.get<Account>('/accounts/primary');
   },
 };

@@ -38,6 +38,13 @@
   --rb-step: #1b194d;
   --rb-tint-loans: #8b6914;
   --rb-scrim: rgb(14 13 34 / 0.52);
+
+  /* Chart categorical slots, fixed order (validated: dataviz validate_palette.js, light on #fff) */
+  --rb-series-1: #2a78d6;
+  --rb-series-2: #eb6834;
+  --rb-series-3: #1baf7a;
+  --rb-series-4: #eda100;
+  --rb-series-5: #e87ba4;
   --rb-shadow: 0 1px 2px rgb(27 25 77 / 0.05), 0 12px 32px -18px rgb(27 25 77 / 0.22);
 }
 
@@ -69,6 +76,13 @@
   --rb-step: #29285a;
   --rb-tint-loans: #e0b24a;
   --rb-scrim: rgb(0 0 0 / 0.6);
+
+  /* Same hues stepped for the dark surface (validated on #16153a) */
+  --rb-series-1: #3987e5;
+  --rb-series-2: #d95926;
+  --rb-series-3: #199e70;
+  --rb-series-4: #c98500;
+  --rb-series-5: #d55181;
   --rb-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 16px 40px -20px rgb(0 0 0 / 0.6);
 }
 
@@ -98,6 +112,12 @@
   --color-scrim: var(--rb-scrim);
   --color-tint-loans: var(--rb-tint-loans);
 
+  --color-series-1: var(--rb-series-1);
+  --color-series-2: var(--rb-series-2);
+  --color-series-3: var(--rb-series-3);
+  --color-series-4: var(--rb-series-4);
+  --color-series-5: var(--rb-series-5);
+
   --shadow-card: var(--rb-shadow);
 }
 
@@ -121,10 +141,17 @@
 
   --animate-fade-in: fade-in 0.18s ease-out;
   --animate-sheet-up: sheet-up 0.22s ease-out;
+  --animate-ring: ring 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
 
   @keyframes fade-in {
     from {
       opacity: 0;
+    }
+  }
+  /* Progress rings draw in from empty; the final offset is set inline */
+  @keyframes ring {
+    from {
+      stroke-dashoffset: var(--ring-circumference);
     }
   }
   @keyframes sheet-up {

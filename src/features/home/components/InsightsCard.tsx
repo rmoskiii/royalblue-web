@@ -1,8 +1,8 @@
 import { useInsights } from '@/api/hooks';
 import { Card, CardHeader, Money } from '@/components/ui';
 
-/** Fixed order and colours so categories look the same everywhere. */
-const categoryColours = ['var(--rb-brand)', '#5856D6', '#FF6B35', '#C93C38', '#FF9500'];
+/** Chart slots in fixed order (see --rb-series-* in styles/index.css). */
+const categoryColours = [1, 2, 3, 4, 5].map((n) => `var(--rb-series-${n})`);
 
 export function InsightsCard() {
   const { data } = useInsights();
@@ -33,6 +33,7 @@ export function InsightsCard() {
             {data.breakdown.map((b, i) => (
               <span
                 key={b.category}
+                title={`${b.category}: ${Math.round(b.share * 100)}%`}
                 style={{ width: `${b.share * 100}%`, backgroundColor: categoryColours[i] }}
               />
             ))}

@@ -1,17 +1,25 @@
+import type { ComponentType } from 'react';
 import { createBrowserRouter } from 'react-router';
 import { AppShell } from '@/components/layout/AppShell';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { comingSoon, paths } from '@/components/layout/navigation';
+import { PageLoader } from '@/components/ui';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { SignUpPage } from '@/features/auth/SignUpPage';
-import { HomePage } from '@/features/home/HomePage';
-import { LoansPage } from '@/features/loans/LoansPage';
+import { BusinessOnly } from '@/features/business/BusinessOnly';
+import { HomeRoute } from '@/features/home/HomeRoute';
 import { ComingSoonPage } from '@/features/misc/ComingSoonPage';
 import { NotFoundPage } from '@/features/misc/NotFoundPage';
-import { TransactionsPage } from '@/features/transactions/TransactionsPage';
 import { TransferRoute } from '@/features/transfer/TransferRoute';
-import { VerificationPage } from '@/features/verification/VerificationPage';
 import { RedirectIfAuthenticated, RequireAuth } from './guards';
+
+/**
+ * Code-split a page: its feature bundle downloads the first time the route is visited.
+ * Usage: page(() => import('@/features/x/XPage'), (m) => m.XPage)
+ */
+function page<M>(load: () => Promise<M>, pick: (module: M) => ComponentType) {
+  return { lazy: async () => ({ Component: pick(await load()) }) };
+}
 
 export const router = createBrowserRouter([
   {
@@ -28,15 +36,74 @@ export const router = createBrowserRouter([
   },
   {
     element: <RequireAuth />,
+    hydrateFallbackElement: <PageLoader />,
     children: [
       {
         element: <AppShell />,
         children: [
-          { index: true, element: <HomePage /> },
+          { index: true, element: <HomeRoute /> },
           { path: paths.transfer, element: <TransferRoute /> },
-          { path: paths.loans, element: <LoansPage /> },
-          { path: paths.transactions, element: <TransactionsPage /> },
-          { path: paths.verification, element: <VerificationPage /> },
+          {
+            path: paths.loans,
+            ...page(
+              () => import('@/features/loans/LoansPage'),
+              (m) => m.LoansPage,
+            ),
+          },
+          {
+            path: paths.transactions,
+            ...page(
+              () => import('@/features/transactions/TransactionsPage'),
+              (m) => m.TransactionsPage,
+            ),
+          },
+          {
+            path: paths.verification,
+            ...page(
+              () => import('@/features/verification/VerificationPage'),
+              (m) => m.VerificationPage,
+            ),
+          },
+          {
+            path: paths.payBills,
+            ...page(
+              () => import('@/features/bills/BillsPage'),
+              (m) => m.BillsPage,
+            ),
+          },
+          {
+            path: paths.savings,
+            ...page(
+              () => import('@/features/savings/SavingsPage'),
+              (m) => m.SavingsPage,
+            ),
+          },
+          {
+            path: paths.cards,
+            ...page(
+              () => import('@/features/cards/CardsPage'),
+              (m) => m.CardsPage,
+            ),
+          },
+          {
+            element: <BusinessOnly />,
+            children: [
+              {
+                path: paths.payments,
+                ...page(
+                  () => import('@/features/business/PaymentsPage'),
+                  (m) => m.PaymentsPage,
+                ),
+              },
+              {
+                path: paths.staff,
+                ...page(
+                  () => import('@/features/business/StaffPage'),
+                  (m) => m.StaffPage,
+                ),
+              },
+            ],
+          },
           ...comingSoon.map((item) => ({ path: item.to, element: <ComingSoonPage item={item} /> })),
         ],
       },
