@@ -1,11 +1,15 @@
 import { LayoutGrid } from 'lucide-react';
-import { NavLink } from 'react-router';
 import { cn } from '@/lib/cn';
-import { mobileTabs, paths } from './navigation';
+import { NavEntry } from './NavEntry';
+import { mobileTabs } from './navigation';
 
-const tabClass =
-  'flex flex-col items-center gap-0.75 py-1.5 text-[11px] font-medium text-ink-3 aria-[current=page]:text-primary-text';
+const tabClass = (isActive: boolean) =>
+  cn(
+    'flex flex-col items-center gap-0.75 py-1.5 text-[11px] font-medium text-ink-3',
+    isActive && 'text-primary-text',
+  );
 
+/** Phone navigation (PRD: Home, Transfers, Savings, Cards) plus More. */
 export function BottomTabs({ onMore, className }: { onMore: () => void; className?: string }) {
   return (
     <nav
@@ -15,13 +19,16 @@ export function BottomTabs({ onMore, className }: { onMore: () => void; classNam
         className,
       )}
     >
-      {mobileTabs.map(({ label, to, icon: Icon }) => (
-        <NavLink key={to} to={to} end={to === paths.home} className={tabClass}>
-          <Icon className="size-5" strokeWidth={1.8} />
-          {label}
-        </NavLink>
-      ))}
-      <button type="button" onClick={onMore} className={tabClass}>
+      {mobileTabs.map((item) => {
+        const Icon = item.icon;
+        return (
+          <NavEntry key={item.label} item={item} className={tabClass}>
+            <Icon className="size-5" strokeWidth={1.8} />
+            {item.label}
+          </NavEntry>
+        );
+      })}
+      <button type="button" onClick={onMore} className={tabClass(false)}>
         <LayoutGrid className="size-5" strokeWidth={1.8} />
         More
       </button>

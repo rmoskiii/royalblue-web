@@ -1,10 +1,12 @@
 # RoyalBlue MFB web app
 
-Responsive web banking frontend for RoyalBlue Microfinance Bank, built from the **RoyalBlue-Dash** Figma file. It works on desktop and mobile, with light and deep-purple dark themes.
+Responsive web banking frontend for RoyalBlue Microfinance Bank, built from the **RoyalBlue-Dash** Figma file and the **RoyalBlue MFB Digital Banking Platform PRD (v1.0)**. It works on desktop and mobile, with light and deep-purple dark themes.
+
+Where the two disagree, the Figma wins on colours and the PRD wins on typography (all Inter), navigation and flows.
 
 **Stack:** Vite · React 19 · TypeScript · React Router · Tailwind CSS v4 · TanStack Query · lucide-react
 
-> The app runs on **mock data** until the API contract is connected. You can log in with any email and password.
+> The app runs on **mock data** until the API contract is connected. Login and sign-up forms are pre-filled for demos (`src/config/demo.ts`), so you only need to press the buttons. Pre-filling switches off automatically when `VITE_USE_MOCKS=false`.
 
 ---
 
@@ -34,17 +36,18 @@ VS Code will suggest the ESLint, Prettier and Tailwind extensions (see `.vscode/
 
 ## What's built
 
-| Area         | Route(s)                                                                                            | Notes                                                                |
-| ------------ | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Auth         | `/login`, `/sign-up`, `/verify-email`, `/create-password`                                           | Sign-up flow passes the email between steps via router state         |
-| Home         | `/`                                                                                                 | Balance, quick services, tier upgrade prompt, active loan, insights  |
-| Transfer     | `/transfer`                                                                                         | Name enquiry, NIP fee, beneficiaries, PIN confirmation               |
-| Loans        | `/loans`                                                                                            | Active loan + schedule, repayment calculator, products, how it works |
-| Transactions | `/transactions`                                                                                     | Search, filters, grouped by day, receipt sheet                       |
-| Verification | Modal, opened from Home                                                                             | 5 steps: account type, BVN, ID, proof of address, phone              |
-| Coming soon  | `/pay-bills`, `/savings`, `/invest`, `/insights`, `/cards`, `/rewards`, `/refer`, `/learn`, `/help` | Placeholder pages, generated from the nav config                     |
+| Area           | Where                                                                              | Notes                                                                                            |
+| -------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Login          | `/login`                                                                           | Email and password                                                                               |
+| Sign-up        | `/sign-up`                                                                         | PRD FR-01: phone → SMS code → BVN/NIN → confirm fetched details → login details → account number |
+| Home           | `/`                                                                                | Balance with privacy toggle; Send, Receive, Pay bills, Add money; transactions + quick transfer  |
+| Transfers      | Modal (from nav, Home, or `/transfer`)                                             | PRD View 3: searchable banks, name lookup, free-transfer fee indicator, PIN pad or passkey       |
+| Loans          | `/loans`                                                                           | Active loan + schedule, repayment calculator, products, how it works                             |
+| Transactions   | `/transactions`                                                                    | Search, filters, grouped by day, table-style rows on desktop, receipt sheet                      |
+| Account limits | `/verification`                                                                    | PRD View 6: tier limits, 3-step upgrade (BVN, ID + selfie via webcam, proof of address)          |
+| Coming soon    | Pay bills, Savings, Cards, Invest, Insights, Rewards, Refer, Learn, Help, Settings | Placeholder pages, generated from the nav config                                                 |
 
-**Layout:** phones get a top bar and bottom tabs (Home, Transfer, Loans, Activity, More). At `lg` (1024px) and up, a sidebar replaces the tabs. At `xl` (1280px), Home gets a right-hand column.
+**Layout:** phones get a top bar and bottom tabs (Home, Transfers, Savings, Cards, More), with Loans and everything else under More. At `lg` (1024px) and up, a royal blue sidebar with a profile badge replaces the tabs. At `xl` (1280px), Home splits into transactions (left) and quick transfer (right).
 
 ---
 
@@ -87,28 +90,25 @@ src/
 
 Tokens are defined in `src/styles/index.css`. Raw values sit in `--rb-*` CSS variables, and `[data-theme='dark']` swaps them. Tailwind reads them through `@theme inline`, so the same class works in both themes. Components almost never need `dark:` variants.
 
-| Class                                                | Use                                                    |
-| ---------------------------------------------------- | ------------------------------------------------------ |
-| `bg-bg`                                              | Page background                                        |
-| `bg-surface` / `bg-surface-2` / `bg-surface-3`       | Cards / fields and subtle fills / tracks               |
-| `text-ink` / `text-ink-2` / `text-ink-3`             | Primary / secondary / muted text                       |
-| `border-line`                                        | Hairlines and card borders                             |
-| `text-brand`                                         | Display headings (navy in light, lilac in dark)        |
-| `bg-primary`, `bg-primary-soft`, `text-primary-text` | Signal red actions and states                          |
-| `text-success`, `bg-success-soft`                    | Money in, paid, verified                               |
-| `text-warning`, `bg-warning-soft`                    | Pending                                                |
-| `bg-navy`                                            | Balance card and auth background (same in both themes) |
-| `text-tint-airtime/data/bills/card/loans`            | Service icon tints (Figma variables)                   |
-| `rounded-field` / `-tile` / `-card` / `-panel`       | 10 / 14 / 20 / 26px radii                              |
-| `font-display`                                       | Serif headings and balances                            |
+| Class                                                | Use                                                     |
+| ---------------------------------------------------- | ------------------------------------------------------- |
+| `bg-bg`                                              | Page background                                         |
+| `bg-surface` / `bg-surface-2` / `bg-surface-3`       | Cards / fields and subtle fills / tracks                |
+| `text-ink` / `text-ink-2` / `text-ink-3`             | Primary / secondary / muted text                        |
+| `border-line`                                        | Hairlines and card borders                              |
+| `text-brand`                                         | Headings and key figures (navy in light, lilac in dark) |
+| `bg-primary`, `bg-primary-soft`, `text-primary-text` | Signal red actions and states                           |
+| `text-success`, `bg-success-soft`                    | Money in, paid, verified                                |
+| `text-warning`, `bg-warning-soft`                    | Pending                                                 |
+| `bg-navy`                                            | Balance card and auth background (same in both themes)  |
+| `text-tint-airtime/data/bills/card/loans`            | Service icon tints (Figma variables)                    |
+| `rounded-field` / `-tile` / `-card` / `-panel`       | 10 / 14 / 20 / 26px radii                               |
 
-Figma sources: navy `#1B194D`, heading navy `#272570`, red `#C93C38`, body grey `#5A5A5A`, field grey `#F5F5F5`, Inter, Erstoria.
+Figma sources: navy `#1B194D`, heading navy `#272570`, red `#C93C38`, body grey `#5A5A5A`, field grey `#F5F5F5`.
+
+**Typography:** Inter throughout (PRD). Headings use `font-semibold tracking-tight`; amounts use the `tabular` utility so digits line up.
 
 **Theme switching:** `ThemeProvider` saves the user's choice in `localStorage` (`rb.theme`). If there's no saved choice, it follows the device setting. A small script in `index.html` applies the theme before first paint, which prevents a flash of the wrong theme.
-
-### Swapping in Erstoria
-
-The Figma headings use **Erstoria**, a licensed font. Fraunces is a free stand-in until the files arrive. To switch, follow the four steps in `src/styles/fonts.css`. The ₦ sign is always set in Inter (see `Money.tsx`), so the display font doesn't need to include it.
 
 ### Logo
 
@@ -126,7 +126,9 @@ The Figma headings use **Erstoria**, a licensed font. Fraunces is a free stand-i
    - `api/services/auth.ts`, `api/services/verification.ts`: endpoint paths and the upload format
    - `features/transfer/lib/fees.ts`: use the fee from the API instead of the local NIP table
    - `features/loans/lib/amortization.ts`: use the API's repayment schedule if it provides one
-   - `features/auth/CreatePasswordPage.tsx`: match the backend password rules
+   - `features/auth/lib/passwordRules.ts`: match the backend password rules
+   - `features/transfer/lib/passkey.ts`: WebAuthn challenge and assertion for biometric approval
+   - `api/types.ts` (`Account.freeTransfersRemaining`): the API needs to return the free-transfer allowance (PRD FR-03)
 4. Mutations (transfer, verification steps) already invalidate the relevant queries, so balances and lists refresh after an action.
 
 Amounts are in **naira**. If the API uses kobo, convert in the services layer.
@@ -146,6 +148,6 @@ Amounts are in **naira**. If the API uses kobo, convert in the services layer.
 
 - **Components:** named exports, PascalCase files, one main component per file.
 - **Styling:** Tailwind classes only. Combine conditional classes with `cn()`. For a link that should look like a button, use `buttonClass()` instead of nesting a `<button>` inside a `<Link>`.
-- **State:** server data lives in React Query. Local UI state uses `useState`. App-wide concerns (theme, auth, toasts, verification) are React context in `app/providers` or the owning feature.
+- **State:** server data lives in React Query. Local UI state uses `useState`. App-wide concerns (theme, auth, toasts, the transfer modal) are React context in `app/providers` or the owning feature.
 - **Copy:** sentence case, plain words, and messages that say what happened and what to do next.
 - **Accessibility:** icon-only buttons need an `aria-label`. Toggles use `aria-pressed`. Dialogs use `Modal`, which handles Escape and focus.

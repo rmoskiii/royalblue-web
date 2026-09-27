@@ -1,7 +1,13 @@
 import { env } from '@/config/env';
 import { http, mockResponse } from '../client';
 import { mockAccount, mockBanks, mockBeneficiaries } from '../mocks/data';
-import type { Bank, Beneficiary, NameEnquiryResult, TransferRequest } from '../types';
+import type {
+  Bank,
+  Beneficiary,
+  NameEnquiryResult,
+  TransferRequest,
+  TransferResult,
+} from '../types';
 
 export const transferService = {
   listBanks(): Promise<Bank[]> {
@@ -27,8 +33,8 @@ export const transferService = {
     return http.get<NameEnquiryResult>('/transfers/name-enquiry', { bankCode, accountNumber });
   },
 
-  send(body: TransferRequest): Promise<{ reference: string }> {
-    if (env.useMocks) return mockResponse({ reference: `RB${Date.now()}` }, 800);
-    return http.post('/transfers', body);
+  send(body: TransferRequest): Promise<TransferResult> {
+    if (env.useMocks) return mockResponse({ reference: `RB${Date.now()}` }, 900);
+    return http.post<TransferResult>('/transfers', body);
   },
 };

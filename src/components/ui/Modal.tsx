@@ -9,6 +9,8 @@ interface ModalProps {
   /** Accessible name; shown as the header unless `hideHeader` */
   title: string;
   hideHeader?: boolean;
+  /** Phones: take the whole screen instead of a bottom sheet */
+  fullScreenOnMobile?: boolean;
   children: ReactNode;
   className?: string;
 }
@@ -17,7 +19,15 @@ interface ModalProps {
  * Centred dialog on tablet/desktop, bottom sheet on phones.
  * Closes on Escape and on backdrop click; locks page scroll while open.
  */
-export function Modal({ open, onClose, title, hideHeader, children, className }: ModalProps) {
+export function Modal({
+  open,
+  onClose,
+  title,
+  hideHeader,
+  fullScreenOnMobile,
+  children,
+  className,
+}: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -39,7 +49,10 @@ export function Modal({ open, onClose, title, hideHeader, children, className }:
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 grid animate-fade-in items-end bg-scrim md:place-items-center md:p-4"
+      className={cn(
+        'fixed inset-0 z-50 grid animate-fade-in bg-scrim md:place-items-center md:p-4',
+        fullScreenOnMobile ? 'items-stretch' : 'items-end',
+      )}
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
@@ -49,7 +62,10 @@ export function Modal({ open, onClose, title, hideHeader, children, className }:
         aria-label={title}
         tabIndex={-1}
         className={cn(
-          'max-h-[92dvh] w-full animate-sheet-up overflow-auto rounded-t-[24px] bg-surface pb-[env(safe-area-inset-bottom)] shadow-card outline-none md:max-h-[90dvh] md:w-[min(440px,100%)] md:rounded-[24px] md:pb-0',
+          'w-full animate-sheet-up overflow-auto bg-surface pb-[env(safe-area-inset-bottom)] shadow-card outline-none md:max-h-[90dvh] md:w-[min(440px,100%)] md:rounded-[24px] md:pb-0',
+          fullScreenOnMobile
+            ? 'h-dvh pt-[env(safe-area-inset-top)] md:h-auto md:pt-0'
+            : 'max-h-[92dvh] rounded-t-[24px]',
           className,
         )}
       >

@@ -7,13 +7,12 @@ import { env } from './env';
 const demoValues = {
   login: { email: 'temidayo@example.com', password: 'RoyalBlue@2026' },
   signUp: {
-    firstName: 'Temidayo',
-    lastName: 'Adeyemi',
-    email: 'temidayo@example.com',
     phone: '8034564521',
+    code: '123456',
+    bvn: '22234567890',
+    email: 'temidayo@example.com',
+    password: 'RoyalBlue@2026',
   },
-  emailCode: '123456',
-  newPassword: 'RoyalBlue@2026',
 };
 
 export const demo = env.useMocks ? demoValues : null;

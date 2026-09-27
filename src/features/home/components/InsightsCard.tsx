@@ -18,13 +18,13 @@ export function InsightsCard() {
           <div className="my-3 grid grid-cols-2 gap-3">
             <div>
               <p className="text-xs text-ink-3">Money in</p>
-              <Money amount={data.moneyIn} className="font-display text-[22px] text-success" />
+              <Money amount={data.moneyIn} className="text-[22px] font-semibold text-success" />
             </div>
             <div>
               <p className="text-xs text-ink-3">Money out</p>
               <Money
                 amount={data.moneyOut}
-                className="font-display text-[22px] text-primary-text"
+                className="text-[22px] font-semibold text-primary-text"
               />
             </div>
           </div>

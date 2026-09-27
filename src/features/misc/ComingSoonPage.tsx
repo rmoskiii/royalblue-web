@@ -10,9 +10,7 @@ export function ComingSoonPage({ item }: { item: NavItem }) {
       <span className="grid size-12 place-items-center rounded-2xl bg-surface-2 text-brand">
         <Icon className="size-6" strokeWidth={1.8} />
       </span>
-      <h1 className="font-display text-[28px] font-medium tracking-tight text-brand">
-        {item.label}
-      </h1>
+      <h1 className="text-[28px] font-semibold tracking-tight text-brand">{item.label}</h1>
       <p className="text-ink-2">This section is coming in a later release.</p>
       <Link to={paths.home} className={buttonClass({ variant: 'secondary' })}>
         Back to home

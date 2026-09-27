@@ -11,18 +11,13 @@ interface MoneyProps {
   className?: string;
 }
 
-/**
- * Renders a naira amount. The ₦ glyph is always set in Inter because many
- * display serifs (including the Erstoria stand-in) don't include it.
- */
+/** Renders a naira amount, e.g. ₦12,000,345.00, with tabular digits. */
 export function Money({ amount, decimals = 0, signed, masked, className }: MoneyProps) {
   const sign = signed ? (amount > 0 ? '+' : amount < 0 ? '−' : '') : '';
   const digits = masked ? '••••••' : formatNaira(amount, decimals).slice(1);
   return (
     <span className={cn('tabular', className)}>
-      {sign}
-      <span className="font-sans">₦</span>
-      {digits}
+      {sign}₦{digits}
     </span>
   );
 }

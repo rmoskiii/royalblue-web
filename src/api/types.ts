@@ -19,11 +19,31 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface SignUpRequest {
+/** Sign-up (PRD FR-01): phone → SMS code → BVN/NIN → confirm → login details */
+export type IdentityType = 'bvn' | 'nin';
+
+export interface PhoneVerification {
+  /** Short-lived token that ties the sign-up steps together */
+  signUpToken: string;
+}
+
+/** Details fetched from NIBSS for the customer to confirm */
+export interface IdentityLookup {
   firstName: string;
   lastName: string;
+  dateOfBirth: ISODateString;
+  photoUrl: string | null;
+}
+
+export interface CompleteSignUpRequest {
+  signUpToken: string;
   email: string;
-  phone: string;
+  password: string;
+}
+
+export interface SignUpResult {
+  accountNumber: string;
+  accountName: string;
 }
 
 // ---------- Customer & account ----------
@@ -42,6 +62,9 @@ export interface Account {
   bankName: string;
   balance: number;
   tier: KycTier;
+  /** PRD FR-03: free outward transfers left this month, and the monthly allowance */
+  freeTransfersRemaining: number;
+  freeTransfersPerMonth: number;
 }
 
 // ---------- Transactions ----------
@@ -101,13 +124,21 @@ export interface NameEnquiryResult {
   bankCode: string;
 }
 
+/** PRD FR-08 / View 3: approve with the 4-digit PIN or a passkey (WebAuthn). */
+export type TransferAuthorisation =
+  { method: 'pin'; pin: string } | { method: 'passkey'; assertion: string };
+
 export interface TransferRequest {
   destination: TransferDestination;
   bankCode: string;
   accountNumber: string;
   amount: number;
   narration?: string;
-  pin: string;
+  authorisation: TransferAuthorisation;
+}
+
+export interface TransferResult {
+  reference: string;
 }
 
 // ---------- Loans ----------
@@ -139,12 +170,27 @@ export interface Loan {
 }
 
 // ---------- Verification (KYC) ----------
-export type VerificationStepId =
-  'account-type' | 'bvn' | 'id-document' | 'proof-of-address' | 'phone';
-export type AccountType = 'personal' | 'business';
-export type IdDocumentType = 'nin' | 'drivers-licence' | 'passport' | 'voters-card';
+/** PRD View 6: BVN validation → ID upload (+ selfie) → proof of address */
+export type VerificationStepId = 'bvn' | 'id-document' | 'proof-of-address';
+export type IdDocumentType = 'voters-card' | 'passport' | 'drivers-licence' | 'nin-slip';
 
 export interface VerificationStatus {
   tier: KycTier;
   completedSteps: VerificationStepId[];
+}
+
+/** PRD §3B tier structure. `null` means unlimited. */
+export interface TierLimit {
+  tier: KycTier;
+  requirements: string;
+  singleTransactionLimit: number | null;
+  dailyLimit: number | null;
+  maxBalance: number | null;
+}
+
+export interface IdDocumentSubmission {
+  type: IdDocumentType;
+  number: string;
+  documentImage: File;
+  selfie: File;
 }

@@ -1,11 +1,11 @@
 import { ShieldCheck } from 'lucide-react';
+import { Link } from 'react-router';
 import { useVerificationStatus } from '@/api/hooks';
-import { Button } from '@/components/ui';
-import { useVerification } from '@/features/verification/VerificationProvider';
+import { paths } from '@/components/layout/navigation';
+import { buttonClass } from '@/components/ui';
 
 export function TierBanner() {
   const { data: status } = useVerificationStatus();
-  const { openVerification } = useVerification();
   if (!status || status.tier === 3) return null;
 
   return (
@@ -16,12 +16,12 @@ export function TierBanner() {
       <div className="min-w-0 flex-[1_1_220px]">
         <p className="font-semibold">Upgrade to Tier {status.tier + 1}</p>
         <p className="text-[13px] text-ink-2">
-          Finish verification to raise your daily transfer limit and unlock larger loans.
+          Finish verification to raise your transfer limits and unlock larger loans.
         </p>
       </div>
-      <Button variant="secondary" onClick={() => openVerification()}>
-        Continue verification
-      </Button>
+      <Link to={paths.verification} className={buttonClass({ variant: 'secondary' })}>
+        Upgrade now
+      </Link>
     </section>
   );
 }

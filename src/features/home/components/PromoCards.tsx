@@ -8,7 +8,7 @@ export function ReferCard() {
   return (
     <section className="relative overflow-hidden rounded-card bg-navy-600 p-4.5 text-white">
       <LeafArt />
-      <h3 className="font-display text-2xl font-medium tracking-tight">Refer and earn</h3>
+      <h3 className="text-2xl font-semibold tracking-tight">Refer and earn</h3>
       <p className="relative mt-1.5 mb-3.5 max-w-[30ch] text-[13px] text-white/78">
         Your friend gets ₦500 when they sign up. You get ₦1,000 cashback after their first
         transaction.
@@ -35,7 +35,7 @@ export function VirtualCardPromo() {
         </div>
         <span className="text-[15px] tracking-[0.12em] tabular">•••• 4821</span>
       </div>
-      <h3 className="font-display text-[22px] font-medium text-brand">Get a virtual card</h3>
+      <h3 className="text-[22px] font-semibold text-brand">Get a virtual card</h3>
       <p className="mt-1.5 mb-3.5 text-[13px] text-ink-2">
         Pay online in naira, set spending limits and freeze it any time.
       </p>

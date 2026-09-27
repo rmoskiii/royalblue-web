@@ -36,7 +36,7 @@ export function LoanCalculator({ product, ref }: LoanCalculatorProps) {
       </label>
       <Money
         amount={amount}
-        className="mt-1 block font-display text-[30px] leading-tight font-medium tracking-tight text-brand"
+        className="mt-1 block text-[30px] leading-tight font-semibold tracking-tight text-brand"
       />
       <input
         id="loan-amount"
@@ -71,7 +71,7 @@ export function LoanCalculator({ product, ref }: LoanCalculatorProps) {
       <div className="my-4 grid gap-2.5 rounded-tile bg-surface-2 p-3.5">
         <div className="flex items-baseline justify-between gap-3">
           <span className="text-[13px] text-ink-2">Monthly repayment</span>
-          <Money amount={estimate.monthly} className="font-display text-[26px] text-brand" />
+          <Money amount={estimate.monthly} className="text-[26px] font-semibold text-brand" />
         </div>
         {rows.map(([label, value]) => (
           <div key={label} className="flex justify-between text-[13px] text-ink-2">

@@ -8,7 +8,7 @@ export function Logo({ onDark, className }: { onDark?: boolean; className?: stri
   return (
     <span
       className={cn(
-        'relative inline-block pt-1 font-display text-2xl leading-none font-medium tracking-tight',
+        'relative inline-block pt-1 text-2xl leading-none font-semibold tracking-tight',
         onDark ? 'text-white' : 'text-brand',
         className,
       )}

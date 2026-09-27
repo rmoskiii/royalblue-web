@@ -1,20 +1,20 @@
-import { NavLink } from 'react-router';
-import { useLoans } from '@/api/hooks';
-import { Chip, Logo } from '@/components/ui';
+import { ChevronRight } from 'lucide-react';
+import { Link } from 'react-router';
+import { useAccount, useLoans, useMe } from '@/api/hooks';
+import { Avatar, Chip, Logo } from '@/components/ui';
 import { cn } from '@/lib/cn';
-import { learnAndEarnNav, paths, primaryNav, type NavItem } from './navigation';
+import { NavEntry } from './NavEntry';
+import { learnAndEarnNav, paths, primaryNav, settingsNav, type NavItem } from './navigation';
 
-function SidebarLink({ item, badge }: { item: NavItem; badge?: string }) {
+function SidebarItem({ item, badge }: { item: NavItem; badge?: string }) {
   const Icon = item.icon;
   return (
-    <NavLink
-      to={item.to}
-      end={item.to === paths.home}
-      className={({ isActive }) =>
+    <NavEntry
+      item={item}
+      className={(isActive) =>
         cn(
-          'flex items-center gap-3 rounded-field px-2.5 py-2.25 font-medium text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink',
-          isActive &&
-            'bg-primary-soft text-primary-text hover:bg-primary-soft hover:text-primary-text',
+          'flex w-full items-center gap-3 rounded-field px-2.5 py-2.25 text-left font-medium text-white/70 transition-colors hover:bg-white/8 hover:text-white',
+          isActive && 'bg-white/12 text-white hover:bg-white/12',
         )
       }
     >
@@ -25,26 +25,30 @@ function SidebarLink({ item, badge }: { item: NavItem; badge?: string }) {
           {badge}
         </Chip>
       )}
-    </NavLink>
+    </NavEntry>
   );
 }
 
+/** PRD View 1: royal blue sidebar with logo, menu and a profile badge at the bottom. */
 export function Sidebar({ className }: { className?: string }) {
   const { data: loans } = useLoans();
+  const { data: user } = useMe();
+  const { data: account } = useAccount();
   const hasActiveLoan = loans?.some((l) => l.status === 'active');
+  const fullName = user ? `${user.firstName} ${user.lastName}` : '';
 
   return (
     <aside
       className={cn(
-        'w-59 shrink-0 flex-col gap-1 overflow-y-auto border-r border-line bg-surface px-3 py-4.5',
+        'w-60 shrink-0 flex-col gap-1 overflow-y-auto border-r border-white/5 bg-navy px-3 py-4.5',
         className,
       )}
     >
-      <Logo className="mx-2.5 mt-1 mb-4.5 self-start" />
-      <nav aria-label="Main" className="grid gap-1">
+      <Logo onDark className="mx-2.5 mt-1 mb-4.5 self-start" />
+      <nav aria-label="Main" className="grid gap-0.5">
         {primaryNav.map((item) => (
-          <SidebarLink
-            key={item.to}
+          <SidebarItem
+            key={item.label}
             item={item}
             badge={item.to === paths.loans && hasActiveLoan ? 'Active' : undefined}
           />
@@ -52,17 +56,31 @@ export function Sidebar({ className }: { className?: string }) {
       </nav>
 
       <div className="mt-auto" />
-      <p className="px-2.5 pt-4.5 pb-1.5 text-[11px] font-semibold tracking-wider text-ink-3 uppercase">
+      <p className="px-2.5 pt-4.5 pb-1.5 text-[11px] font-semibold tracking-wider text-white/45 uppercase">
         Learn and earn
       </p>
-      <nav aria-label="Learn and earn" className="grid gap-1">
+      <nav aria-label="Learn and earn" className="grid gap-0.5">
         {learnAndEarnNav.map((item) => (
-          <SidebarLink key={item.to} item={item} />
+          <SidebarItem key={item.label} item={item} />
         ))}
       </nav>
-      <p className="mt-3.5 rounded-xl bg-surface-2 p-3 text-xs leading-snug text-ink-3">
-        Licensed by the Central Bank of Nigeria. Deposits insured by NDIC.
-      </p>
+
+      <div className="mt-3 border-t border-white/10 pt-3">
+        <SidebarItem item={settingsNav} />
+        <Link
+          to={paths.settings}
+          className="mt-2 flex items-center gap-2.5 rounded-xl bg-white/8 p-2.5 text-white hover:bg-white/12"
+        >
+          <Avatar name={fullName || ' '} className="bg-white/15 text-white" />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-[13px] font-semibold">{fullName}</span>
+            <span className="block text-xs text-white/60">
+              Personal{account ? ` · Tier ${account.tier}` : ''}
+            </span>
+          </span>
+          <ChevronRight className="size-4 text-white/50" />
+        </Link>
+      </div>
     </aside>
   );
 }

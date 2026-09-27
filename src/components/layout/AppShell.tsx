@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router';
-import { VerificationProvider } from '@/features/verification/VerificationProvider';
+import { TransferProvider } from '@/features/transfer/TransferProvider';
 import { BottomTabs } from './BottomTabs';
 import { MoreSheet } from './MoreSheet';
 import { Sidebar } from './Sidebar';
@@ -15,7 +15,7 @@ export function AppShell() {
   const [moreOpen, setMoreOpen] = useState(false);
 
   return (
-    <VerificationProvider>
+    <TransferProvider>
       <div className="flex h-dvh overflow-hidden">
         <Sidebar className="hidden lg:flex" />
         <div className="flex min-w-0 flex-1 flex-col">
@@ -29,6 +29,6 @@ export function AppShell() {
         </div>
       </div>
       <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} />
-    </VerificationProvider>
+    </TransferProvider>
   );
 }

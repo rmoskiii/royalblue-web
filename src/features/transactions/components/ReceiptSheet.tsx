@@ -35,7 +35,7 @@ export function ReceiptSheet({
           decimals={2}
           signed
           className={cn(
-            'my-1.5 block font-display text-[34px] leading-tight font-medium tracking-tight',
+            'my-1.5 block text-[34px] leading-tight font-semibold tracking-tight',
             credit && 'text-success',
           )}
         />

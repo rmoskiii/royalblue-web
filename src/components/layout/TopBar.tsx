@@ -1,12 +1,15 @@
-import { Bell, Search } from 'lucide-react';
-import { useMe } from '@/api/hooks';
-import { Avatar } from '@/components/ui';
+import { Bell, Search, ShieldCheck } from 'lucide-react';
+import { Link } from 'react-router';
+import { useAccount, useMe } from '@/api/hooks';
 import { useToast } from '@/app/providers/ToastProvider';
+import { Avatar } from '@/components/ui';
 import { formatGreetingDate, greeting } from '@/lib/format';
+import { paths } from './navigation';
 import { ThemeToggle } from './ThemeToggle';
 
 export function TopBar() {
   const { data: user } = useMe();
+  const { data: account } = useAccount();
   const { showToast } = useToast();
   const fullName = user ? `${user.firstName} ${user.lastName}` : '';
   const hello = greeting();
@@ -33,6 +36,16 @@ export function TopBar() {
             className="w-full bg-transparent text-[13px] text-ink outline-none placeholder:text-ink-3"
           />
         </label>
+        {account && (
+          <Link
+            to={paths.verification}
+            title="See your limits and upgrade"
+            className="mr-1 inline-flex h-7 items-center gap-1 rounded-full bg-primary-soft px-2.5 text-[11px] font-bold tracking-wider text-primary-text uppercase hover:brightness-95"
+          >
+            <ShieldCheck className="size-3.5" />
+            Tier {account.tier}
+          </Link>
+        )}
         <button
           type="button"
           aria-label="Notifications"
@@ -43,7 +56,6 @@ export function TopBar() {
           <span className="absolute top-2 right-2.5 size-1.75 rounded-full border-[1.5px] border-surface bg-primary" />
         </button>
         <ThemeToggle />
-        <Avatar name={fullName || ' '} className="ml-1 hidden lg:grid" />
       </div>
     </header>
   );

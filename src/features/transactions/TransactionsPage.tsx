@@ -50,13 +50,13 @@ export function TransactionsPage() {
         <div className="mb-3 grid grid-cols-2 gap-3">
           <Card className="px-4 py-3.5">
             <p className="text-xs text-ink-3">Money in</p>
-            <Money amount={insights.moneyIn} className="font-display text-[22px] text-success" />
+            <Money amount={insights.moneyIn} className="text-[22px] font-semibold text-success" />
           </Card>
           <Card className="px-4 py-3.5">
             <p className="text-xs text-ink-3">Money out</p>
             <Money
               amount={insights.moneyOut}
-              className="font-display text-[22px] text-primary-text"
+              className="text-[22px] font-semibold text-primary-text"
             />
           </Card>
         </div>

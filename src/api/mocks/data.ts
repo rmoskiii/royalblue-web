@@ -5,6 +5,7 @@ import type {
   InsightsSummary,
   Loan,
   LoanProduct,
+  TierLimit,
   Transaction,
   User,
   VerificationStatus,
@@ -33,8 +34,10 @@ export const mockAccount: Account = {
   accountNumber: '7823456109',
   accountName: 'Temidayo Adeyemi',
   bankName: 'RoyalBlue MFB',
-  balance: 12_000_345,
+  balance: 485_345,
   tier: 2,
+  freeTransfersRemaining: 7,
+  freeTransfersPerMonth: 10,
 };
 
 export const mockTransactions: Transaction[] = [
@@ -270,5 +273,30 @@ export const mockLoans: Loan[] = [
 
 export const mockVerification: VerificationStatus = {
   tier: 2,
-  completedSteps: ['account-type', 'bvn', 'id-document'],
+  completedSteps: ['bvn', 'id-document'],
 };
+
+/** From the PRD (§3B). */
+export const mockTierLimits: TierLimit[] = [
+  {
+    tier: 1,
+    requirements: 'Phone number and BVN or NIN',
+    singleTransactionLimit: 50_000,
+    dailyLimit: 300_000,
+    maxBalance: 300_000,
+  },
+  {
+    tier: 2,
+    requirements: 'Tier 1 plus a valid ID',
+    singleTransactionLimit: 200_000,
+    dailyLimit: 500_000,
+    maxBalance: 500_000,
+  },
+  {
+    tier: 3,
+    requirements: 'Tier 2 plus proof of address',
+    singleTransactionLimit: 5_000_000,
+    dailyLimit: null,
+    maxBalance: null,
+  },
+];

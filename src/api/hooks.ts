@@ -19,6 +19,7 @@ export const queryKeys = {
   loans: ['loans'] as const,
   loanProducts: ['loan-products'] as const,
   verification: ['verification'] as const,
+  tierLimits: ['tier-limits'] as const,
 };
 
 export const useMe = () => useQuery({ queryKey: queryKeys.me, queryFn: accountService.getMe });
@@ -59,3 +60,10 @@ export const useLoanProducts = () =>
 
 export const useVerificationStatus = () =>
   useQuery({ queryKey: queryKeys.verification, queryFn: verificationService.getStatus });
+
+export const useTierLimits = () =>
+  useQuery({
+    queryKey: queryKeys.tierLimits,
+    queryFn: verificationService.getTierLimits,
+    staleTime: Infinity,
+  });

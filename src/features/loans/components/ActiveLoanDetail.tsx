@@ -29,7 +29,7 @@ export function ActiveLoanDetail({ loan }: { loan: Loan }) {
       <div className="mt-3.5 mb-2.5 flex flex-wrap items-baseline gap-2.5">
         <Money
           amount={s.leftToRepay}
-          className="font-display text-[28px] leading-none font-medium tracking-tight text-brand"
+          className="text-[28px] leading-none font-semibold tracking-tight text-brand"
         />
         <span className="text-ink-3">left to repay</span>
       </div>

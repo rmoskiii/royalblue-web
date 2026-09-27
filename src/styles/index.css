@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@import './fonts.css';
 
 /*
  * RoyalBlue design tokens
@@ -111,9 +110,8 @@
   --color-tint-bills: #ff6b35;
   --color-tint-card: #5856d6;
 
-  /* Typography — Figma: Erstoria (display) + Inter */
+  /* Typography — all Inter (PRD). Headings use font-semibold + tracking-tight. */
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-display: var(--rb-font-display), Georgia, 'Times New Roman', serif;
 
   /* Radii — Figma: 10 (fields, buttons), 26 (auth card) */
   --radius-field: 10px;
