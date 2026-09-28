@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router';
 import { setActiveProfileId } from '@/api/client';
 import { useProfiles } from '@/api/hooks';
 import type { Profile, ProfileType } from '@/api/types';
+import { paths } from '@/components/layout/navigation';
 import { storage } from '@/lib/storage';
 
 export const PROFILE_STORAGE_KEY = 'rb.profile';
@@ -56,7 +57,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       setActiveProfileId(id);
       storage.set(PROFILE_STORAGE_KEY, id);
       setActiveId(id);
-      navigate('/');
+      navigate(paths.home);
       queryClient.invalidateQueries({ predicate: (q) => q.queryKey[0] !== 'profiles' });
     },
     [profile?.id, navigate, queryClient],

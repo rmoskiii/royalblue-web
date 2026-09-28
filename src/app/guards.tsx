@@ -1,16 +1,13 @@
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { paths } from '@/components/layout/navigation';
-import { LandingPage } from '@/features/landing/LandingPage';
 import { useAuth } from './providers/AuthProvider';
 
 /**
- * Signed-out visitors see the public landing page at "/", and are sent to
- * /login (remembering where they were going) for every other app page.
+ * Sends signed-out visitors to /login, remembering where they were going.
  */
 export function RequireAuth() {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
-  if (!isAuthenticated && location.pathname === paths.home) return <LandingPage />;
   if (!isAuthenticated) {
     return (
       <Navigate

@@ -38,11 +38,11 @@ VS Code will suggest the ESLint, Prettier and Tailwind extensions (see `.vscode/
 
 | Area            | Where                                                   | Notes                                                                                            |
 | --------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Website         | `/` (signed out), `/welcome`, `/terms`, `/privacy`      | Figma "Desktop - 2" exports with clickable buttons (`features/landing/sections.ts`)              |
+| Website         | `/welcome` (where `/` opens), `/terms`, `/privacy`      | Figma "Desktop - 2" exports with clickable buttons (`features/landing/sections.ts`)              |
 | Login           | `/login`                                                | Email and password                                                                               |
 | Sign-up         | `/sign-up`                                              | PRD FR-01: phone → SMS code → BVN/NIN → confirm fetched details → login details → account number |
-| Home            | `/` (personal profile)                                  | Balance with privacy toggle; Send, Receive, Pay bills, Add money; transactions + quick transfer  |
-| Merchant portal | `/` (business profile), `/payments`, `/staff`           | PRD View 2: volume / payout / terminals, live payments table, POS status, cashier access         |
+| Home            | `/dashboard` (personal profile)                         | Balance with privacy toggle; Send, Receive, Pay bills, Add money; transactions + quick transfer  |
+| Merchant portal | `/dashboard` (business), `/payments`, `/staff`          | PRD View 2: volume / payout / terminals, live payments table, POS status, cashier access         |
 | Profile switch  | Top bar                                                 | PRD FR-04: Personal ↔ Business. Switching refetches everything for the new profile               |
 | Transfers       | Modal (from nav, Home, or `/transfer`)                  | PRD View 3: searchable banks, name lookup, free-transfer fee indicator, PIN pad or passkey       |
 | Pay bills       | `/pay-bills?type=airtime\|data\|electricity`            | PRD FR-07: networks, data bundles, meter validation, PIN approval, electricity token receipt     |

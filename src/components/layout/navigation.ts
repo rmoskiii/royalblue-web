@@ -34,7 +34,8 @@ export interface NavItem {
 }
 
 export const paths = {
-  home: '/',
+  /** App dashboard ("/" opens the website, see router.tsx) */
+  home: '/dashboard',
   transfer: '/transfer',
   payBills: '/pay-bills',
   loans: '/loans',
@@ -52,7 +53,7 @@ export const paths = {
   payments: '/payments',
   staff: '/staff',
   login: '/login',
-  /** Public marketing site; also shown at "/" to signed-out visitors */
+  /** Public website; where "/" (the bare Vercel link) lands */
   welcome: '/welcome',
   terms: '/terms',
   privacy: '/privacy',

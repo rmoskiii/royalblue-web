@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import { createBrowserRouter } from 'react-router';
+import { createBrowserRouter, Navigate } from 'react-router';
 import { AppShell } from '@/components/layout/AppShell';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { comingSoon, paths } from '@/components/layout/navigation';
@@ -24,6 +24,8 @@ function page<M>(load: () => Promise<M>, pick: (module: M) => ComponentType) {
 }
 
 export const router = createBrowserRouter([
+  // The bare URL (e.g. the Vercel link) opens the website
+  { path: '/', element: <Navigate to={paths.welcome} replace /> },
   {
     element: <RedirectIfAuthenticated />,
     children: [
@@ -43,7 +45,7 @@ export const router = createBrowserRouter([
       {
         element: <AppShell />,
         children: [
-          { index: true, element: <HomeRoute /> },
+          { path: paths.home, element: <HomeRoute /> },
           { path: paths.transfer, element: <TransferRoute /> },
           {
             path: paths.loans,

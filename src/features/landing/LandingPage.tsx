@@ -7,7 +7,7 @@ const scaled = (px: number) => `min(${(px / DESIGN_WIDTH) * 100}%, ${px}px)`;
 
 /**
  * Public marketing site, built from the Figma "Desktop - 2" exports.
- * Shown at "/" to signed-out visitors and at /welcome for everyone.
+ * Lives at /welcome, which is where "/" (the bare site link) redirects.
  *
  * Every section is an image laid out on the 1440px Figma grid and scaled as
  * one piece, with invisible links over the drawn buttons and nav items.
