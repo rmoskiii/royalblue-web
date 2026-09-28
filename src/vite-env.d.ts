@@ -8,3 +8,9 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+/** Images imported through vite-imagetools with `&as=srcset` (see features/landing/sections.ts) */
+declare module '*as=srcset' {
+  const srcset: string;
+  export default srcset;
+}

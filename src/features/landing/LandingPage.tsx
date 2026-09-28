@@ -20,7 +20,7 @@ export function LandingPage() {
       <main>
         {sections.map((s, i) => (
           <section
-            key={s.src}
+            key={s.srcSet}
             className="w-full"
             style={{ background: s.background, marginTop: scaled(s.gapAbove) }}
           >
@@ -30,7 +30,7 @@ export function LandingPage() {
               style={{ width: `min(${(s.width / DESIGN_WIDTH) * 100}%, ${s.width}px)` }}
             >
               <HotspotImage
-                src={s.src}
+                srcSet={s.srcSet}
                 alt={s.alt}
                 width={s.width}
                 height={s.height}

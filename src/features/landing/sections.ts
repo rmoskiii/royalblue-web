@@ -1,20 +1,22 @@
-import copyright from '@/assets/landing/copyright.png';
-import footerWatermark from '@/assets/landing/footer-watermark.png';
-import footer from '@/assets/landing/footer.png';
-import goals from '@/assets/landing/goals.webp';
-import headerScrolled from '@/assets/landing/header-scrolled.png';
-import hero from '@/assets/landing/hero.webp';
-import regulators from '@/assets/landing/regulators.png';
-import services from '@/assets/landing/services.png';
-import sme from '@/assets/landing/sme.webp';
+// Each master is a 3x Figma export. The build makes 1x, 2x and 3x WebP versions of it,
+// and the browser downloads only the one that fits the screen.
+import copyright from '@/assets/landing/copyright.png?w=1245;2490;3735&format=webp&quality=85&as=srcset';
+import footerWatermark from '@/assets/landing/footer-watermark.png?w=1284;2568;3853&format=webp&quality=85&as=srcset';
+import footer from '@/assets/landing/footer.png?w=1270;2540;3810&format=webp&quality=85&as=srcset';
+import goals from '@/assets/landing/goals.png?w=1440;2880;4320&format=webp&quality=85&as=srcset';
+import headerScrolled from '@/assets/landing/header-scrolled.png?w=1440;2880;4320&format=webp&quality=85&as=srcset';
+import hero from '@/assets/landing/hero.png?w=1440;2880;4320&format=webp&quality=85&as=srcset';
+import regulators from '@/assets/landing/regulators.png?w=575;1150;1725&format=webp&quality=85&as=srcset';
+import services from '@/assets/landing/services.png?w=1270;2540;3810&format=webp&quality=85&as=srcset';
+import sme from '@/assets/landing/sme.png?w=1270;2540;3810&format=webp&quality=85&as=srcset';
 import { paths } from '@/components/layout/navigation';
 
 /**
  * The landing page is built from the Figma "Desktop - 2" exports.
  *
- * Everything is measured in Figma pixels on a 1440px-wide page, so the whole
- * page scales down evenly on smaller screens. Images can be re-exported at @2x
- * with the same filenames; the numbers below don't change.
+ * Everything is measured in 1x Figma pixels on a 1440px-wide page, so the whole
+ * page scales down evenly on smaller screens. The image files themselves are 3x
+ * exports; replacing one with a new export of the same name needs no other change.
  */
 export const DESIGN_WIDTH = 1440;
 
@@ -42,7 +44,8 @@ export interface Anchor {
 
 export interface ImageSection {
   id?: string;
-  src: string;
+  /** Generated srcset (1x/2x/3x WebP) */
+  srcSet: string;
   /** Screen-reader and SEO text: everything the image says */
   alt: string;
   width: number;
@@ -67,7 +70,7 @@ const navHotspots: Hotspot[] = [
 
 /** The white bar from Figma's scrolled header (shadow trimmed; StickyHeader adds its own). */
 export const headerImage = {
-  src: headerScrolled,
+  srcSet: headerScrolled,
   alt: 'RoyalBlue',
   width: 1440,
   height: 44,
@@ -79,7 +82,7 @@ export const headerImage = {
 export const sections: ImageSection[] = [
   {
     id: 'top',
-    src: hero,
+    srcSet: hero,
     alt: 'Exceptional banking that meet customer needs. Experience secure savings, accessible loans, and seamless digital banking designed to help individuals, businesses, and communities grow with confidence.',
     width: 1440,
     height: 793,
@@ -101,7 +104,7 @@ export const sections: ImageSection[] = [
     ],
   },
   {
-    src: regulators,
+    srcSet: regulators,
     alt: 'Licensed by the Central Bank of Nigeria. Insured by the Nigeria Deposit Insurance Corporation (NDIC).',
     width: 575,
     height: 60,
@@ -109,7 +112,7 @@ export const sections: ImageSection[] = [
   },
   {
     id: 'services',
-    src: services,
+    srcSet: services,
     alt: 'Engineered for modern enterprise and personal growth. SME and business credit, instant settlements, bank-grade encryption, seamless open APIs, high-yield savings, and corporate expense cards.',
     width: 1270,
     height: 787,
@@ -117,7 +120,7 @@ export const sections: ImageSection[] = [
   },
   {
     id: 'loans',
-    src: sme,
+    srcSet: sme,
     alt: 'Fueling small and medium enterprises with real capital. We understand the cash flow dynamics of local businesses. Our loan products offer competitive rates, flexible repayment structures, and quick approvals.',
     width: 1270,
     height: 609,
@@ -136,7 +139,7 @@ export const sections: ImageSection[] = [
   },
   {
     id: 'about',
-    src: goals,
+    srcSet: goals,
     alt: 'Banking built around your goals. RoyalBlue Microfinance Bank exists to make banking simpler, more accessible, and more rewarding for every Nigerian. Digital convenience, business support and customer-first service. Ready to elevate your financial growth? See how fast your savings grow.',
     width: 1440,
     height: 1521,
@@ -156,7 +159,7 @@ export const sections: ImageSection[] = [
     ],
   },
   {
-    src: footer,
+    srcSet: footer,
     alt: 'RoyalBlue. 127 Herbert Macaulay Street, Ebute Metta, Sabo Yaba, Lagos, Nigeria. Leading provider of financial services to small and medium enterprises by helping them achieve their financial goals. Licensed by the Central Bank of Nigeria. Insured by the Nigeria Deposit Insurance Corporation.',
     width: 1270,
     height: 105,
@@ -167,14 +170,14 @@ export const sections: ImageSection[] = [
     ],
   },
   {
-    src: copyright,
+    srcSet: copyright,
     alt: '© 2026 RoyalBlue Microfinance Bank Ltd. All rights reserved.',
     width: 1245,
     height: 46,
     gapAbove: 100,
   },
   {
-    src: footerWatermark,
+    srcSet: footerWatermark,
     alt: '',
     width: 1285,
     height: 186,
