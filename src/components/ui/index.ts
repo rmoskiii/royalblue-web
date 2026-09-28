@@ -15,5 +15,6 @@ export { PinPad } from './PinPad';
 export { ProgressBar } from './ProgressBar';
 export { SegmentedControl } from './SegmentedControl';
 export { SelectField } from './SelectField';
+export { Streaks } from './Streaks';
 export { Switch } from './Switch';
 export { TextField, type TextFieldProps } from './TextField';

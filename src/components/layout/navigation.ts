@@ -52,6 +52,10 @@ export const paths = {
   payments: '/payments',
   staff: '/staff',
   login: '/login',
+  /** Public marketing site; also shown at "/" to signed-out visitors */
+  welcome: '/welcome',
+  terms: '/terms',
+  privacy: '/privacy',
   signUp: '/sign-up',
 } as const;
 

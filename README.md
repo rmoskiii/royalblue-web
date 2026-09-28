@@ -38,6 +38,7 @@ VS Code will suggest the ESLint, Prettier and Tailwind extensions (see `.vscode/
 
 | Area            | Where                                                   | Notes                                                                                            |
 | --------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Website         | `/` (signed out), `/welcome`, `/terms`, `/privacy`      | Figma "Desktop - 2" exports with clickable buttons (`features/landing/sections.ts`)              |
 | Login           | `/login`                                                | Email and password                                                                               |
 | Sign-up         | `/sign-up`                                              | PRD FR-01: phone → SMS code → BVN/NIN → confirm fetched details → login details → account number |
 | Home            | `/` (personal profile)                                  | Balance with privacy toggle; Send, Receive, Pay bills, Add money; transactions + quick transfer  |
@@ -82,7 +83,8 @@ src/
       components/      Components used only by this feature
       lib/             Pure logic (e.g. loan maths, fees)
   lib/                 App-wide helpers (formatting, theme, storage, cn)
-  styles/              Tailwind entry, design tokens, fonts
+  assets/              Images imported by code (see src/assets/README.md for sources)
+  styles/              Tailwind entry, design tokens
 ```
 
 **Rules of thumb**
@@ -120,7 +122,7 @@ Figma sources: navy `#1B194D`, heading navy `#272570`, red `#C93C38`, body grey 
 
 ### Logo
 
-`components/ui/Logo.tsx` is a text wordmark for now. Export the official lockup from Figma (node `41:10375`) as SVG into `src/assets/` and swap it in.
+`components/ui/Logo.tsx` inlines the official lockup (`public/royalblue-lockup.svg`) so the lettering can switch between navy and white. Use `compact` to drop the "Microfinance Bank" line at small sizes. The favicon is `public/favicon.svg`.
 
 ---
 
@@ -145,6 +147,18 @@ Figma sources: navy `#1B194D`, heading navy `#272570`, red `#C93C38`, body grey 
 4. Mutations (transfer, verification steps) already invalidate the relevant queries, so balances and lists refresh after an action.
 
 Amounts are in **naira**. If the API uses kobo, convert in the services layer.
+
+---
+
+## Deploying
+
+This is a single-page app: React Router handles URLs in the browser, so the host must serve `index.html` for every path that isn't a real file. Without that, opening `/loans` directly (or refreshing on it) returns the host's 404.
+
+- **Vercel:** `vercel.json` rewrites every path to `/index.html`. Real files such as `/assets/*` and `/favicon.svg` are still served as normal, because Vercel checks the filesystem before applying rewrites.
+- **Netlify:** add `public/_redirects` with `/*  /index.html  200`.
+- **Other hosts:** configure a fallback to `index.html`.
+
+Signed-out visitors who open a deep link go to `/login` first, then land on the page they asked for.
 
 ---
 

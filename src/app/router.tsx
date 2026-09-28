@@ -8,6 +8,8 @@ import { LoginPage } from '@/features/auth/LoginPage';
 import { SignUpPage } from '@/features/auth/SignUpPage';
 import { BusinessOnly } from '@/features/business/BusinessOnly';
 import { HomeRoute } from '@/features/home/HomeRoute';
+import { LandingPage } from '@/features/landing/LandingPage';
+import { LegalPage } from '@/features/landing/LegalPage';
 import { ComingSoonPage } from '@/features/misc/ComingSoonPage';
 import { NotFoundPage } from '@/features/misc/NotFoundPage';
 import { TransferRoute } from '@/features/transfer/TransferRoute';
@@ -109,5 +111,9 @@ export const router = createBrowserRouter([
       },
     ],
   },
+  // Public website pages, available whether or not you're signed in
+  { path: paths.welcome, element: <LandingPage /> },
+  { path: paths.terms, element: <LegalPage title="Terms of Service" /> },
+  { path: paths.privacy, element: <LegalPage title="Privacy Policy" /> },
   { path: '*', element: <NotFoundPage /> },
 ]);
