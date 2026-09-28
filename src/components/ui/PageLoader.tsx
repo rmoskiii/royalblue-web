@@ -1,8 +1,13 @@
-/** Full-screen spinner shown while a code-split page loads on first visit. */
+import { Logo } from './Logo';
+
+/** Full-screen loader shown while a code-split page loads on first visit. */
 export function PageLoader() {
   return (
     <div className="grid h-dvh place-items-center bg-bg" aria-busy="true" aria-label="Loading">
-      <span className="size-8 animate-spin rounded-full border-2 border-surface-3 border-t-primary" />
+      <div className="grid justify-items-center gap-5">
+        <Logo className="h-12" />
+        <span className="size-6 animate-spin rounded-full border-2 border-surface-3 border-t-primary" />
+      </div>
     </div>
   );
 }

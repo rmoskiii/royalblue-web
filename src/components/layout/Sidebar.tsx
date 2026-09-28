@@ -46,7 +46,9 @@ export function Sidebar({ className }: { className?: string }) {
         className,
       )}
     >
-      <Logo onDark className="mx-2.5 mt-1 mb-4.5 self-start" />
+      <Link to={paths.home} aria-label="RoyalBlue home" className="mx-2.5 mt-1 mb-5 self-start">
+        <Logo onDark className="h-11" />
+      </Link>
       <nav aria-label="Main" className="grid gap-0.5">
         {nav.primary.map((item) => (
           <SidebarItem

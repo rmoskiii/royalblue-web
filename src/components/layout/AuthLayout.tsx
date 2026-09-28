@@ -10,7 +10,7 @@ export function AuthLayout() {
       <Streaks />
       <header className="relative flex flex-wrap items-center justify-between gap-3 px-5 pt-[max(20px,env(safe-area-inset-top))] pb-5 md:px-12 md:pt-8">
         <Link to={paths.login} aria-label="RoyalBlue home">
-          <Logo onDark />
+          <Logo onDark className="h-8 md:h-12" />
         </Link>
         <div className="flex items-center gap-2.5">
           <ThemeToggle onDark />

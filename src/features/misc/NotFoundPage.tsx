@@ -1,11 +1,12 @@
 import { Link } from 'react-router';
-import { buttonClass } from '@/components/ui';
+import { Logo, buttonClass } from '@/components/ui';
 import { paths } from '@/components/layout/navigation';
 
 export function NotFoundPage() {
   return (
     <div className="grid min-h-dvh place-items-center bg-bg p-6 text-center">
-      <div className="grid gap-3">
+      <div className="grid justify-items-center gap-3">
+        <Logo className="mb-6 h-12" />
         <p className="text-sm font-semibold tracking-wider text-ink-3 uppercase">Error 404</p>
         <h1 className="text-4xl font-semibold text-brand">We can’t find that page</h1>
         <Link to={paths.home} className={buttonClass({ className: 'justify-self-center' })}>
