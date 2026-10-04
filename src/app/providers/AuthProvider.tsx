@@ -57,6 +57,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if ('mfaRequired' in next && next.mfaRequired) {
       throw new Error('Authenticator code required');
     }
+    if (!('accessToken' in next)) {
+      throw new Error('Authenticator code required');
+    }
     establishSession(next);
   }, [establishSession]);
 

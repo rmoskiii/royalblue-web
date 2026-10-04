@@ -41,6 +41,9 @@ export function LoginPage() {
         setChallenge(result);
         return 'mfa' as const;
       }
+      if (!('accessToken' in result)) {
+        throw new Error('Authenticator code required');
+      }
       goIn(result);
       return 'ok' as const;
     },

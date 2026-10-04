@@ -50,6 +50,10 @@ function writeDraft(draft: SignupDraft) {
   sessionStorage.setItem(SIGNUP_KEY, JSON.stringify(draft));
 }
 
+function isMfaChallenge(data: NestLogin | MfaChallenge): data is MfaChallenge {
+  return 'mfaRequired' in data && data.mfaRequired === true;
+}
+
 function toSession(data: NestLogin): Session {
   return {
     accessToken: data.accessToken,
@@ -69,7 +73,7 @@ export const authService = {
   async login(body: LoginRequest): Promise<Session | MfaChallenge> {
     if (env.useMocks) return mockResponse({ accessToken: 'mock-token', user: mockUser }, 600);
     const data = await http.post<NestLogin | MfaChallenge>('/auth/login', body);
-    if ('mfaRequired' in data && data.mfaRequired) return data;
+    if (isMfaChallenge(data)) return data;
     return toSession(data);
   },
 

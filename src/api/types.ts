@@ -72,8 +72,8 @@ export interface CompleteSignUpRequest {
   lastName?: string;
   bvn?: string;
   nin?: string;
-  pin: string;
-  totpCode: string;
+  pin?: string;
+  totpCode?: string;
   accountKind?: AccountKind;
   entityType?: EntityType;
   business?: {
