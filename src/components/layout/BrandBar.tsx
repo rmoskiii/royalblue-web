@@ -82,7 +82,7 @@ export function LoginButton({ onDark }: { onDark?: boolean }) {
   );
 }
 
-export function OpenAccountButton({ onDark }: { onDark?: boolean }) {
+export function OpenAccountButton({ onDark: _onDark }: { onDark?: boolean }) {
   return (
     <Link
       to={paths.signUp}
