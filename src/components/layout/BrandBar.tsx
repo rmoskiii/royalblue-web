@@ -62,9 +62,9 @@ export function LoginButton({ onDark }: { onDark?: boolean }) {
     <Link
       to={paths.login}
       className={buttonClass({
-        size: 'md',
+        size: 'sm',
         variant: onDark ? 'glass' : 'outline',
-        className: 'h-12 min-w-[6rem] px-6 text-[16px]',
+        className: 'min-w-[4.75rem] px-3.5 text-[13px]',
       })}
     >
       Login
@@ -77,12 +77,12 @@ export function OpenAccountButton({ onDark }: { onDark?: boolean }) {
     <Link
       to={paths.signUp}
       className={buttonClass({
-        size: 'md',
-        variant: onDark ? 'primary' : 'primary',
-        className: 'h-12 min-w-[10.5rem] px-6 text-[16px]',
+        size: 'sm',
+        variant: 'primary',
+        className: 'min-w-[8.25rem] px-3.5 text-[13px]',
       })}
     >
-      Open an Account
+      Open an account
     </Link>
   );
 }

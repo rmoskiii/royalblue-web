@@ -33,6 +33,8 @@ export interface Hotspot {
   href?: string;
   /** Rounded like the drawn button (buttons) or a soft pill (text links) */
   shape?: 'button' | 'text';
+  /** Paint over Figma type with a real label (hero CTAs). */
+  cover?: 'primary' | 'outline';
 }
 
 /** A named scroll target inside an image, e.g. the calculator half of the goals block */
@@ -49,6 +51,8 @@ export interface ImageSection {
   alt: string;
   width: number;
   height: number;
+  /** Draw wider than `width` to enlarge raster type/icons (services grid). */
+  displayWidth?: number;
   /** Left offset on the 1440 page (centred if omitted) */
   x?: number;
   /** Gap above, in design pixels */
@@ -57,8 +61,6 @@ export interface ImageSection {
   background?: string;
   hotspots?: Hotspot[];
   anchors?: Anchor[];
-  /** If set, only this many design-pixels of height are shown (hides Figma-drawn CTAs). */
-  visibleHeight?: number;
 }
 
 export const sections: ImageSection[] = [
@@ -68,10 +70,36 @@ export const sections: ImageSection[] = [
     alt: 'Exceptional banking that meet customer needs. Experience secure savings, accessible loans, and seamless digital banking designed to help individuals, businesses, and communities grow with confidence.',
     width: 1440,
     height: 793,
-    visibleHeight: 468,
     gapAbove: 0,
     background:
       'linear-gradient(180deg, #1b194e 0%, #1b194e 30%, #1f1b4e 45%, #2b1d4d 60%, #381f49 75%, #432148 90%, #4b2347 100%)',
+    hotspots: [
+      { label: 'RoyalBlue home', x: 70, y: 8, w: 150, h: 48, href: '#top', shape: 'text' },
+      { label: 'About', x: 1036, y: 10, w: 58, h: 40, href: '#about', shape: 'text' },
+      { label: 'Services', x: 1118, y: 10, w: 74, h: 40, href: '#services', shape: 'text' },
+      { label: 'Loans', x: 1214, y: 10, w: 58, h: 40, href: '#loans', shape: 'text' },
+      { label: 'Savings', x: 1294, y: 10, w: 72, h: 40, href: '#savings', shape: 'text' },
+      {
+        label: 'Open an account',
+        x: 588,
+        y: 490,
+        w: 142,
+        h: 42,
+        to: paths.signUp,
+        shape: 'button',
+        cover: 'primary',
+      },
+      {
+        label: 'Login',
+        x: 731,
+        y: 490,
+        w: 120,
+        h: 42,
+        to: paths.login,
+        shape: 'button',
+        cover: 'outline',
+      },
+    ],
   },
   {
     srcSet: regulators,
@@ -86,7 +114,8 @@ export const sections: ImageSection[] = [
     alt: 'Engineered for modern enterprise and personal growth. SME and business credit, instant settlements, bank-grade encryption, seamless open APIs, high-yield savings, and corporate expense cards.',
     width: 1270,
     height: 787,
-    gapAbove: 29,
+    displayWidth: 1440,
+    gapAbove: 24,
   },
   {
     id: 'loans',

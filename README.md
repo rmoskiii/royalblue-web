@@ -79,7 +79,7 @@ Then you land on Home. Login is password-only (no authenticator) for these sandb
 
 | Area            | Where                                                   | Notes                                                                                            |
 | --------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Website         | `/welcome` (where `/` opens), `/terms`, `/privacy`      | Figma "Desktop - 2" exports; HTML CTAs are cropped so they do not sit on the artwork buttons     |
+| Website         | `/welcome` (where `/` opens), `/terms`, `/privacy`      | Figma "Desktop - 2" exports; hero CTAs are Login / Open an account over the original buttons     |
 | Login           | `/login`                                                | Email **or** phone + password; authenticator step when TOTP is enabled                            |
 | Sign-up         | `/sign-up`                                              | Password → details → BVN/NIN (continue if slow) → PIN. OTP/TOTP only when Nest has Resend |
 | Account limits  | `/verification`                                         | BVN via KYC `validate-bvn`. No freeze. Starter ₦50k until BVN/NIN. Tiers 1–3 after.            |
