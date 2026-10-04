@@ -45,15 +45,17 @@ VS Code will suggest the ESLint, Prettier and Tailwind extensions (see `.vscode/
 
 ## Test logins
 
-Staff are seeded by Nest (`npx prisma db seed`). They have **no** personal NUBAN — after login they go to `/admin`, not Home.
+Staff and two retail customers are seeded by Nest (`npx prisma db seed`). Staff have **no** personal NUBAN — after login they go to `/admin`, not Home. Customers skip `/sign-up`.
 
 | Role | Email | Phone | Password | Landing | What they can do |
 | --- | --- | --- | --- | --- | --- |
 | Administrator | `admin@royalblue.ng` | `08011111111` | `RoyalBlueAdmin1!` | Desk | Pipeline, accounts freeze, team, recommend + decide |
 | Loan officer | `officer@royalblue.ng` | `08022222222` | `RoyalBlueOfficer1!` | Desk | Pipeline, claim / recommend. No freeze or final decision |
 | Credit manager | `manager@royalblue.ng` | `08033333333` | `RoyalBlueManager1!` | Desk | Review, decide, freeze. No staff-team admin extras beyond review |
+| Customer | `customer@royalblue.ng` | `08044444444` | `RoyalBlueCustomer1!` | Home | Funded wallet ₦185k, BVN linked, PIN `123456`, no authenticator |
+| Starter KYC | `starter@royalblue.ng` | `08055555555` | `RoyalBlueStarter1!` | Home | ₦32.5k, no BVN (₦50k CBN cap), PIN `123456` |
 
-Customers are **not** seeded. Use `/sign-up`: email OTP → password → Google Authenticator → account kind → details → BVN/NIN (optional) → confirm → **6-digit transaction PIN**. Then `/login` with email **or** phone. If authenticator is on, login asks for a 6-digit code after the password.
+`/sign-up` is still there: email OTP → password → Google Authenticator → account kind → details → BVN/NIN (optional) → confirm → **6-digit transaction PIN**. If authenticator is on, login asks for a 6-digit code after the password.
 
 Staff password-login until they set PIN / TOTP under **Me → Security**. Staff have no transaction PIN, so they cannot send customer funds.
 
