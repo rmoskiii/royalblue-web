@@ -24,7 +24,7 @@ export function AppShell() {
             <Sidebar className="hidden lg:flex" />
             <div className="flex min-w-0 flex-1 flex-col">
               <TopBar />
-              <main className="flex-1 overflow-y-auto overscroll-contain px-4 pt-4 pb-8 lg:px-7 lg:pt-6 lg:pb-10">
+              <main className="flex-1 overflow-y-auto overscroll-contain px-4 pt-5 pb-6 lg:px-7 lg:pt-6 lg:pb-10">
                 <div className="mx-auto max-w-[1180px]">
                   <Outlet />
                 </div>

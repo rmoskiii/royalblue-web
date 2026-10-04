@@ -5,7 +5,7 @@ import { useWorkspaceNav } from './useWorkspaceNav';
 
 const tabClass = (isActive: boolean) =>
   cn(
-    'flex flex-col items-center gap-0.75 py-1.5 text-[11px] font-medium text-ink-3',
+    'flex flex-col items-center gap-0 py-1 text-[10px] font-medium text-ink-3',
     isActive && 'text-primary-text',
   );
 
@@ -17,7 +17,7 @@ export function BottomTabs({ onMore, className }: { onMore: () => void; classNam
     <nav
       aria-label="Main"
       className={cn(
-        'grid border-t border-line bg-surface px-1 pt-1.5 pb-[max(8px,env(safe-area-inset-bottom))]',
+        'grid border-t border-line bg-surface px-1 pt-0.5 pb-[max(4px,env(safe-area-inset-bottom))]',
         cols === 3 && 'grid-cols-3',
         cols === 4 && 'grid-cols-4',
         cols === 5 && 'grid-cols-5',
@@ -28,13 +28,13 @@ export function BottomTabs({ onMore, className }: { onMore: () => void; classNam
         const Icon = item.icon;
         return (
           <NavEntry key={item.label} item={item} className={tabClass}>
-            <Icon className="size-5" strokeWidth={1.8} />
+            <Icon className="size-4.5" strokeWidth={1.8} />
             {item.label}
           </NavEntry>
         );
       })}
       <button type="button" onClick={onMore} className={tabClass(false)}>
-        <LayoutGrid className="size-5" strokeWidth={1.8} />
+        <LayoutGrid className="size-4.5" strokeWidth={1.8} />
         More
       </button>
     </nav>
