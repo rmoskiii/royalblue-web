@@ -27,10 +27,22 @@ export function IdentityStep({
     pending: true,
   });
   const submit = useMutation({
-    mutationFn: () =>
-      authService.lookupIdentity(type, number, { phone, firstName, lastName }),
+    mutationFn: async () => {
+      const lookup = authService.lookupIdentity(type, number, { phone, firstName, lastName });
+      const timed = await Promise.race([
+        lookup.then((identity) => ({ ok: true as const, identity })),
+        new Promise<{ ok: false }>((resolve) => {
+          window.setTimeout(() => resolve({ ok: false }), 8_000);
+        }),
+      ]);
+      if (timed.ok) return timed.identity;
+      return fallback();
+    },
     onSuccess: (identity) => onDone(identity, { type, number }),
   });
+
+  const skipIdentity = () => onDone(fallback(), { type, number: '' });
+  const continuePending = () => onDone(fallback(), { type, number });
 
   return (
     <form
@@ -75,10 +87,14 @@ export function IdentityStep({
       </Button>
       <button
         type="button"
-        className="text-sm font-medium text-ink-2"
-        onClick={() => onDone(fallback(), { type, number: number.length === 11 ? number : '' })}
+        className="text-sm font-medium text-brand"
+        disabled={number.length !== 11 || submit.isPending}
+        onClick={continuePending}
       >
         Continue without waiting
+      </button>
+      <button type="button" className="text-sm font-medium text-ink-2" onClick={skipIdentity}>
+        Skip for now — ₦50k starter limits
       </button>
     </form>
   );

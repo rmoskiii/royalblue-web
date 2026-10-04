@@ -49,6 +49,8 @@ export interface ImageSection {
   alt: string;
   width: number;
   height: number;
+  /** Draw wider than `width` to enlarge raster type/icons (services grid). */
+  displayWidth?: number;
   /** Left offset on the 1440 page (centred if omitted) */
   x?: number;
   /** Gap above, in design pixels */
@@ -57,8 +59,6 @@ export interface ImageSection {
   background?: string;
   hotspots?: Hotspot[];
   anchors?: Anchor[];
-  /** If set, only this many design-pixels of height are shown (hides Figma-drawn CTAs). */
-  visibleHeight?: number;
 }
 
 export const sections: ImageSection[] = [
@@ -68,7 +68,6 @@ export const sections: ImageSection[] = [
     alt: 'Exceptional banking that meet customer needs. Experience secure savings, accessible loans, and seamless digital banking designed to help individuals, businesses, and communities grow with confidence.',
     width: 1440,
     height: 793,
-    visibleHeight: 468,
     gapAbove: 0,
     background:
       'linear-gradient(180deg, #1b194e 0%, #1b194e 30%, #1f1b4e 45%, #2b1d4d 60%, #381f49 75%, #432148 90%, #4b2347 100%)',
@@ -86,7 +85,8 @@ export const sections: ImageSection[] = [
     alt: 'Engineered for modern enterprise and personal growth. SME and business credit, instant settlements, bank-grade encryption, seamless open APIs, high-yield savings, and corporate expense cards.',
     width: 1270,
     height: 787,
-    gapAbove: 29,
+    displayWidth: 1440,
+    gapAbove: 24,
   },
   {
     id: 'loans',

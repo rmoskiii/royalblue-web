@@ -45,19 +45,33 @@ VS Code will suggest the ESLint, Prettier and Tailwind extensions (see `.vscode/
 
 ## Test logins
 
-Staff are seeded by Nest (`npx prisma db seed`). They have **no** personal NUBAN — after login they go to `/admin`, not Home.
+Hosted demo: [https://royalblue-web.vercel.app/login](https://royalblue-web.vercel.app/login) (API: `https://royalblue-api.onrender.com`).
 
-| Role | Email | Phone | Password | Landing | What they can do |
+Staff and two retail customers are seeded by Nest (`npx prisma db seed`). Staff have **no** personal NUBAN — after login they go to `/admin`, not Home. Seeded customers skip `/sign-up` (password + PIN only, no authenticator).
+
+| Role | Email | Phone | Password | PIN | Lands on |
 | --- | --- | --- | --- | --- | --- |
-| Administrator | `admin@royalblue.ng` | `08011111111` | `RoyalBlueAdmin1!` | Desk | Pipeline, accounts freeze, team, recommend + decide |
-| Loan officer | `officer@royalblue.ng` | `08022222222` | `RoyalBlueOfficer1!` | Desk | Pipeline, claim / recommend. No freeze or final decision |
-| Credit manager | `manager@royalblue.ng` | `08033333333` | `RoyalBlueManager1!` | Desk | Review, decide, freeze. No staff-team admin extras beyond review |
+| Administrator | `admin@royalblue.ng` | `08011111111` | `RoyalBlueAdmin1!` | — | Desk — pipeline, freeze, team, recommend + decide |
+| Loan officer | `officer@royalblue.ng` | `08022222222` | `RoyalBlueOfficer1!` | — | Desk — claim / recommend (no freeze or final decision) |
+| Credit manager | `manager@royalblue.ng` | `08033333333` | `RoyalBlueManager1!` | — | Desk — review, decide, freeze |
+| Customer (funded) | `customer@royalblue.ng` | `08044444444` | `RoyalBlueCustomer1!` | `123456` | Home — BVN + NIN + ID, **Tier 2**, NUBAN `8044444444`, ₦185,000. Upload proof of address for Tier 3 |
+| Starter KYC | `starter@royalblue.ng` | `08055555555` | `RoyalBlueStarter1!` | `123456` | Home — no BVN/docs (**Starter ₦50k**), NUBAN `8055555555`, ₦32,500 |
 
-Customers are **not** seeded. Use `/sign-up`: email OTP → password → Google Authenticator → account kind → details → BVN/NIN (optional) → confirm → **6-digit transaction PIN**. Then `/login` with email **or** phone. If authenticator is on, login asks for a 6-digit code after the password.
+Login field: `POST /auth/login` `{ identifier, password }` — email **or** Nigerian number (`080…`, `803…`, `+234…`). Staff have no transaction PIN, so they cannot send customer funds until they set one under **Me → Security**.
 
-Staff password-login until they set PIN / TOTP under **Me → Security**. Staff have no transaction PIN, so they cannot send customer funds.
+### Simulate onboarding
 
-Login field: `POST /auth/login` `{ identifier, password }` where `identifier` is email or a Nigerian number (`080…`, `803…`, `+234…`).
+Use a **new** email (not the seeded ones) at [https://royalblue-web.vercel.app/sign-up](https://royalblue-web.vercel.app/sign-up) or local `/sign-up`.
+
+Until Resend is configured, **email OTP and Google Authenticator are skipped**. Hosted signup is:
+
+1. Email
+2. Password
+3. Personal or business → name and phone
+4. **BVN or NIN** — enter the 11 digits, then Continue. If BudPay is slow, **Continue without waiting** still saves the number. **Skip for now** is starter ₦50k only.
+5. Confirm name → **6-digit transaction PIN**
+
+Then you land on Home. Login is password-only (no authenticator) for these sandbox accounts. OTP + TOTP come back when `RESEND_API_KEY` is set on Nest.
 
 ---
 
@@ -65,9 +79,9 @@ Login field: `POST /auth/login` `{ identifier, password }` where `identifier` is
 
 | Area            | Where                                                   | Notes                                                                                            |
 | --------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Website         | `/welcome` (where `/` opens), `/terms`, `/privacy`      | Figma "Desktop - 2" exports; HTML CTAs are cropped so they do not sit on the artwork buttons     |
+| Website         | `/welcome` (where `/` opens), `/terms`, `/privacy`      | Figma "Desktop - 2" exports; hero CTAs are Login / Open an account over the original buttons     |
 | Login           | `/login`                                                | Email **or** phone + password; authenticator step when TOTP is enabled                            |
-| Sign-up         | `/sign-up`                                              | OTP → password → TOTP → details → BVN/NIN → confirm → **transaction PIN** (6 digits)             |
+| Sign-up         | `/sign-up`                                              | Password → details → BVN/NIN (continue if slow) → PIN. OTP/TOTP only when Nest has Resend |
 | Account limits  | `/verification`                                         | BVN via KYC `validate-bvn`. No freeze. Starter ₦50k until BVN/NIN. Tiers 1–3 after.            |
 | Home            | `/dashboard` (personal)                                 | Staff never land here. Balance, Send / Receive / Pay / Add money                                 |
 | Merchant portal | `/dashboard` (business), `/payments`, `/staff`          | Volume / payout / terminals, live payments, cashier access                                       |

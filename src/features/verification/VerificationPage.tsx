@@ -51,6 +51,8 @@ export function VerificationPage() {
     setSelected(null);
     setEditing(false);
     queryClient.invalidateQueries({ queryKey: queryKeys.verification });
+    queryClient.invalidateQueries({ queryKey: queryKeys.account });
+    queryClient.invalidateQueries({ queryKey: queryKeys.customerProfile });
   };
 
   const showForm = active && (!completed.has(active) || editing);
@@ -65,7 +67,12 @@ export function VerificationPage() {
           </span>
           <div className="min-w-0 flex-[1_1_200px]">
             <p className="text-xs font-semibold tracking-wider text-ink-3 uppercase">Your tier</p>
-            <p className="text-2xl font-semibold tracking-tight">Tier {status.tier}</p>
+            <p className="text-2xl font-semibold tracking-tight">
+              {status.restrictedNoBvn ? 'Starter' : `Tier ${status.tier}`}
+            </p>
+            {status.kycStatus && (
+              <p className="text-[13px] text-ink-3">KYC {status.kycStatus.replaceAll('_', ' ').toLowerCase()}</p>
+            )}
           </div>
           {currentTier && (
             <dl className="grid flex-[2_1_320px] grid-cols-3 gap-3 text-[13px]">
@@ -101,10 +108,10 @@ export function VerificationPage() {
               <div className="flex gap-3">
                 <CircleCheck className="size-6 shrink-0 text-success" />
                 <div>
-                  <p className="font-semibold">Documents submitted</p>
+                  <p className="font-semibold">You’re on Tier 3</p>
                   <p className="text-[13px] text-ink-2">
-                    We’re reviewing them now. Most checks finish within a few minutes, and we’ll let
-                    you know when your account moves to Tier 3.
+                    BVN, ID and proof of address are on file. Daily and balance caps are off. Live
+                    BudPay review can still re-check these documents later.
                   </p>
                 </div>
               </div>
@@ -136,7 +143,7 @@ export function VerificationPage() {
 
         <section>
           <h2 className="mb-2.5 text-base font-semibold">Tiers and limits</h2>
-          <TierLimitsTable tiers={tiers} current={status.tier} />
+          <TierLimitsTable tiers={tiers} current={status.tier} restrictedNoBvn={status.restrictedNoBvn} />
         </section>
       </div>
     </>

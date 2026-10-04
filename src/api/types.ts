@@ -305,6 +305,7 @@ export type IdDocumentType = 'voters-card' | 'passport' | 'drivers-licence' | 'n
 export interface VerificationStatus {
   tier: KycTier;
   restrictedNoBvn?: boolean;
+  kycStatus?: string;
   hasBvn?: boolean;
   hasNin?: boolean;
   completedSteps: VerificationStepId[];
