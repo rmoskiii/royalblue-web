@@ -23,6 +23,7 @@ export function HotspotImage({
   hotspots = [],
   anchors = [],
   eager,
+  hero,
 }: {
   /** From an '…&as=srcset' import */
   srcSet: string;
@@ -33,9 +34,11 @@ export function HotspotImage({
   anchors?: Anchor[];
   /** Load immediately (above the fold) instead of lazily */
   eager?: boolean;
+  /** First landing section — slightly enlarged on phones */
+  hero?: boolean;
 }) {
   return (
-    <div className="relative">
+    <div className={cn('relative', hero && 'landing-hero-art')}>
       <img
         // Smallest (1x) file as the fallback; srcSet does the real work
         src={srcSet.split(' ')[0]}

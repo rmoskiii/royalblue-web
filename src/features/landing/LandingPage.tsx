@@ -30,7 +30,7 @@ export function LandingPage() {
           return (
             <section
               key={s.srcSet}
-              className={i === 0 ? 'landing-hero relative w-full' : 'relative w-full'}
+              className="relative w-full"
               style={{ background: s.background, marginTop: scaled(s.gapAbove) }}
             >
               {i === 0 && (
@@ -56,6 +56,7 @@ export function LandingPage() {
                   hotspots={s.hotspots}
                   anchors={s.anchors}
                   eager={i === 0}
+                  hero={i === 0}
                 />
                 {i === 0 ? <HeroCtas /> : null}
               </div>
