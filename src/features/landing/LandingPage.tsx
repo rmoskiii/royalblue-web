@@ -30,7 +30,7 @@ export function LandingPage() {
           return (
             <section
               key={s.srcSet}
-              className="relative w-full"
+              className={i === 0 ? 'landing-hero relative w-full' : 'relative w-full'}
               style={{ background: s.background, marginTop: scaled(s.gapAbove) }}
             >
               {i === 0 && (
@@ -47,7 +47,15 @@ export function LandingPage() {
                   />
                 </>
               )}
-              <div id={s.id} className="relative mx-auto scroll-mt-[72px]" style={{ width: frameWidth }}>
+              <div
+                id={s.id}
+                className={
+                  i === 0
+                    ? 'landing-hero-frame relative mx-auto scroll-mt-[72px]'
+                    : 'relative mx-auto scroll-mt-[72px]'
+                }
+                style={{ width: frameWidth }}
+              >
                 <HotspotImage
                   srcSet={s.srcSet}
                   alt={s.alt}

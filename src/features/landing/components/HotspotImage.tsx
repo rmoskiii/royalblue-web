@@ -38,9 +38,7 @@ export function HotspotImage({
   coverMobile?: boolean;
 }) {
   return (
-    <div
-      className={cn('relative', coverMobile && 'max-lg:h-[min(92svh,52rem)] max-lg:overflow-hidden')}
-    >
+    <div className={cn('relative', coverMobile && 'landing-hero-art')}>
       <img
         // Smallest (1x) file as the fallback; srcSet does the real work
         src={srcSet.split(' ')[0]}
@@ -51,11 +49,7 @@ export function HotspotImage({
         height={height}
         loading={eager ? 'eager' : 'lazy'}
         decoding="async"
-        className={cn(
-          'block h-auto w-full select-none',
-          coverMobile &&
-            'max-lg:absolute max-lg:inset-0 max-lg:h-full max-lg:w-full max-lg:object-cover max-lg:object-[center_32%]',
-        )}
+        className="block h-auto w-full select-none"
         draggable={false}
       />
       {anchors.map((a) => (
