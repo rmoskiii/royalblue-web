@@ -201,16 +201,7 @@ Amounts in the UI are **naira**. After card checkout BudPay returns to `/dashboa
 
 This is a single-page app: React Router handles URLs in the browser, so the host must serve `index.html` for every path that isn't a real file. Without that, opening `/loans` directly (or refreshing on it) returns the host's 404.
 
-- **Vercel:** `vercel.json` rewrites every path to `/index.html`. Real files such as `/assets/*` and `/favicon.svg` are still served as normal, because Vercel checks the filesystem before applying rewrites.
-
-**Hosted API.** Set these on the Vercel project (Preview + Production) and redeploy:
-
-```
-VITE_USE_MOCKS=false
-VITE_API_BASE_URL=https://<royalblue-api>.onrender.com/api/v1
-```
-
-Do not use `/api/v1` on Vercel. Nest is hosted separately (see master-backend README → Hosted sandbox). CORS already allows `*.vercel.app`.
+- **Vercel:** `vercel.json` proxies `/api/*` to `https://royalblue-api.onrender.com` and rewrites other paths to `/index.html`. Production builds bake `VITE_USE_MOCKS=false` and `VITE_API_BASE_URL=https://royalblue-api.onrender.com/api/v1` from `.env.production`. CORS already allows `*.vercel.app`.
 
 - **Netlify:** add `public/_redirects` with `/*  /index.html  200`.
 - **Other hosts:** configure a fallback to `index.html`.
