@@ -2,7 +2,6 @@ import { Delete, Fingerprint } from 'lucide-react';
 import { useEffect } from 'react';
 import { cn } from '@/lib/cn';
 
-const PIN_LENGTH = 4;
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 /**
@@ -15,18 +14,20 @@ export function PinPad({
   onComplete,
   onBiometric,
   disabled,
+  length = 4,
 }: {
   value: string;
   onChange: (pin: string) => void;
   onComplete: (pin: string) => void;
   onBiometric?: () => void;
   disabled?: boolean;
+  length?: 4 | 6;
 }) {
   const press = (digit: string) => {
-    if (disabled || value.length >= PIN_LENGTH) return;
+    if (disabled || value.length >= length) return;
     const next = value + digit;
     onChange(next);
-    if (next.length === PIN_LENGTH) onComplete(next);
+    if (next.length === length) onComplete(next);
   };
   const erase = () => !disabled && onChange(value.slice(0, -1));
 
@@ -46,10 +47,10 @@ export function PinPad({
     <div className="grid justify-items-center gap-6">
       <div
         className="flex gap-4"
-        aria-label={`${value.length} of ${PIN_LENGTH} digits entered`}
+        aria-label={`${value.length} of ${length} digits entered`}
         role="status"
       >
-        {Array.from({ length: PIN_LENGTH }, (_, i) => (
+        {Array.from({ length }, (_, i) => (
           <span
             key={i}
             className={cn(

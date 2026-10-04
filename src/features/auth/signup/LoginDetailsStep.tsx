@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Check } from 'lucide-react';
 import { useState } from 'react';
 import { authService } from '@/api/services/auth';
-import type { SignUpResult } from '@/api/types';
+import type { Session } from '@/api/types';
 import { Button, TextField } from '@/components/ui';
 import { demo } from '@/config/demo';
 import { cn } from '@/lib/cn';
@@ -14,7 +14,7 @@ export function LoginDetailsStep({
   onDone,
 }: {
   signUpToken: string;
-  onDone: (result: SignUpResult, credentials: { email: string; password: string }) => void;
+  onDone: (result: Session, credentials: { email: string; password: string }) => void;
 }) {
   const [email, setEmail] = useState(demo?.signUp.email ?? '');
   const [password, setPassword] = useState(demo?.signUp.password ?? '');

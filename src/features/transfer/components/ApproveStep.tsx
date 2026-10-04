@@ -6,7 +6,7 @@ import { Money, PinApproval } from '@/components/ui';
 import { formatAccountNumber } from '@/lib/format';
 import type { TransferDraft } from '../types';
 
-/** Security check (PRD View 3): 4-digit PIN pad or passkey. */
+/** Security check: 6-digit transaction PIN from onboarding. */
 export function ApproveStep({
   draft,
   onSent,

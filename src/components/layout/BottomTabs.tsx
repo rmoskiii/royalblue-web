@@ -1,8 +1,7 @@
 import { LayoutGrid } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { NavEntry } from './NavEntry';
-import { useProfile } from '@/app/providers/ProfileProvider';
-import { navigationFor } from './navigation';
+import { useWorkspaceNav } from './useWorkspaceNav';
 
 const tabClass = (isActive: boolean) =>
   cn(
@@ -12,12 +11,16 @@ const tabClass = (isActive: boolean) =>
 
 /** Phone navigation for the active profile, plus More. */
 export function BottomTabs({ onMore, className }: { onMore: () => void; className?: string }) {
-  const { mobileTabs } = navigationFor(useProfile().profileType);
+  const { mobileTabs } = useWorkspaceNav();
+  const cols = mobileTabs.length + 1;
   return (
     <nav
       aria-label="Main"
       className={cn(
-        'grid grid-cols-5 border-t border-line bg-surface px-1 pt-1.5 pb-[max(8px,env(safe-area-inset-bottom))]',
+        'grid border-t border-line bg-surface px-1 pt-1.5 pb-[max(8px,env(safe-area-inset-bottom))]',
+        cols === 3 && 'grid-cols-3',
+        cols === 4 && 'grid-cols-4',
+        cols === 5 && 'grid-cols-5',
         className,
       )}
     >

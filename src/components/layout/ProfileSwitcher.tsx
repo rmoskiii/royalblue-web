@@ -1,15 +1,17 @@
-import { Briefcase, Check, ChevronDown, User } from 'lucide-react';
+import { Briefcase, Check, ChevronDown, LogOut, User } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useProfile } from '@/app/providers/ProfileProvider';
 import { Avatar } from '@/components/ui';
 import { cn } from '@/lib/cn';
 import { formatAccountNumber } from '@/lib/format';
+import { useLogoutConfirm } from './LogoutProvider';
 
 /**
  * Personal ↔ Business profile dropdown (PRD FR-04 / View 2).
  * Desktop: labelled button. Phones: avatar with a small chevron.
  */
 export function ProfileSwitcher() {
+  const { requestLogout } = useLogoutConfirm();
   const { profiles, profile, switchProfile } = useProfile();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -48,7 +50,7 @@ export function ProfileSwitcher() {
           )}
         />
         <span className="hidden max-w-44 truncate text-[13px] font-semibold lg:block">
-          {profile.type === 'personal' ? 'Personal profile' : profile.name}
+          {profile.name}
         </span>
         <ChevronDown className="size-4 text-ink-3" />
       </button>
@@ -81,7 +83,7 @@ export function ProfileSwitcher() {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[13px] font-semibold">
-                    {p.type === 'personal' ? 'Personal profile' : p.name}
+                    {p.name}
                   </span>
                   <span className="block text-xs text-ink-3 tabular">
                     {p.type === 'personal' ? 'Personal' : 'Business'} ·{' '}
@@ -97,6 +99,20 @@ export function ProfileSwitcher() {
               Register a business to add a business profile.
             </p>
           )}
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              setOpen(false);
+              requestLogout();
+            }}
+            className="mt-1 flex w-full items-center gap-3 rounded-xl border-t border-line px-2.5 py-2.5 text-left hover:bg-surface-2"
+          >
+            <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-surface-2 text-brand">
+              <LogOut className="size-4.5" />
+            </span>
+            <span className="text-[13px] font-semibold">Log out</span>
+          </button>
         </div>
       )}
     </div>

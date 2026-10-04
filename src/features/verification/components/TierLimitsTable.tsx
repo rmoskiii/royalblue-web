@@ -21,18 +21,24 @@ export function TierLimitsTable({ tiers, current }: { tiers: TierLimit[]; curren
           </tr>
         </thead>
         <tbody>
-          {tiers.map((t) => (
+          {tiers.map((t, i) => (
             <tr
-              key={t.tier}
-              aria-current={t.tier === current ? 'true' : undefined}
+              key={`${t.tier}-${t.restrictedNoBvn ? 'starter' : 'full'}-${i}`}
+              aria-current={
+                t.restrictedNoBvn
+                  ? undefined
+                  : t.tier === current
+                    ? 'true'
+                    : undefined
+              }
               className={cn(
                 'border-t border-line [&>td]:px-3.5 [&>td]:py-3',
-                t.tier === current && 'bg-primary-soft/60',
+                t.tier === current && !t.restrictedNoBvn && 'bg-primary-soft/60',
               )}
             >
               <td className="font-semibold whitespace-nowrap">
-                Tier {t.tier}{' '}
-                {t.tier === current && (
+                {t.restrictedNoBvn ? 'Starter' : `Tier ${t.tier}`}{' '}
+                {!t.restrictedNoBvn && t.tier === current && (
                   <Chip tone="danger" className="ml-1">
                     You
                   </Chip>

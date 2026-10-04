@@ -1,11 +1,16 @@
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, LogOut } from 'lucide-react';
 import { Link } from 'react-router';
 import { useAccount, useLoans } from '@/api/hooks';
+import { isStaffRole } from '@/api/types';
+import { useAuth } from '@/app/providers/AuthProvider';
 import { useProfile } from '@/app/providers/ProfileProvider';
 import { Avatar, Chip, Logo } from '@/components/ui';
+import { staffRoleLabel } from '@/features/admin/staffAccess';
 import { cn } from '@/lib/cn';
+import { useLogoutConfirm } from './LogoutProvider';
 import { NavEntry } from './NavEntry';
-import { navigationFor, paths, settingsNav, type NavItem } from './navigation';
+import { homePathForRole, paths, settingsNav, type NavItem } from './navigation';
+import { useWorkspaceNav } from './useWorkspaceNav';
 
 function SidebarItem({ item, badge }: { item: NavItem; badge?: string }) {
   const Icon = item.icon;
@@ -34,10 +39,16 @@ function SidebarItem({ item, badge }: { item: NavItem; badge?: string }) {
 export function Sidebar({ className }: { className?: string }) {
   const { data: loans } = useLoans();
   const { data: account } = useAccount();
+  const { session } = useAuth();
+  const { requestLogout } = useLogoutConfirm();
   const { profile, profileType } = useProfile();
-  const nav = navigationFor(profileType);
-  const hasActiveLoan = loans?.some((l) => l.status === 'active');
-  const profileName = profile?.name ?? '';
+  const nav = useWorkspaceNav();
+  const staff = isStaffRole(session?.user.role);
+  const hasActiveLoan = !staff && loans?.some((l) => l.status === 'active');
+  const profileName = staff
+    ? (session?.user.firstName || session?.user.email || 'Staff')
+    : (profile?.name ?? '');
+  const homeTo = homePathForRole(session?.user.role);
 
   return (
     <aside
@@ -46,8 +57,8 @@ export function Sidebar({ className }: { className?: string }) {
         className,
       )}
     >
-      <Link to={paths.home} aria-label="RoyalBlue home" className="mx-2.5 mt-1 mb-5 self-start">
-        <Logo onDark className="h-11" />
+      <Link to={homeTo} aria-label="RoyalBlue home" className="mx-2.5 mt-1 mb-5 flex items-center self-start">
+        <Logo onDark />
       </Link>
       <nav aria-label="Main" className="grid gap-0.5">
         {nav.primary.map((item) => (
@@ -83,12 +94,21 @@ export function Sidebar({ className }: { className?: string }) {
           <span className="min-w-0 flex-1">
             <span className="block truncate text-[13px] font-semibold">{profileName}</span>
             <span className="block text-xs text-white/60">
-              {profileType === 'business' ? 'Business' : 'Personal'}
-              {account ? ` · Tier ${account.tier}` : ''}
+              {staff && isStaffRole(session?.user.role)
+                ? staffRoleLabel[session.user.role]
+                : `${profileType === 'business' ? 'Business' : 'Personal'}${account ? ` · Tier ${account.tier}` : ''}`}
             </span>
           </span>
           <ChevronRight className="size-4 text-white/50" />
         </Link>
+        <button
+          type="button"
+          onClick={requestLogout}
+          className="mt-1 flex w-full items-center gap-3 rounded-field px-2.5 py-2.25 text-left font-medium text-white/70 transition-colors hover:bg-white/8 hover:text-white"
+        >
+          <LogOut className="size-5" strokeWidth={1.8} />
+          Log out
+        </button>
       </div>
     </aside>
   );

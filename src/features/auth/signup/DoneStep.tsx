@@ -4,6 +4,7 @@ import { useToast } from '@/app/providers/ToastProvider';
 import { Button } from '@/components/ui';
 import { copyText } from '@/lib/clipboard';
 import { formatAccountNumber } from '@/lib/format';
+import { submitOnEnter, useEnterToSubmit } from '../lib/submitOnEnter';
 
 /** PRD FR-02: the new account number, issued at registration. */
 export function DoneStep({
@@ -16,8 +17,17 @@ export function DoneStep({
   isContinuing: boolean;
 }) {
   const { showToast } = useToast();
+  const formRef = useEnterToSubmit();
   return (
-    <div className="grid gap-4">
+    <form
+      ref={formRef}
+      className="grid gap-4"
+      onKeyDown={submitOnEnter}
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!isContinuing) onContinue();
+      }}
+    >
       <div className="grid justify-items-center gap-1.5 rounded-tile bg-surface-2 px-4 py-5 text-center">
         <CircleCheck className="mb-1 size-8 text-success" />
         <p className="text-[13px] text-ink-3">Your RoyalBlue account number</p>
@@ -39,9 +49,9 @@ export function DoneStep({
       <p className="text-center text-[13px] text-ink-2">
         You’re on Tier 1. Add an ID later to raise your limits.
       </p>
-      <Button size="lg" block onClick={onContinue} disabled={isContinuing}>
+      <Button type="submit" size="lg" block disabled={isContinuing}>
         {isContinuing ? 'Signing you in…' : 'Go to my account'}
       </Button>
-    </div>
+    </form>
   );
 }

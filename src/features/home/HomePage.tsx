@@ -1,4 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/api/hooks';
+import { accountService } from '@/api/services/accounts';
+import { useToast } from '@/app/providers/ToastProvider';
 import { QuickTransferCard } from '@/features/transfer/components/QuickTransferCard';
 import { ActiveLoanCard } from './components/ActiveLoanCard';
 import { AddMoneySheet } from './components/AddMoneySheet';
@@ -16,6 +21,32 @@ import { TierBanner } from './components/TierBanner';
  */
 export function HomePage() {
   const [sheet, setSheet] = useState<'receive' | 'add-money' | null>(null);
+  const [params, setParams] = useSearchParams();
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
+  const verifying = useRef(false);
+
+  useEffect(() => {
+    const reference = params.get('reference');
+    const status = params.get('status');
+    if (!reference || verifying.current) return;
+    verifying.current = true;
+    if (status && status !== 'success') {
+      showToast(`Card payment ${status}`);
+      setParams({}, { replace: true });
+      return;
+    }
+    void accountService
+      .verifyCardTopup(reference)
+      .then((result) => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.account });
+        queryClient.invalidateQueries({ queryKey: ['transactions'] });
+        queryClient.invalidateQueries({ queryKey: queryKeys.insights });
+        showToast(`₦${result.amount.toLocaleString('en-NG')} card top-up received`);
+      })
+      .catch((error: Error) => showToast(error.message))
+      .finally(() => setParams({}, { replace: true }));
+  }, [params, queryClient, setParams, showToast]);
 
   return (
     <div className="grid gap-4">

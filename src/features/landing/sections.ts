@@ -4,7 +4,6 @@ import copyright from '@/assets/landing/copyright.png?w=1245;2490;3735&format=we
 import footerWatermark from '@/assets/landing/footer-watermark.png?w=1284;2568;3853&format=webp&quality=85&as=srcset';
 import footer from '@/assets/landing/footer.png?w=1270;2540;3810&format=webp&quality=85&as=srcset';
 import goals from '@/assets/landing/goals.png?w=1440;2880;4320&format=webp&quality=85&as=srcset';
-import headerScrolled from '@/assets/landing/header-scrolled.png?w=1440;2880;4320&format=webp&quality=85&as=srcset';
 import hero from '@/assets/landing/hero.png?w=1440;2880;4320&format=webp&quality=85&as=srcset';
 import regulators from '@/assets/landing/regulators.png?w=575;1150;1725&format=webp&quality=85&as=srcset';
 import services from '@/assets/landing/services.png?w=1270;2540;3810&format=webp&quality=85&as=srcset';
@@ -58,27 +57,10 @@ export interface ImageSection {
   background?: string;
   hotspots?: Hotspot[];
   anchors?: Anchor[];
+  /** If set, only this many design-pixels of height are shown (hides Figma-drawn CTAs). */
+  visibleHeight?: number;
 }
 
-const navHotspots: Hotspot[] = [
-  { label: 'RoyalBlue home', x: 78, y: 6, w: 118, h: 40, href: '#top', shape: 'text' },
-  { label: 'About', x: 1038, y: 13, w: 54, h: 28, href: '#about', shape: 'text' },
-  { label: 'Services', x: 1121, y: 13, w: 69, h: 28, href: '#services', shape: 'text' },
-  { label: 'Loans', x: 1219, y: 13, w: 53, h: 28, href: '#loans', shape: 'text' },
-  { label: 'Savings', x: 1300, y: 13, w: 64, h: 28, href: '#savings', shape: 'text' },
-];
-
-/** The white bar from Figma's scrolled header (shadow trimmed; StickyHeader adds its own). */
-export const headerImage = {
-  srcSet: headerScrolled,
-  alt: 'RoyalBlue',
-  width: 1440,
-  height: 44,
-  // Same nav as the hero, 5px higher because the export's top shadow was trimmed
-  hotspots: navHotspots.map((h) => ({ ...h, y: Math.max(0, h.y - 5) })),
-};
-
-/** Page sections in Figma order, with the Figma spacing between them. */
 export const sections: ImageSection[] = [
   {
     id: 'top',
@@ -86,22 +68,10 @@ export const sections: ImageSection[] = [
     alt: 'Exceptional banking that meet customer needs. Experience secure savings, accessible loans, and seamless digital banking designed to help individuals, businesses, and communities grow with confidence.',
     width: 1440,
     height: 793,
+    visibleHeight: 468,
     gapAbove: 0,
     background:
       'linear-gradient(180deg, #1b194e 0%, #1b194e 30%, #1f1b4e 45%, #2b1d4d 60%, #381f49 75%, #432148 90%, #4b2347 100%)',
-    hotspots: [
-      ...navHotspots,
-      {
-        label: 'Open an Account',
-        x: 596,
-        y: 492,
-        w: 129,
-        h: 39,
-        to: paths.signUp,
-        shape: 'button',
-      },
-      { label: 'Learn More', x: 733, y: 492, w: 113, h: 39, href: '#services', shape: 'button' },
-    ],
   },
   {
     srcSet: regulators,
@@ -150,9 +120,9 @@ export const sections: ImageSection[] = [
       {
         label: 'Open an Account',
         x: 115,
-        y: 1072,
-        w: 130,
-        h: 39,
+        y: 1068,
+        w: 168,
+        h: 48,
         to: paths.signUp,
         shape: 'button',
       },

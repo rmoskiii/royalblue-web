@@ -21,12 +21,16 @@ const titles: Record<Step['name'], string> = {
 /** PRD View 3: centred modal on desktop, full-screen drawer on phones. */
 export function TransferModal({
   initial,
+  preset,
   onClose,
 }: {
   initial?: Beneficiary;
+  preset?: TransferDraft;
   onClose: () => void;
 }) {
-  const [step, setStep] = useState<Step>({ name: 'details' });
+  const [step, setStep] = useState<Step>(
+    preset ? { name: 'approve', draft: preset } : { name: 'details' },
+  );
 
   return (
     <Modal
@@ -42,7 +46,7 @@ export function TransferModal({
           <button
             type="button"
             aria-label="Back"
-            onClick={() => setStep({ name: 'details' })}
+            onClick={() => (preset ? onClose() : setStep({ name: 'details' }))}
             className="grid size-9.5 place-items-center rounded-field text-ink-2 hover:bg-surface-2"
           >
             <ArrowLeft className="size-5" />

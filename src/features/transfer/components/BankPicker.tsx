@@ -84,7 +84,7 @@ export function BankPicker({
             className="max-h-56 overflow-auto py-1"
           >
             {filtered.map((b) => (
-              <li key={b.code} role="option" aria-selected={b.code === value}>
+              <li key={`${b.code}-${b.name}`} role="option" aria-selected={b.code === value}>
                 <button
                   type="button"
                   onClick={() => choose(b.code)}

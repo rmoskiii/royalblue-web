@@ -39,7 +39,7 @@ export function NavEntry({
   return (
     <NavLink
       to={item.to ?? paths.home}
-      end={item.to === paths.home}
+      end={item.to === paths.home || item.to === paths.admin}
       onClick={onNavigate}
       className={({ isActive }) => className(isActive)}
     >

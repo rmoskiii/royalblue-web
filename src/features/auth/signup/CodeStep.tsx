@@ -5,6 +5,7 @@ import { useToast } from '@/app/providers/ToastProvider';
 import { Button } from '@/components/ui';
 import { demo } from '@/config/demo';
 import { CodeInput } from '../components/CodeInput';
+import { submitOnEnter } from '../lib/submitOnEnter';
 
 export function CodeStep({
   phone,
@@ -29,6 +30,7 @@ export function CodeStep({
   return (
     <form
       className="grid gap-4"
+      onKeyDown={submitOnEnter}
       onSubmit={(e) => {
         e.preventDefault();
         if (code.length === 6) submit.mutate();

@@ -2,15 +2,18 @@ import {
   BookOpen,
   ChartPie,
   CircleHelp,
+  ClipboardList,
   CreditCard,
   Gift,
   History,
   House,
   Landmark,
+  LayoutDashboard,
   Receipt,
   Send,
   Settings,
   ShieldCheck,
+  Snowflake,
   TrendingUp,
   UserCog,
   Users,
@@ -18,6 +21,8 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react';
+import type { StaffRole } from '@/api/types';
+import { isStaffRole } from '@/api/types';
 
 /**
  * Single source of truth for navigation. Sidebar, bottom tabs, the More
@@ -39,6 +44,11 @@ export const paths = {
   transfer: '/transfer',
   payBills: '/pay-bills',
   loans: '/loans',
+  loanApply: '/loans/apply',
+  admin: '/admin',
+  adminQueue: '/admin/queue',
+  adminAccounts: '/admin/accounts',
+  adminTeam: '/admin/team',
   savings: '/savings',
   cards: '/cards',
   invest: '/invest',
@@ -50,6 +60,10 @@ export const paths = {
   learn: '/learn',
   help: '/help',
   settings: '/settings',
+  settingsProfile: '/settings/profile',
+  settingsSecurity: '/settings/security',
+  settingsNotifications: '/settings/notifications',
+  settingsPayments: '/settings/payments',
   payments: '/payments',
   staff: '/staff',
   login: '/login',
@@ -62,9 +76,15 @@ export const paths = {
 
 const item = {
   home: { label: 'Home', to: paths.home, icon: House },
-  transfers: { label: 'Transfers', action: 'transfer', icon: Send },
+  transfers: { label: 'Send', to: paths.transfer, icon: Send },
   payBills: { label: 'Pay bills', to: paths.payBills, icon: Zap },
   loans: { label: 'Loans', to: paths.loans, icon: Landmark },
+  admin: { label: 'Credit desk', to: paths.admin, icon: ClipboardList },
+  desk: { label: 'Desk', to: paths.admin, icon: LayoutDashboard },
+  pipeline: { label: 'Pipeline', to: paths.adminQueue, icon: ClipboardList },
+  review: { label: 'Review', to: paths.adminQueue, icon: ClipboardList },
+  accounts: { label: 'Accounts', to: paths.adminAccounts, icon: Snowflake },
+  team: { label: 'Team', to: paths.adminTeam, icon: Users },
   savings: { label: 'Savings', to: paths.savings, icon: Wallet },
   cards: { label: 'Cards', to: paths.cards, icon: CreditCard },
   transactions: { label: 'Transactions', to: paths.transactions, icon: History },
@@ -141,8 +161,40 @@ const businessNav: NavigationSet = {
 export const navigationFor = (profile: 'personal' | 'business') =>
   profile === 'business' ? businessNav : personalNav;
 
+export function navigationForStaff(role: StaffRole): NavigationSet {
+  const desk = item.desk;
+  const queue = role === 'CREDIT_MANAGER' ? item.review : item.pipeline;
+  if (role === 'LOAN_OFFICER') {
+    return {
+      primary: [desk, queue],
+      learnAndEarn: [],
+      mobileTabs: [desk, queue],
+      more: [item.settings],
+    };
+  }
+  if (role === 'CREDIT_MANAGER') {
+    return {
+      primary: [desk, queue, item.accounts],
+      learnAndEarn: [],
+      mobileTabs: [desk, queue, item.accounts],
+      more: [item.settings],
+    };
+  }
+  return {
+    primary: [desk, queue, item.accounts, item.team],
+    learnAndEarn: [],
+    mobileTabs: [desk, queue, item.accounts, item.team],
+    more: [item.settings],
+  };
+}
+
+export function homePathForRole(role?: string | null) {
+  return isStaffRole(role) ? paths.admin : paths.home;
+}
+
 /** Desktop sidebar, pinned above the profile badge */
 export const settingsNav = item.settings;
+export const adminNav = item.admin;
 
 /** Destinations in the nav that aren't built yet. */
 export const comingSoon: (NavItem & { to: string })[] = [
@@ -152,5 +204,4 @@ export const comingSoon: (NavItem & { to: string })[] = [
   item.refer,
   item.learn,
   item.help,
-  item.settings,
 ];

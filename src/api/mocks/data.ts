@@ -36,6 +36,10 @@ export const mockAccount: Account = {
   bankName: 'RoyalBlue MFB',
   balance: 485_345,
   tier: 2,
+  restrictedNoBvn: false,
+  singleTransactionLimit: 200_000,
+  dailyLimit: 500_000,
+  maxBalance: 500_000,
   freeTransfersRemaining: 7,
   freeTransfersPerMonth: 10,
 };
@@ -284,14 +288,25 @@ export const mockLoans: Loan[] = [
 
 export const mockVerification: VerificationStatus = {
   tier: 2,
+  restrictedNoBvn: false,
+  hasBvn: true,
   completedSteps: ['bvn', 'id-document'],
+  missing: ['Add proof of address to unlock Tier 3 limits.'],
 };
 
-/** From the PRD (§3B). */
+/** From the PRD (§3B) plus CBN starter KYC without BVN. */
 export const mockTierLimits: TierLimit[] = [
   {
     tier: 1,
-    requirements: 'Phone number and BVN or NIN',
+    restrictedNoBvn: true,
+    requirements: 'Phone only. Add BVN or NIN to lift the ₦50,000 CBN starter cap.',
+    singleTransactionLimit: 50_000,
+    dailyLimit: 50_000,
+    maxBalance: 50_000,
+  },
+  {
+    tier: 1,
+    requirements: 'BVN or NIN linked to this profile.',
     singleTransactionLimit: 50_000,
     dailyLimit: 300_000,
     maxBalance: 300_000,

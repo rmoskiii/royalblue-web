@@ -5,7 +5,7 @@ export { Card, CardHeader } from './Card';
 export { Chip } from './Chip';
 export { EmptyState } from './EmptyState';
 export { IconTile } from './IconTile';
-export { Logo } from './Logo';
+export { Logo, logoSizeClass } from './Logo';
 export { CloseButton, Modal } from './Modal';
 export { Money } from './Money';
 export { PageHeader } from './PageHeader';

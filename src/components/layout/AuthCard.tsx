@@ -4,22 +4,19 @@ import type { ReactNode } from 'react';
 export function AuthCard({
   title,
   subtitle,
-  step,
+  back,
   children,
 }: {
   title: string;
   subtitle?: ReactNode;
-  /** e.g. "Step 2 of 5" */
-  step?: string;
+  back?: ReactNode;
   children: ReactNode;
 }) {
   return (
-    <div className="grid w-[min(420px,100%)] gap-4.5 rounded-panel bg-surface p-6 shadow-[0_30px_60px_-30px_rgb(0_0_0/0.5)]">
+    <div className="grid w-[min(450px,100%)] gap-6 rounded-[26px] border border-line bg-surface p-6 shadow-[0_30px_60px_-30px_rgb(0_0_0/0.5)]">
+      {back}
       <div>
-        {step && (
-          <p className="mb-1.5 text-xs font-semibold tracking-wider text-ink-3 uppercase">{step}</p>
-        )}
-        <h1 className="text-[34px] leading-tight font-semibold tracking-tight text-brand">
+        <h1 className="text-[40px] leading-[1.1] font-semibold tracking-[-0.8px] text-brand">
           {title}
         </h1>
         {subtitle && <p className="mt-1 text-sm text-ink-3">{subtitle}</p>}

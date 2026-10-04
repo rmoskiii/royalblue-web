@@ -23,8 +23,17 @@ export const queryKeys = {
     ['name-enquiry', bankCode, accountNumber] as const,
   loans: ['loans'] as const,
   loanProducts: ['loan-products'] as const,
+  staff: {
+    summary: ['staff', 'summary'] as const,
+    applications: (filter?: string) => ['staff', 'applications', filter ?? 'all'] as const,
+    application: (id: string) => ['staff', 'application', id] as const,
+    accounts: ['staff', 'accounts'] as const,
+    team: ['staff', 'team'] as const,
+  },
   verification: ['verification'] as const,
   tierLimits: ['tier-limits'] as const,
+  security: ['security'] as const,
+  customerProfile: ['customer-profile'] as const,
   profiles: ['profiles'] as const,
   business: {
     summary: ['business', 'summary'] as const,
@@ -96,6 +105,9 @@ export const useTierLimits = () =>
 
 export const useProfiles = () =>
   useQuery({ queryKey: queryKeys.profiles, queryFn: profileService.list, staleTime: Infinity });
+
+export const useCustomerProfile = () =>
+  useQuery({ queryKey: queryKeys.customerProfile, queryFn: profileService.get });
 
 export const useBusinessSummary = () =>
   useQuery({ queryKey: queryKeys.business.summary, queryFn: businessService.getSummary });

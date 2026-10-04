@@ -15,8 +15,27 @@ export interface Session {
 }
 
 export interface LoginRequest {
-  email: string;
+  identifier?: string;
+  email?: string;
+  phone?: string;
   password: string;
+}
+
+export interface MfaChallenge {
+  mfaRequired: true;
+  challengeToken: string;
+  methods: Array<'totp' | 'otp'>;
+  email: string;
+}
+
+export interface SecuritySettings {
+  totpEnabled: boolean;
+  pinSet: boolean;
+  loginAlertsEnabled: boolean;
+  transactionAlertsEnabled?: boolean;
+  marketingEmailsEnabled?: boolean;
+  passwordSet: boolean;
+  biometricsAvailable: boolean;
 }
 
 /** Sign-up (PRD FR-01): phone → SMS code → BVN/NIN → confirm → login details */
@@ -27,18 +46,42 @@ export interface PhoneVerification {
   signUpToken: string;
 }
 
-/** Details fetched from NIBSS for the customer to confirm */
+/** Details fetched from NIBSS/BudPay KYC for the customer to confirm */
 export interface IdentityLookup {
   firstName: string;
   lastName: string;
   dateOfBirth: ISODateString;
   photoUrl: string | null;
+  pending?: boolean;
 }
+
+export type AccountKind = 'personal' | 'business';
+export type EntityType =
+  | 'INDIVIDUAL'
+  | 'SOLE_PROPRIETOR'
+  | 'LIMITED_ENTITY'
+  | 'NGO'
+  | 'GOVERNMENT_AGENCY';
 
 export interface CompleteSignUpRequest {
   signUpToken: string;
   email: string;
   password: string;
+  phone?: string;
+  firstName?: string;
+  lastName?: string;
+  bvn?: string;
+  nin?: string;
+  pin: string;
+  totpCode: string;
+  accountKind?: AccountKind;
+  entityType?: EntityType;
+  business?: {
+    registeredName: string;
+    tradeName?: string;
+    registrationNumber?: string;
+    description?: string;
+  };
 }
 
 export interface SignUpResult {
@@ -54,6 +97,17 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
+  displayName?: string;
+  businessName?: string | null;
+  role?: StaffRole | 'APPLICANT';
+}
+
+export type StaffRole = 'ADMINISTRATOR' | 'LOAN_OFFICER' | 'CREDIT_MANAGER';
+
+export const staffRoles: StaffRole[] = ['ADMINISTRATOR', 'LOAN_OFFICER', 'CREDIT_MANAGER'];
+
+export function isStaffRole(role?: string | null): role is StaffRole {
+  return staffRoles.includes(role as StaffRole);
 }
 
 export interface Account {
@@ -62,9 +116,83 @@ export interface Account {
   bankName: string;
   balance: number;
   tier: KycTier;
+  restrictedNoBvn?: boolean;
+  singleTransactionLimit?: number;
+  dailyLimit?: number | null;
+  maxBalance?: number | null;
   /** PRD FR-03: free outward transfers left this month, and the monthly allowance */
   freeTransfersRemaining: number;
   freeTransfersPerMonth: number;
+  /** True when the API will accept a BudPay sandbox / test top-up. */
+  sandbox?: boolean;
+}
+
+export interface CustomerProfile {
+  staff: boolean;
+  user: {
+    id: string;
+    email: string;
+    phone: string;
+    role?: string;
+    isEmailActive: boolean;
+    createdAt: ISODateString;
+    firstName: string;
+    lastName: string;
+  };
+  applicant: {
+    id: string;
+    entityType: string;
+    kycStatus: string;
+    idDocumentVerified?: boolean;
+    addressVerified?: boolean;
+    bvn?: string | null;
+    nin?: string | null;
+    ippisNumber?: string | null;
+    employerType?: string;
+  } | null;
+  individual: {
+    firstName: string;
+    lastName: string;
+    dateOfBirth?: string | null;
+    gender?: string | null;
+    maritalStatus?: string | null;
+    residentialAddress?: string | null;
+    state?: string | null;
+    city?: string | null;
+    employerName?: string | null;
+    jobTitle?: string | null;
+    employmentStartDate?: string | null;
+    monthlyNetIncome?: number | null;
+    bankCode?: string | null;
+    bankName?: string | null;
+    accountNumber?: string | null;
+    accountName?: string | null;
+    nextOfKinName?: string | null;
+    nextOfKinPhone?: string | null;
+    nextOfKinRelationship?: string | null;
+  } | null;
+  business: {
+    id?: string;
+    registeredName: string;
+    tradeName?: string | null;
+    registrationNumber: string;
+    businessAddress?: string | null;
+    state?: string | null;
+    city?: string | null;
+  } | null;
+  accounts: Array<{
+    id: string;
+    accountNumber: string;
+    accountName: string;
+    bankName: string;
+    status: string;
+  }>;
+  preferences: {
+    loginAlertsEnabled: boolean;
+    transactionAlertsEnabled: boolean;
+    marketingEmailsEnabled: boolean;
+  };
+  editable: Record<string, boolean>;
 }
 
 // ---------- Transactions ----------
@@ -124,7 +252,7 @@ export interface NameEnquiryResult {
   bankCode: string;
 }
 
-/** PRD FR-08: approve money movements with the 4-digit PIN or a passkey (WebAuthn). */
+/** Approve money movements with the 6-digit transaction PIN from sign-up. */
 export type TransactionAuthorisation =
   { method: 'pin'; pin: string } | { method: 'passkey'; assertion: string };
 
@@ -142,8 +270,8 @@ export interface TransferResult {
 }
 
 // ---------- Loans ----------
-export type LoanStatus = 'pending' | 'active' | 'closed';
-export type LoanProductId = 'working-capital' | 'asset-leasing' | 'lpo-financing' | 'instant-loan';
+export type LoanStatus = 'pending' | 'active' | 'closed' | 'under_review' | 'declined';
+export type LoanProductId = string;
 
 export interface LoanProduct {
   id: LoanProductId;
@@ -176,12 +304,22 @@ export type IdDocumentType = 'voters-card' | 'passport' | 'drivers-licence' | 'n
 
 export interface VerificationStatus {
   tier: KycTier;
+  restrictedNoBvn?: boolean;
+  hasBvn?: boolean;
+  hasNin?: boolean;
   completedSteps: VerificationStepId[];
+  missing?: string[];
+  limits?: {
+    singleTransactionLimit: number;
+    dailyLimit: number | null;
+    maxBalance: number | null;
+  };
 }
 
 /** PRD §3B tier structure. `null` means unlimited. */
 export interface TierLimit {
   tier: KycTier;
+  restrictedNoBvn?: boolean;
   requirements: string;
   singleTransactionLimit: number | null;
   dailyLimit: number | null;
@@ -389,3 +527,171 @@ export interface BillPaymentResult {
   token?: string;
   units?: number;
 }
+
+export type ApplicationStatus =
+  | 'DRAFT'
+  | 'SUBMITTED'
+  | 'KYC_PENDING'
+  | 'KYC_FAILED'
+  | 'UNDER_REVIEW'
+  | 'ADDITIONAL_INFORMATION_REQUIRED'
+  | 'CREDIT_REVIEW'
+  | 'APPROVED'
+  | 'APPROVED_WITH_CONDITIONS'
+  | 'DECLINED'
+  | 'DISBURSED'
+  | 'ACTIVE'
+  | 'COMPLETED'
+  | 'DEFAULTED';
+
+export interface LoanGuarantor {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  employer: string;
+  occupation?: string;
+  residentialAddress?: string;
+  relationship?: string;
+  income: number;
+}
+
+export interface LoanFacility {
+  id: string;
+  lenderName: string;
+  facilityType: string;
+  originalAmount: number;
+  outstandingBal: number;
+  monthlyRepayment: number;
+}
+
+export interface LoanDocument {
+  id: string;
+  documentType: string;
+  status: string;
+  createdAt: ISODateString;
+}
+
+export interface CreditFile {
+  id: string;
+  applicationNumber: string;
+  status: ApplicationStatus;
+  requestedAmount: number;
+  approvedAmount?: number | null;
+  tenorMonths: number;
+  purpose: string;
+  nextOfKinName?: string | null;
+  nextOfKinPhone?: string | null;
+  nextOfKinRelationship?: string | null;
+  salaryBankName?: string | null;
+  salaryAccountNumber?: string | null;
+  bureauProvider?: string | null;
+  payrollMandateRef?: string | null;
+  submittedAt?: ISODateString | null;
+  createdAt: ISODateString;
+  loanProduct?: { id: string; name: string; code: string };
+  applicant?: {
+    ippisNumber?: string | null;
+    user?: { email: string; phone: string };
+    individual?: { firstName: string; lastName: string; employerName?: string | null };
+  };
+  guarantors?: LoanGuarantor[];
+  existingFacilities?: LoanFacility[];
+  documents?: LoanDocument[];
+  assessments?: Array<{
+    id: string;
+    dsrRatio: number;
+    monthlyNetIncome: number;
+    totalMonthlyDebt: number;
+    riskRating: string;
+    recommendedAmount: number;
+    officerNotes: string;
+    createdAt: ISODateString;
+  }>;
+  decisions?: Array<{
+    id: string;
+    decision: ApplicationStatus;
+    finalAmount?: number | null;
+    decisionNotes: string;
+    createdAt: ISODateString;
+  }>;
+  assignedOfficer?: { id: string; email: string } | null;
+}
+
+export interface StaffSummary {
+  role: StaffRole | string;
+  assignedToMe: number;
+  frozenAccounts: number;
+  activeAccounts: number;
+  staffHeadcount: number;
+  pipeline: {
+    intake: number;
+    creditReview: number;
+    approved: number;
+    declined: number;
+    disbursed: number;
+  };
+}
+
+export interface StaffBankAccount {
+  id: string;
+  accountNumber: string;
+  accountName: string;
+  status: string;
+  freezeReason?: string | null;
+  availableBalance?: number | string;
+  applicant?: {
+    user?: { email: string };
+    individual?: { firstName: string; lastName: string } | null;
+  } | null;
+}
+
+export interface CreditTeamMember {
+  id: string;
+  email: string;
+  role: StaffRole;
+  isEmailActive: boolean;
+  createdAt: ISODateString;
+}
+
+export interface ApplyLoanRequest {
+  application: {
+    loanProductId: string;
+    requestedAmount: number;
+    tenorMonths: number;
+    purpose: string;
+    ippisNumber?: string;
+    nextOfKinName: string;
+    nextOfKinPhone: string;
+    nextOfKinRelationship: string;
+    salaryBankName?: string;
+    salaryAccountNumber?: string;
+    residentialAddress: string;
+    employerName: string;
+    jobTitle?: string;
+    monthlyNetIncome: number;
+    declarationAccepted: boolean;
+  };
+  liabilities?: Array<{
+    lenderName: string;
+    facilityType: string;
+    originalAmount: number;
+    outstandingBal: number;
+    monthlyRepayment: number;
+  }>;
+  guarantor: {
+    fullName: string;
+    email: string;
+    phone: string;
+    employer: string;
+    occupation: string;
+    residentialAddress: string;
+    relationship: string;
+    bvn?: string;
+    income: number;
+    bankName?: string;
+    accountNumber?: string;
+    declarationAccepted: boolean;
+  };
+}
+

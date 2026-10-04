@@ -50,6 +50,9 @@ interface LogoProps {
   className?: string;
 }
 
+/** Shared lockup size: large enough for the tagline, used on home, auth, and marketing. */
+export const logoSizeClass = 'h-12';
+
 export function Logo({ onDark, compact, className }: LogoProps) {
   return (
     <svg
@@ -57,7 +60,8 @@ export function Logo({ onDark, compact, className }: LogoProps) {
       aria-label="RoyalBlue Microfinance Bank"
       viewBox={compact ? '0 0 315.51 76' : '0 0 315.51 97.04'}
       className={cn(
-        'h-9 w-auto shrink-0',
+        'w-auto shrink-0',
+        logoSizeClass,
         onDark ? 'text-white' : 'text-[#272570] dark:text-white',
         className,
       )}

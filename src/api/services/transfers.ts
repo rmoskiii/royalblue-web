@@ -12,7 +12,12 @@ import type {
 export const transferService = {
   listBanks(): Promise<Bank[]> {
     if (env.useMocks) return mockResponse(mockBanks);
-    return http.get<Bank[]>('/transfers/banks');
+    return http.get<Array<Bank & { bankCode?: string; bankName?: string }>>('/transfers/banks').then((rows) =>
+      rows.map((row) => ({
+        code: row.code || row.bankCode || '',
+        name: row.name || row.bankName || '',
+      })),
+    );
   },
 
   listBeneficiaries(): Promise<Beneficiary[]> {

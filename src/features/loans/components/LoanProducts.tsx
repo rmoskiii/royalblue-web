@@ -1,13 +1,14 @@
 import { Banknote, FileText, Store, Truck, type LucideIcon } from 'lucide-react';
-import type { LoanProduct, LoanProductId } from '@/api/types';
+import type { LoanProduct } from '@/api/types';
 import { formatNaira } from '@/lib/format';
 
-const productIcons: Record<LoanProductId, LucideIcon> = {
-  'working-capital': Store,
-  'asset-leasing': Truck,
-  'lpo-financing': FileText,
-  'instant-loan': Banknote,
-};
+function productIcon(id: string, name: string): LucideIcon {
+  const key = `${id} ${name}`.toLowerCase();
+  if (key.includes('lease') || key.includes('asset')) return Truck;
+  if (key.includes('lpo')) return FileText;
+  if (key.includes('instant') || key.includes('salary') || key.includes('sal-')) return Banknote;
+  return Store;
+}
 
 function tenorLabel(options: number[]) {
   const min = Math.min(...options);
@@ -27,7 +28,7 @@ export function LoanProducts({
       <h2 className="mt-2 mb-2.5 text-base font-semibold">Financing options</h2>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
         {products.map((p) => {
-          const Icon = productIcons[p.id];
+          const Icon = productIcon(p.id, p.name);
           return (
             <article
               key={p.id}

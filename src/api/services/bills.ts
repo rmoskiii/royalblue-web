@@ -95,11 +95,13 @@ export const billService = {
       }
       return mockResponse(result, 900);
     }
+    const pin = body.authorisation.method === 'pin' ? body.authorisation.pin : undefined;
     if (body.type === 'airtime') {
       return http.post<BillPaymentResult>('/bills/airtime', {
         provider: NETWORK_PROVIDER[body.network],
         number: body.phone,
         amount: body.amount,
+        pin,
       });
     }
     if (body.type === 'data') {
@@ -108,6 +110,7 @@ export const billService = {
         number: body.phone,
         planId: body.planId,
         amount: body.amount,
+        pin,
       });
     }
     return http.post<BillPaymentResult>('/bills/electricity', {
@@ -115,6 +118,7 @@ export const billService = {
       number: body.meterNumber,
       type: body.meterType,
       amount: body.amount,
+      pin,
     });
   },
 };

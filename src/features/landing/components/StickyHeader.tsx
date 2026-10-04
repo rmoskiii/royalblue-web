@@ -1,9 +1,8 @@
+import { BrandBar, LoginButton, OpenAccountButton } from '@/components/layout/BrandBar';
 import { cn } from '@/lib/cn';
 import { useScrolled } from '../hooks/useScrolled';
-import { DESIGN_WIDTH, headerImage } from '../sections';
-import { HotspotImage } from './HotspotImage';
 
-/** White header from the Figma, shown once the visitor scrolls past the hero. */
+/** Real lockup + About / Services / Loans / Savings, shown after the hero. */
 export function StickyHeader() {
   const visible = useScrolled(560);
 
@@ -16,9 +15,17 @@ export function StickyHeader() {
         visible ? 'translate-y-0' : '-translate-y-full',
       )}
     >
-      <div className="mx-auto" style={{ maxWidth: DESIGN_WIDTH }}>
-        <HotspotImage {...headerImage} eager />
-      </div>
+      <BrandBar
+        showMarketingNav
+        trailing={
+          <>
+            <LoginButton />
+            <span className="hidden sm:inline">
+              <OpenAccountButton />
+            </span>
+          </>
+        }
+      />
     </header>
   );
 }

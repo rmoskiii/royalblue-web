@@ -23,6 +23,11 @@ export function CodeInput({
   };
 
   const onKeyDown = (i: number, e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.currentTarget.form?.requestSubmit();
+      return;
+    }
     if (e.key === 'Backspace' && !digits[i] && i > 0) refs.current[i - 1]?.focus();
   };
 
@@ -43,14 +48,17 @@ export function CodeInput({
             refs.current[i] = el;
           }}
           aria-label={`Digit ${i + 1}`}
+          type="text"
           inputMode="numeric"
+          enterKeyHint="done"
           autoComplete={i === 0 ? 'one-time-code' : 'off'}
+          autoFocus={i === 0}
           maxLength={1}
           value={d}
           onChange={(e) => setDigit(i, e.target.value.replace(/\D/g, '').slice(-1))}
           onKeyDown={(e) => onKeyDown(i, e)}
           onPaste={onPaste}
-          className="h-13 w-full rounded-field border border-transparent bg-surface-2 text-center text-lg font-semibold tabular outline-none focus:border-brand focus:ring-3 focus:ring-brand/15"
+          className="size-14 w-full rounded-[10px] border border-transparent bg-surface-2 text-center text-xl font-semibold tabular outline-none focus:border-brand focus:ring-3 focus:ring-brand/15"
         />
       ))}
     </div>

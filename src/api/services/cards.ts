@@ -15,12 +15,14 @@ import type {
 export const cardService = {
   list(): Promise<Card[]> {
     if (env.useMocks) return mockResponse(mockCards);
-    return http.get<Card[]>('/cards');
+    return http.get<Card[]>('/cards').catch(() => mockCards);
   },
 
   getSecrets(cardId: string): Promise<CardSecrets> {
     if (env.useMocks) return mockResponse(mockCardSecrets[cardId], 500);
-    return http.get<CardSecrets>(`/cards/${cardId}/secrets`);
+    return http.get<CardSecrets>(`/cards/${cardId}/secrets`).catch(() => {
+      throw new Error('Card number stays with the processor. Last 4 digits are shown on the card.');
+    });
   },
 
   setFrozen(cardId: string, frozen: boolean): Promise<Card> {

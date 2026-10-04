@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
+import { Link } from 'react-router';
 import { useLoanProducts, useLoans } from '@/api/hooks';
 import type { LoanProduct } from '@/api/types';
-import { useToast } from '@/app/providers/ToastProvider';
-import { Button, PageHeader } from '@/components/ui';
+import { paths } from '@/components/layout/navigation';
+import { buttonClass, PageHeader } from '@/components/ui';
 import { ActiveLoanDetail } from './components/ActiveLoanDetail';
 import { HowItWorks } from './components/HowItWorks';
 import { LoanCalculator } from './components/LoanCalculator';
@@ -11,7 +12,6 @@ import { LoanProducts } from './components/LoanProducts';
 export function LoansPage() {
   const { data: loans } = useLoans();
   const { data: products } = useLoanProducts();
-  const { showToast } = useToast();
   const [selected, setSelected] = useState<LoanProduct | null>(null);
   const calculatorRef = useRef<HTMLDivElement>(null);
 
@@ -31,9 +31,9 @@ export function LoansPage() {
         title="Loans"
         subtitle="Business and personal financing, from 2% per month."
         action={
-          <Button onClick={() => showToast('The application form is next on the build list')}>
+          <Link to={paths.loanApply} className={buttonClass({ variant: 'primary' })}>
             Apply for a loan
-          </Button>
+          </Link>
         }
       />
       <div className="grid gap-4">

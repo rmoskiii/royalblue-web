@@ -1,5 +1,8 @@
-import { ChevronRight, CreditCard, Landmark } from 'lucide-react';
+import { ChevronRight, CreditCard, FlaskConical, Landmark } from 'lucide-react';
 import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { queryKeys, useAccount } from '@/api/hooks';
+import { accountService } from '@/api/services/accounts';
 import { useToast } from '@/app/providers/ToastProvider';
 import { Modal } from '@/components/ui';
 import { AccountDetails } from './AccountDetails';
@@ -8,11 +11,37 @@ type Method = 'choose' | 'bank-transfer';
 
 export function AddMoneySheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [method, setMethod] = useState<Method>('choose');
+  const { data: account } = useAccount();
   const { showToast } = useToast();
+  const queryClient = useQueryClient();
   const close = () => {
     setMethod('choose');
     onClose();
   };
+
+  const sandboxTopUp = useMutation({
+    mutationFn: () => accountService.sandboxFund(50_000),
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.account });
+      queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.insights });
+      showToast(`₦${result.amount.toLocaleString('en-NG')} test credit landed`);
+      close();
+    },
+    onError: (error) => showToast(error.message),
+  });
+
+  const cardTopUp = useMutation({
+    mutationFn: () => accountService.startCardTopup(5_000),
+    onSuccess: ({ authorizationUrl }) => {
+      if (!authorizationUrl) {
+        showToast('BudPay did not return a checkout URL');
+        return;
+      }
+      window.location.assign(authorizationUrl);
+    },
+    onError: (error) => showToast(error.message),
+  });
 
   const options = [
     {
@@ -24,10 +53,18 @@ export function AddMoneySheet({ open, onClose }: { open: boolean; onClose: () =>
     {
       icon: CreditCard,
       title: 'Debit card',
-      body: 'Top up instantly with a Visa, Mastercard or Verve card.',
-      onClick: () => showToast('Card top-ups are coming soon'),
+      body: 'Pay on BudPay checkout (Visa, Mastercard or Verve). Test cards work with a test secret key.',
+      onClick: () => cardTopUp.mutate(),
     },
   ];
+  if (account?.sandbox) {
+    options.push({
+      icon: FlaskConical,
+      title: 'BudPay sandbox top-up',
+      body: 'Credit ₦50,000 through the dedicated-account webhook payload (test keys / mock).',
+      onClick: () => sandboxTopUp.mutate(),
+    });
+  }
 
   return (
     <Modal open={open} onClose={close} title="Add money">
@@ -56,7 +93,8 @@ export function AddMoneySheet({ open, onClose }: { open: boolean; onClose: () =>
         ) : (
           <>
             <p className="text-ink-2">
-              Transfer to this account from any bank. It lands instantly.
+              This is your BudPay dedicated virtual account. Transfer from any Nigerian bank; the
+              credit webhook (or a dashboard sync) lands it on your RoyalBlue balance.
             </p>
             <AccountDetails />
           </>

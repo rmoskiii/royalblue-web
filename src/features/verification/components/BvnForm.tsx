@@ -32,7 +32,8 @@ export function BvnForm({ onDone }: { onDone: () => void }) {
       />
       <p className="flex gap-2.5 rounded-xl bg-surface-2 p-3 text-[13px] text-ink-2">
         <CircleHelp className="size-4 shrink-0" />
-        Don’t know your BVN? Dial *565*0# from the phone number linked to your bank account.
+        Don’t know your BVN? Dial *565*0# from the phone number linked to your bank account. We only
+        confirm your name — this does not freeze accounts or pull salary history.
       </p>
       <Button
         type="submit"
@@ -41,6 +42,9 @@ export function BvnForm({ onDone }: { onDone: () => void }) {
       >
         {submit.isPending ? 'Checking…' : 'Validate BVN'}
       </Button>
+      <button type="button" className="justify-self-start text-sm font-medium text-ink-2" onClick={onDone}>
+        Continue without waiting
+      </button>
     </form>
   );
 }

@@ -6,7 +6,16 @@ Where the two disagree, the Figma wins on colours and the PRD wins on typography
 
 **Stack:** Vite · React 19 · TypeScript · React Router · Tailwind CSS v4 · TanStack Query · lucide-react
 
-> Pair with **master-backend** on branch `pair-program`. Copy `.env.example` to `.env` (`VITE_USE_MOCKS=false`) so dashboard, payments, transfers, bills, and transactions call `/api/v1`. Vite proxies `/api` to `http://localhost:3000`. Login and sign-up demo prefill is off in live mode.
+> Pair with **master-backend** on branch `pair-program`. Copy `.env.example` to `.env` (`VITE_USE_MOCKS=false`) so the app calls Nest `/api/v1`. Vite proxies `/api` to `http://localhost:3000`. Restart `npm run dev` after changing `VITE_*` — Vite only reads env at startup.
+
+Two mock layers (they are independent):
+
+| Switch | Repo | `true` | `false` |
+| --- | --- | --- | --- |
+| `VITE_USE_MOCKS` | this app | In-memory `src/api/mocks` — never hits Nest | Browser → Nest |
+| `BUDPAY_MOCK` | master-backend | Nest never calls `api.budpay.com` | Nest calls BudPay; KYC/catalogs may still pass-through |
+
+Keep `VITE_USE_MOCKS=false` while pairing even if Nest has `BUDPAY_MOCK=true`. Otherwise banks, plans, and balances never leave the browser fixtures.
 
 ---
 
@@ -34,28 +43,48 @@ VS Code will suggest the ESLint, Prettier and Tailwind extensions (see `.vscode/
 
 ---
 
+## Test logins
+
+Staff are seeded by Nest (`npx prisma db seed`). They have **no** personal NUBAN — after login they go to `/admin`, not Home.
+
+| Role | Email | Phone | Password | Landing | What they can do |
+| --- | --- | --- | --- | --- | --- |
+| Administrator | `admin@royalblue.ng` | `08011111111` | `RoyalBlueAdmin1!` | Desk | Pipeline, accounts freeze, team, recommend + decide |
+| Loan officer | `officer@royalblue.ng` | `08022222222` | `RoyalBlueOfficer1!` | Desk | Pipeline, claim / recommend. No freeze or final decision |
+| Credit manager | `manager@royalblue.ng` | `08033333333` | `RoyalBlueManager1!` | Desk | Review, decide, freeze. No staff-team admin extras beyond review |
+
+Customers are **not** seeded. Use `/sign-up`: email OTP → password → Google Authenticator → account kind → details → BVN/NIN (optional) → confirm → **6-digit transaction PIN**. Then `/login` with email **or** phone. If authenticator is on, login asks for a 6-digit code after the password.
+
+Staff password-login until they set PIN / TOTP under **Me → Security**. Staff have no transaction PIN, so they cannot send customer funds.
+
+Login field: `POST /auth/login` `{ identifier, password }` where `identifier` is email or a Nigerian number (`080…`, `803…`, `+234…`).
+
+---
+
 ## What's built
 
 | Area            | Where                                                   | Notes                                                                                            |
 | --------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Website         | `/welcome` (where `/` opens), `/terms`, `/privacy`      | Figma "Desktop - 2" exports with clickable buttons (`features/landing/sections.ts`)              |
-| Login           | `/login`                                                | Email and password                                                                               |
-| Sign-up         | `/sign-up`                                              | PRD FR-01: phone → SMS code → BVN/NIN → confirm fetched details → login details → account number |
-| Home            | `/dashboard` (personal profile)                         | Balance with privacy toggle; Send, Receive, Pay bills, Add money; transactions + quick transfer  |
-| Merchant portal | `/dashboard` (business), `/payments`, `/staff`          | PRD View 2: volume / payout / terminals, live payments table, POS status, cashier access         |
-| Profile switch  | Top bar                                                 | PRD FR-04: Personal ↔ Business. Switching refetches everything for the new profile               |
-| Transfers       | Modal (from nav, Home, or `/transfer`)                  | PRD View 3: searchable banks, name lookup, free-transfer fee indicator, PIN pad or passkey       |
-| Pay bills       | `/pay-bills?type=airtime\|data\|electricity`            | PRD FR-07: networks, data bundles, meter validation, PIN approval, electricity token receipt     |
-| Savings         | `/savings`                                              | PRD View 4: live interest, vault cards with progress rings, new vault, returns calculator        |
-| Cards           | `/cards`                                                | PRD View 5: 3D virtual card, show details/CVV, freeze, controls, physical card order + tracking  |
-| Loans           | `/loans`                                                | Active loan + schedule, repayment calculator, products, how it works                             |
-| Transactions    | `/transactions`                                         | Search, filters, grouped by day, table-style rows when wide, receipt sheet                       |
-| Account limits  | `/verification`                                         | PRD View 6: tier limits, 3-step upgrade (BVN, ID + selfie via webcam, proof of address)          |
-| Coming soon     | Invest, Insights, Rewards, Refer, Learn, Help, Settings | Placeholder pages, generated from the nav config                                                 |
+| Website         | `/welcome` (where `/` opens), `/terms`, `/privacy`      | Figma "Desktop - 2" exports; HTML CTAs are cropped so they do not sit on the artwork buttons     |
+| Login           | `/login`                                                | Email **or** phone + password; authenticator step when TOTP is enabled                            |
+| Sign-up         | `/sign-up`                                              | OTP → password → TOTP → details → BVN/NIN → confirm → **transaction PIN** (6 digits)             |
+| Account limits  | `/verification`                                         | BVN via KYC `validate-bvn`. No freeze. Starter ₦50k until BVN/NIN. Tiers 1–3 after.            |
+| Home            | `/dashboard` (personal)                                 | Staff never land here. Balance, Send / Receive / Pay / Add money                                 |
+| Merchant portal | `/dashboard` (business), `/payments`, `/staff`          | Volume / payout / terminals, live payments, cashier access                                       |
+| Profile switch  | Top bar                                                 | Personal ↔ Business. Staff skip this                                                             |
+| Transfers       | Modal or `/transfer`                                    | Banks from Nest. Approve with the **6-digit transaction PIN** from sign-up                       |
+| Pay bills       | `/pay-bills?type=airtime\|data\|electricity`            | Same PIN on airtime / data / electricity                                                         |
+| Savings         | `/savings`                                              | UI only — Nest has no `/savings` yet. With mocks off this screen 404s/empty unless you mock it |
+| Cards           | `/cards`                                                | Nest lockup from NUBAN last 4; freeze/controls. PAN reveal is 422                                |
+| Loans           | `/loans`, `/loans/apply`                                | Live products + paper borrower/guarantor pack + uploads                                          |
+| Credit desk     | `/admin`, `/admin/queue`, `/admin/accounts`, `/admin/team`, `/admin/applications/:id` | Role-specific workspace (`features/admin`)                          |
+| Me / settings   | `/settings`, `/settings/profile`, `/security`, `/notifications`, `/payments` | OPay-style hub. Staff: security, notifications, legal — no next-of-kin |
+| Transactions    | `/transactions`                                         | Search, filters, receipt                                                                         |
+| Coming soon     | Invest, Insights, Rewards, Refer, Learn, Help           | Placeholder pages from nav config                                                                |
 
-**Layout:** phones get a top bar and bottom tabs. Personal: Home, Transfers, Savings, Cards, More. Business: Dashboard, Payments, Transfers, Staff access, More. At `lg` (1024px) and up, a royal blue sidebar with a profile badge replaces the tabs. Navigation for both profiles lives in `components/layout/navigation.ts`.
+**Layout:** phones get a top bar and bottom tabs. Personal: Home, Transfers, Savings, Cards, More. Business: Dashboard, Payments, Transfers, Staff access, More. Staff: Desk plus role links (Pipeline / Review / Accounts / Team). At `lg` (1024px) and up, a royal blue sidebar replaces the tabs. Nav: `components/layout/navigation.ts`, `useWorkspaceNav.ts`.
 
-**Demo tips (mock mode):** switch to the business profile from the top bar to see the merchant portal; a new payment arrives in the live table every 8 seconds. Any 4-digit PIN approves a transfer or bill.
+**Demo tips:** with **web** mocks on, switch to the business profile for the merchant portal; a new payment arrives every 8 seconds; the 6-digit transaction PIN from sign-up approves a transfer. With mocks **off**, **Add money → Bank transfer** shows the BudPay VA; **Debit card** opens BudPay checkout; **BudPay sandbox top-up** posts a test VA credit. Bank list and cellular plans come from Nest (live BudPay or Nest sandbox fallback) — empty lists usually mean Nest cannot reach `api.budpay.com` or Vite was started before `VITE_USE_MOCKS=false`.
 
 ---
 
@@ -128,13 +157,43 @@ Figma sources: navy `#1B194D`, heading navy `#272570`, red `#C93C38`, body grey 
 
 ## Connecting the API
 
-On `pair-program`, live mode talks to Nest `/api/v1` (see master-backend). Dashboard, payments, transfers, bills, and transactions are wired.
+On `pair-program`, live mode talks to Nest `/api/v1`. The browser never holds the BudPay secret. Shapes and pass-throughs are documented in **master-backend README → External services**.
 
-1. Run master-backend with `BUDPAY_MOCK=true` for sandbox, or `BUDPAY_MOCK=false` plus BudPay merchant keys for production.
-2. Copy `.env.example` to `.env` (`VITE_USE_MOCKS=false`, `VITE_API_BASE_URL=/api/v1`).
-3. Remaining TODOs (savings, cards, loans, KYC uploads, passkeys) still use mocks until those Nest modules exist.
+| Screen | Nest | Upstream |
+| --- | --- | --- |
+| Login / MFA | `POST /auth/login` `{ identifier, password }`, `/auth/login/mfa` | Email or NG phone. OTP is Nest + Resend (not BudPay) |
+| Sign-up | `POST /auth/start`, `/auth/mfa/begin`, `/auth/complete` (`pin`, `totpCode`) | Identity: KYC v2 `validate-bvn` / `validate-id` (sandbox names if unpaid) |
+| Me | `GET/PATCH /profile`, `GET /auth/security`, `PATCH /auth/password\|pin\|alerts`, TOTP begin/confirm | Prisma only |
+| Dashboard | `GET /accounts/primary` | Dedicated VA lookup |
+| Add money — bank | NUBAN on the account | `POST /api/v2/dedicated_virtual_account` at provision |
+| Add money — card | `/accounts/card-topup` then `/verify` | `transaction/initialize` → hosted checkout |
+| Transfers | `/transfers/banks`, name-enquiry, `/outward` `{ pin }` | Live `bank_list` → `{ code, name }[]`. PIN required. |
+| Bills | `/bills/data/plans/:provider` etc. `{ pin }` on pay | Catalogs from BudPay (or Nest sandbox list). PIN required. |
+| Loans | `/applications`, `/applications/pack` | Bureau + payroll are **Nest mocks** (score 680; `wacs_mock_*`) until CRC / WACS keys |
+| Cards | `GET /cards`, `PUT /cards/:id/freeze` | Local lockup; not BudPay issuing |
+| Credit desk | `/staff/summary`, `/applications`, `/accounts`, `/team` | Prisma + mock bureau snapshot on the file |
+| Savings | none | Still frontend-only |
 
-Amounts are in **naira**. If the API uses kobo, convert in the services layer.
+1. Nest: `BUDPAY_MOCK=true` **or** test secret + `BUDPAY_MOCK=false` (outbound network required for live catalogs).
+2. This app: `.env` with `VITE_USE_MOCKS=false`, `VITE_API_BASE_URL=/api/v1`, then restart Vite.
+3. Savings has no Nest route. Card PAN reveal is refused (422). Transfers and bills must send the 6-digit `pin` from onboarding.
+
+### Still UI-only / next views
+
+These screens exist in the app but are not fully backed by Nest, or are the natural next Figma work:
+
+| Area | Status |
+| --- | --- |
+| Savings / vaults | UI only — no `/savings` on Nest |
+| Physical card order | Placeholder; virtual freeze/controls are live |
+| Card PAN / CVV reveal | Always 422 (processor-hosted) |
+| Password reset | Toast “coming soon” |
+| Invest, Insights, Rewards, Refer, Learn, Help | `comingSoon` placeholders in `navigation.ts` |
+| Passkey / biometric approve | Not wired; money movement is PIN-only |
+
+When adding a screen: `features/<name>`, `navigation.ts`, `router.tsx`, then `src/api/services` + `hooks.ts`. Do not call BudPay from the browser.
+
+Amounts in the UI are **naira**. After card checkout BudPay returns to `/dashboard?reference=…&status=success`; Home verifies and refreshes.
 
 ---
 

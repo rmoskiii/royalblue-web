@@ -1,14 +1,13 @@
 import { LogOut } from 'lucide-react';
-import { useAuth } from '@/app/providers/AuthProvider';
 import { Button, CloseButton, Logo, Modal } from '@/components/ui';
+import { useLogoutConfirm } from './LogoutProvider';
 import { NavEntry } from './NavEntry';
-import { useProfile } from '@/app/providers/ProfileProvider';
-import { navigationFor } from './navigation';
+import { useWorkspaceNav } from './useWorkspaceNav';
 import { ThemeToggle } from './ThemeToggle';
 
 export function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { logout } = useAuth();
-  const { more } = navigationFor(useProfile().profileType);
+  const { requestLogout } = useLogoutConfirm();
+  const { more } = useWorkspaceNav();
 
   return (
     <Modal open={open} onClose={onClose} title="More" hideHeader>
@@ -39,7 +38,15 @@ export function MoreSheet({ open, onClose }: { open: boolean; onClose: () => voi
           <span className="font-medium">Appearance</span>
           <ThemeToggle className="bg-surface" />
         </div>
-        <Button variant="secondary" block className="mt-3" onClick={logout}>
+        <Button
+          variant="secondary"
+          block
+          className="mt-3"
+          onClick={() => {
+            onClose();
+            requestLogout();
+          }}
+        >
           <LogOut className="size-4" />
           Log out
         </Button>

@@ -13,7 +13,7 @@ import { LegalPage } from '@/features/landing/LegalPage';
 import { ComingSoonPage } from '@/features/misc/ComingSoonPage';
 import { NotFoundPage } from '@/features/misc/NotFoundPage';
 import { TransferRoute } from '@/features/transfer/TransferRoute';
-import { RedirectIfAuthenticated, RequireAuth } from './guards';
+import { RedirectIfAuthenticated, RequireAuth, RequireStaff, RequireStaffRole } from './guards';
 
 /**
  * Code-split a page: its feature bundle downloads the first time the route is visited.
@@ -53,6 +53,63 @@ export const router = createBrowserRouter([
               () => import('@/features/loans/LoansPage'),
               (m) => m.LoansPage,
             ),
+          },
+          {
+            path: paths.loanApply,
+            ...page(
+              () => import('@/features/loans/ApplyLoanPage'),
+              (m) => m.ApplyLoanPage,
+            ),
+          },
+          {
+            element: <RequireStaff />,
+            children: [
+              {
+                path: paths.admin,
+                ...page(
+                  () => import('@/features/admin/StaffDeskPage'),
+                  (m) => m.StaffDeskPage,
+                ),
+              },
+              {
+                path: paths.adminQueue,
+                ...page(
+                  () => import('@/features/admin/AdminQueuePage'),
+                  (m) => m.AdminQueuePage,
+                ),
+              },
+              {
+                path: '/admin/applications/:id',
+                ...page(
+                  () => import('@/features/admin/AdminCreditFilePage'),
+                  (m) => m.AdminCreditFilePage,
+                ),
+              },
+              {
+                element: <RequireStaffRole roles={['CREDIT_MANAGER', 'ADMINISTRATOR']} />,
+                children: [
+                  {
+                    path: paths.adminAccounts,
+                    ...page(
+                      () => import('@/features/admin/StaffAccountsPage'),
+                      (m) => m.StaffAccountsPage,
+                    ),
+                  },
+                ],
+              },
+              {
+                element: <RequireStaffRole roles={['ADMINISTRATOR']} />,
+                children: [
+                  {
+                    path: paths.adminTeam,
+                    ...page(
+                      () => import('@/features/admin/StaffTeamPage'),
+                      (m) => m.StaffTeamPage,
+                    ),
+                  },
+                ],
+              },
+            ],
           },
           {
             path: paths.transactions,
@@ -104,6 +161,46 @@ export const router = createBrowserRouter([
                 ...page(
                   () => import('@/features/business/StaffPage'),
                   (m) => m.StaffPage,
+                ),
+              },
+            ],
+          },
+          {
+            path: paths.settings,
+            children: [
+              {
+                index: true,
+                ...page(
+                  () => import('@/features/settings/SettingsPage'),
+                  (m) => m.SettingsPage,
+                ),
+              },
+              {
+                path: 'profile',
+                ...page(
+                  () => import('@/features/settings/ProfileDetailsPage'),
+                  (m) => m.ProfileDetailsPage,
+                ),
+              },
+              {
+                path: 'security',
+                ...page(
+                  () => import('@/features/settings/SecuritySettingsPage'),
+                  (m) => m.SecuritySettingsPage,
+                ),
+              },
+              {
+                path: 'notifications',
+                ...page(
+                  () => import('@/features/settings/NotificationsSettingsPage'),
+                  (m) => m.NotificationsSettingsPage,
+                ),
+              },
+              {
+                path: 'payments',
+                ...page(
+                  () => import('@/features/settings/PaymentsSettingsPage'),
+                  (m) => m.PaymentsSettingsPage,
                 ),
               },
             ],

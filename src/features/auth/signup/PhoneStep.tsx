@@ -5,6 +5,7 @@ import { authService } from '@/api/services/auth';
 import { paths } from '@/components/layout/navigation';
 import { Button, TextField } from '@/components/ui';
 import { demo } from '@/config/demo';
+import { submitOnEnter } from '../lib/submitOnEnter';
 
 export function PhoneStep({ onDone }: { onDone: (phone: string) => void }) {
   const [phone, setPhone] = useState(demo?.signUp.phone ?? '');
@@ -17,6 +18,7 @@ export function PhoneStep({ onDone }: { onDone: (phone: string) => void }) {
   return (
     <form
       className="grid gap-4"
+      onKeyDown={submitOnEnter}
       onSubmit={(e) => {
         e.preventDefault();
         submit.mutate();

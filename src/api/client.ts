@@ -7,9 +7,28 @@ import { env } from '@/config/env';
 
 let accessToken: string | null = null;
 let activeProfileId: string | null = null;
+let onUnauthorized: (() => void) | null = null;
+
+const PUBLIC_AUTH_PATHS = [
+  '/auth/login',
+  '/auth/login/mfa',
+  '/auth/mfa/begin',
+  '/auth/start',
+  '/auth/register',
+  '/auth/complete',
+  '/auth/identity-lookup',
+  '/auth/cac-lookup',
+  '/auth/verify-otp',
+  '/auth/resend-otp',
+];
 
 export function setAccessToken(token: string | null) {
   accessToken = token;
+}
+
+/** AuthProvider registers this so a dead JWT drops the session instead of trapping the dashboard. */
+export function setOnUnauthorized(handler: (() => void) | null) {
+  onUnauthorized = handler;
 }
 
 /**
@@ -79,6 +98,9 @@ async function request<T>(
   const data = res.status === 204 ? undefined : await res.json().catch(() => undefined);
 
   if (!res.ok) {
+    if (res.status === 401 && !PUBLIC_AUTH_PATHS.includes(path)) {
+      onUnauthorized?.();
+    }
     throw new ApiError(res.status, errorMessage(data, res.status), data);
   }
   return data as T;
@@ -87,6 +109,7 @@ async function request<T>(
 export const http = {
   get: <T>(path: string, query?: Query) => request<T>('GET', path, { query }),
   post: <T>(path: string, json?: unknown) => request<T>('POST', path, { json }),
+  patch: <T>(path: string, json?: unknown) => request<T>('PATCH', path, { json }),
   put: <T>(path: string, json?: unknown) => request<T>('PUT', path, { json }),
   delete: <T>(path: string) => request<T>('DELETE', path),
   upload: <T>(path: string, form: FormData) => request<T>('POST', path, { form }),

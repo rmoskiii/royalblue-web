@@ -3,6 +3,7 @@ import { Outlet } from 'react-router';
 import { ProfileProvider } from '@/app/providers/ProfileProvider';
 import { TransferProvider } from '@/features/transfer/TransferProvider';
 import { BottomTabs } from './BottomTabs';
+import { LogoutProvider } from './LogoutProvider';
 import { MoreSheet } from './MoreSheet';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
@@ -17,21 +18,23 @@ export function AppShell() {
 
   return (
     <ProfileProvider>
-      <TransferProvider>
-        <div className="flex h-dvh overflow-hidden">
-          <Sidebar className="hidden lg:flex" />
-          <div className="flex min-w-0 flex-1 flex-col">
-            <TopBar />
-            <main className="flex-1 overflow-y-auto overscroll-contain px-4 pt-4 pb-8 lg:px-7 lg:pt-6 lg:pb-10">
-              <div className="mx-auto max-w-[1180px]">
-                <Outlet />
-              </div>
-            </main>
-            <BottomTabs className="lg:hidden" onMore={() => setMoreOpen(true)} />
+      <LogoutProvider>
+        <TransferProvider>
+          <div className="flex h-dvh overflow-hidden">
+            <Sidebar className="hidden lg:flex" />
+            <div className="flex min-w-0 flex-1 flex-col">
+              <TopBar />
+              <main className="flex-1 overflow-y-auto overscroll-contain px-4 pt-4 pb-8 lg:px-7 lg:pt-6 lg:pb-10">
+                <div className="mx-auto max-w-[1180px]">
+                  <Outlet />
+                </div>
+              </main>
+              <BottomTabs className="lg:hidden" onMore={() => setMoreOpen(true)} />
+            </div>
           </div>
-        </div>
-        <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} />
-      </TransferProvider>
+          <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} />
+        </TransferProvider>
+      </LogoutProvider>
     </ProfileProvider>
   );
 }

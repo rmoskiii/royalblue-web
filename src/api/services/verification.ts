@@ -17,7 +17,7 @@ export const verificationService = {
 
   submitBvn(bvn: string) {
     if (env.useMocks) return mockResponse(undefined, 700);
-    return http.post<void>('/verification/bvn', { bvn });
+    return http.post('/kyc/validate-bvn', { bvn });
   },
 
   submitIdDocument({ type, number, documentImage, selfie }: IdDocumentSubmission) {
