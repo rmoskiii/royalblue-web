@@ -28,7 +28,7 @@ export function TopBar() {
       : (user?.firstName ?? profile?.name ?? ' ');
 
   return (
-    <header className="flex items-center gap-3 border-b border-line bg-surface px-4 py-3 pt-[max(12px,env(safe-area-inset-top))] lg:px-7 lg:py-3.5">
+    <header className="flex items-center gap-3 border-b border-line bg-surface px-4 py-2.5 pt-[max(2.75rem,calc(env(safe-area-inset-top)+0.75rem))] lg:px-7 lg:py-3.5 lg:pt-3.5">
       {/* Phones: avatar opens the profile switcher */}
       <div className="lg:hidden">{staff ? null : <ProfileSwitcher />}</div>
 

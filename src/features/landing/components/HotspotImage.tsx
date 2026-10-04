@@ -23,6 +23,7 @@ export function HotspotImage({
   hotspots = [],
   anchors = [],
   eager,
+  coverMobile,
 }: {
   /** From an '…&as=srcset' import */
   srcSet: string;
@@ -33,9 +34,13 @@ export function HotspotImage({
   anchors?: Anchor[];
   /** Load immediately (above the fold) instead of lazily */
   eager?: boolean;
+  /** Phone only: fill a tall frame, crop sides, keep the Figma aspect. Desktop unchanged. */
+  coverMobile?: boolean;
 }) {
   return (
-    <div className="relative">
+    <div
+      className={cn('relative', coverMobile && 'max-lg:h-[min(92svh,52rem)] max-lg:overflow-hidden')}
+    >
       <img
         // Smallest (1x) file as the fallback; srcSet does the real work
         src={srcSet.split(' ')[0]}
@@ -46,7 +51,11 @@ export function HotspotImage({
         height={height}
         loading={eager ? 'eager' : 'lazy'}
         decoding="async"
-        className="block h-auto w-full select-none"
+        className={cn(
+          'block h-auto w-full select-none',
+          coverMobile &&
+            'max-lg:absolute max-lg:inset-0 max-lg:h-full max-lg:w-full max-lg:object-cover max-lg:object-[center_32%]',
+        )}
         draggable={false}
       />
       {anchors.map((a) => (
