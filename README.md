@@ -45,21 +45,32 @@ VS Code will suggest the ESLint, Prettier and Tailwind extensions (see `.vscode/
 
 ## Test logins
 
-Staff and two retail customers are seeded by Nest (`npx prisma db seed`). Staff have **no** personal NUBAN — after login they go to `/admin`, not Home. Customers skip `/sign-up`.
+Hosted demo: [https://royalblue-web.vercel.app/login](https://royalblue-web.vercel.app/login) (API: `https://royalblue-api.onrender.com`).
 
-| Role | Email | Phone | Password | Landing | What they can do |
+Staff and two retail customers are seeded by Nest (`npx prisma db seed`). Staff have **no** personal NUBAN — after login they go to `/admin`, not Home. Seeded customers skip `/sign-up` (password + PIN only, no authenticator).
+
+| Role | Email | Phone | Password | PIN | Lands on |
 | --- | --- | --- | --- | --- | --- |
-| Administrator | `admin@royalblue.ng` | `08011111111` | `RoyalBlueAdmin1!` | Desk | Pipeline, accounts freeze, team, recommend + decide |
-| Loan officer | `officer@royalblue.ng` | `08022222222` | `RoyalBlueOfficer1!` | Desk | Pipeline, claim / recommend. No freeze or final decision |
-| Credit manager | `manager@royalblue.ng` | `08033333333` | `RoyalBlueManager1!` | Desk | Review, decide, freeze. No staff-team admin extras beyond review |
-| Customer | `customer@royalblue.ng` | `08044444444` | `RoyalBlueCustomer1!` | Home | Funded wallet ₦185k, BVN linked, PIN `123456`, no authenticator |
-| Starter KYC | `starter@royalblue.ng` | `08055555555` | `RoyalBlueStarter1!` | Home | ₦32.5k, no BVN (₦50k CBN cap), PIN `123456` |
+| Administrator | `admin@royalblue.ng` | `08011111111` | `RoyalBlueAdmin1!` | — | Desk — pipeline, freeze, team, recommend + decide |
+| Loan officer | `officer@royalblue.ng` | `08022222222` | `RoyalBlueOfficer1!` | — | Desk — claim / recommend (no freeze or final decision) |
+| Credit manager | `manager@royalblue.ng` | `08033333333` | `RoyalBlueManager1!` | — | Desk — review, decide, freeze |
+| Customer (funded) | `customer@royalblue.ng` | `08044444444` | `RoyalBlueCustomer1!` | `123456` | Home — BVN, NUBAN `8044444444`, ₦185,000 |
+| Starter KYC | `starter@royalblue.ng` | `08055555555` | `RoyalBlueStarter1!` | `123456` | Home — no BVN (₦50k CBN cap), NUBAN `8055555555`, ₦32,500 |
 
-`/sign-up` is still there: email OTP → password → Google Authenticator → account kind → details → BVN/NIN (optional) → confirm → **6-digit transaction PIN**. If authenticator is on, login asks for a 6-digit code after the password.
+Login field: `POST /auth/login` `{ identifier, password }` — email **or** Nigerian number (`080…`, `803…`, `+234…`). Staff have no transaction PIN, so they cannot send customer funds until they set one under **Me → Security**.
 
-Staff password-login until they set PIN / TOTP under **Me → Security**. Staff have no transaction PIN, so they cannot send customer funds.
+### Simulate onboarding
 
-Login field: `POST /auth/login` `{ identifier, password }` where `identifier` is email or a Nigerian number (`080…`, `803…`, `+234…`).
+Use a **new** email (not the seeded ones) at [https://royalblue-web.vercel.app/sign-up](https://royalblue-web.vercel.app/sign-up) or local `/sign-up`.
+
+1. Email → 6-digit OTP (pre-filled on the verify step when Resend is not configured)
+2. Password
+3. Google Authenticator (scan QR, enter 6-digit code)
+4. Personal or business → details
+5. BVN / NIN optional (skip for starter ₦50k limits)
+6. Confirm → **6-digit transaction PIN**
+
+Then `/login` with that email or phone. Authenticator is on for new sign-ups, so login asks for a TOTP after the password.
 
 ---
 
