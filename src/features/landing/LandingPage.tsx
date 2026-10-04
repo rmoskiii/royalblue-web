@@ -4,10 +4,6 @@ import { HotspotImage } from './components/HotspotImage';
 import { StickyHeader } from './components/StickyHeader';
 import { DESIGN_WIDTH, sections } from './sections';
 
-/** Phone: clear the iOS/Android status bar. Desktop BrandBar stays 72px. */
-const mobileHeroNav =
-  'max-lg:h-[calc(72px+max(2.75rem,env(safe-area-inset-top)))] max-lg:pt-[max(2.75rem,env(safe-area-inset-top))]';
-
 /** Figma pixels → a length that scales with the page (the design is capped at 1440px wide). */
 const scaled = (px: number) => `min(${(px / DESIGN_WIDTH) * 100}%, ${px}px)`;
 
@@ -30,19 +26,16 @@ export function LandingPage() {
           return (
             <section
               key={s.srcSet}
-              className={i === 0 ? 'landing-hero relative w-full' : 'relative w-full'}
+              className="relative w-full"
               style={{ background: s.background, marginTop: scaled(s.gapAbove) }}
             >
               {i === 0 && (
                 <>
-                  <div
-                    aria-hidden
-                    className={`absolute inset-x-0 top-0 z-10 h-[72px] bg-[#1b194e] ${mobileHeroNav}`}
-                  />
+                  <div aria-hidden className="absolute inset-x-0 top-0 z-10 h-[72px] bg-[#1b194e]" />
                   <BrandBar
                     onDark
                     showMarketingNav
-                    className={`pointer-events-auto absolute inset-x-0 top-0 z-20 ${mobileHeroNav}`}
+                    className="pointer-events-auto absolute inset-x-0 top-0 z-20"
                     trailing={<MarketingAuthButtons onDark />}
                   />
                 </>
@@ -56,6 +49,7 @@ export function LandingPage() {
                   hotspots={s.hotspots}
                   anchors={s.anchors}
                   eager={i === 0}
+                  hero={i === 0}
                 />
                 {i === 0 ? <HeroCtas /> : null}
               </div>

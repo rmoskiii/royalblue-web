@@ -4,14 +4,14 @@ import { useScrolled } from '../hooks/useScrolled';
 
 /** Same navy bar as the hero nav. */
 export function StickyHeader() {
-  const visible = useScrolled(560);
+  const visible = useScrolled(72);
 
   return (
     <header
       aria-hidden={!visible}
       inert={!visible}
       className={cn(
-        'fixed inset-x-0 top-0 z-40 bg-[#1b194e] shadow-[0_2px_16px_-6px_rgb(0_0_0/0.35)] transition-transform duration-300 max-lg:pt-[max(2.75rem,env(safe-area-inset-top))]',
+        'fixed inset-x-0 top-0 z-40 bg-[#1b194e] shadow-[0_2px_16px_-6px_rgb(0_0_0/0.35)] transition-transform duration-300',
         visible ? 'translate-y-0' : '-translate-y-full',
       )}
     >

@@ -209,11 +209,18 @@
   }
 }
 
-/* Phone only. Keep the full Figma frame (no cover-zoom — that clipped the headline).
-   Lengthen the navy band under the art so the hero isn’t a short strip. */
+/* Phone: hero is 1.5× the services image height (787/1270). Desktop unchanged. */
 @media (max-width: 1023px) {
-  .landing-hero {
-    min-height: 52svh;
-    padding-bottom: 1.5rem;
+  .landing-hero-art {
+    height: calc(100vw * 787 / 1270 * 1.5);
+    overflow: hidden;
+  }
+
+  .landing-hero-art > img {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+    object-position: center 36%;
   }
 }
