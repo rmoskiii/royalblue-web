@@ -6,7 +6,7 @@ Where the two disagree, the Figma wins on colours and the PRD wins on typography
 
 **Stack:** Vite · React 19 · TypeScript · React Router · Tailwind CSS v4 · TanStack Query · lucide-react
 
-> The app runs on **mock data** until the API contract is connected. Login and sign-up forms are pre-filled for demos (`src/config/demo.ts`), so you only need to press the buttons. Pre-filling switches off automatically when `VITE_USE_MOCKS=false`.
+> Pair with **master-backend** on branch `pair-program`. Copy `.env.example` to `.env` (`VITE_USE_MOCKS=false`) so dashboard, payments, transfers, bills, and transactions call `/api/v1`. Vite proxies `/api` to `http://localhost:3000`. Login and sign-up demo prefill is off in live mode.
 
 ---
 
@@ -16,8 +16,8 @@ Requires Node **20.19+** (or 22.12+). There's an `.nvmrc` for `nvm use`.
 
 ```bash
 npm install
-cp .env.example .env   # optional: mocks are on by default
-npm run dev            # http://localhost:5173
+cp .env.example .env
+npm run dev            # http://localhost:5173  (API via Vite proxy)
 ```
 
 | Script                 | What it does                           |
@@ -128,23 +128,11 @@ Figma sources: navy `#1B194D`, heading navy `#272570`, red `#C93C38`, body grey 
 
 ## Connecting the API
 
-1. Set `VITE_API_BASE_URL` in `.env` and set `VITE_USE_MOCKS=false`.
-2. For each file in `src/api/services/`, update the endpoint paths to match the contract. If the response shapes differ from `src/api/types.ts`, map them inside the service. The UI only knows the types in `types.ts`, so components shouldn't need to change.
-3. Search the code for `TODO(api)`. Each one marks a decision that depends on the contract:
-   - `api/client.ts`: the error message field in error responses
-   - `app/providers/AuthProvider.tsx`: token storage (an httpOnly cookie is preferable to localStorage for banking)
-   - `api/services/auth.ts`, `api/services/verification.ts`: endpoint paths and the upload format
-   - `features/transfer/lib/fees.ts`: use the fee from the API instead of the local NIP table
-   - `features/loans/lib/amortization.ts`: use the API's repayment schedule if it provides one
-   - `features/auth/lib/passwordRules.ts`: match the backend password rules
-   - `features/transfer/lib/passkey.ts`: WebAuthn challenge and assertion for biometric approval
-   - `api/types.ts` (`Account.freeTransfersRemaining`): the API needs to return the free-transfer allowance (PRD FR-03)
-   - `api/client.ts` (`X-Profile-Id`): how the API scopes requests to the personal or business profile
-   - `api/services/business.ts`: merchant endpoints and the live payments stream (Server-Sent Events assumed)
-   - `api/services/cards.ts`: card details should come from a PCI-compliant reveal, not plain JSON
-   - `api/services/savings.ts`, `features/savings/lib/savingsMaths.ts`: interest compounding rules
-   - `api/services/bills.ts`: biller endpoints, data plans and meter validation
-4. Mutations (transfer, verification steps) already invalidate the relevant queries, so balances and lists refresh after an action.
+On `pair-program`, live mode talks to Nest `/api/v1` (see master-backend). Dashboard, payments, transfers, bills, and transactions are wired.
+
+1. Run master-backend with `BUDPAY_MOCK=true` for sandbox, or `BUDPAY_MOCK=false` plus BudPay merchant keys for production.
+2. Copy `.env.example` to `.env` (`VITE_USE_MOCKS=false`, `VITE_API_BASE_URL=/api/v1`).
+3. Remaining TODOs (savings, cards, loans, KYC uploads, passkeys) still use mocks until those Nest modules exist.
 
 Amounts are in **naira**. If the API uses kobo, convert in the services layer.
 

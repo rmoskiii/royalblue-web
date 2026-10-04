@@ -14,8 +14,8 @@ export function setAccessToken(token: string | null) {
 
 /**
  * Personal vs business profile (PRD FR-04). Sent on every request so the API
- * scopes balances, transactions and merchant data to the active profile.
- * TODO(api): confirm the header name (or whether profile goes in the path).
+ * can scope merchant views. Nest currently uses the JWT applicant; the header
+ * is reserved for a dedicated profile switcher.
  */
 export function setActiveProfileId(id: string | null) {
   activeProfileId = id;
@@ -47,6 +47,14 @@ interface RequestOptions {
   form?: FormData;
 }
 
+function errorMessage(data: unknown, status: number): string {
+  const body = data as { message?: unknown } | undefined;
+  const message = body?.message;
+  if (Array.isArray(message)) return message.map(String).join(', ');
+  if (typeof message === 'string' && message) return message;
+  return `Request failed (${status})`;
+}
+
 async function request<T>(
   method: string,
   path: string,
@@ -71,10 +79,7 @@ async function request<T>(
   const data = res.status === 204 ? undefined : await res.json().catch(() => undefined);
 
   if (!res.ok) {
-    // TODO(api): read the error message field from the contract's error shape
-    const message =
-      (data as { message?: string } | undefined)?.message ?? `Request failed (${res.status})`;
-    throw new ApiError(res.status, message, data);
+    throw new ApiError(res.status, errorMessage(data, res.status), data);
   }
   return data as T;
 }

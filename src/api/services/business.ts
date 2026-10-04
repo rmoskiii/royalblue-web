@@ -16,43 +16,39 @@ import type {
   StaffMember,
 } from '../types';
 
-// TODO(api): confirm merchant endpoints; all calls are scoped to the active business profile.
 export const businessService = {
   getSummary(): Promise<BusinessSummary> {
     if (env.useMocks) return mockResponse(mockBusinessSummary);
-    return http.get<BusinessSummary>('/business/summary');
+    return http.get<BusinessSummary>('/payments/summary');
   },
 
   listSettlements(): Promise<Settlement[]> {
     if (env.useMocks) return mockResponse(mockSettlements);
-    return http.get<Settlement[]>('/business/settlements');
+    return http.get<Settlement[]>('/payments/settlements');
   },
 
   listTerminals(): Promise<PosTerminal[]> {
     if (env.useMocks) return mockResponse(mockTerminals);
-    return http.get<PosTerminal[]>('/business/terminals');
+    return http.get<PosTerminal[]>('/payments/terminals');
   },
 
-  /**
-   * Live incoming payments (PRD View 2 "real-time settlement table").
-   * Returns an unsubscribe function.
-   * TODO(api): confirm transport — Server-Sent Events assumed; switch to WebSocket if needed.
-   */
   subscribeToSettlements(onSettlement: (s: Settlement) => void): () => void {
     if (env.useMocks) {
       const timer = window.setInterval(() => onSettlement(randomSettlement()), 8_000);
       return () => window.clearInterval(timer);
     }
-    const source = new EventSource(`${env.apiBaseUrl}/business/settlements/stream`, {
-      withCredentials: true,
-    });
-    source.onmessage = (e) => onSettlement(JSON.parse(e.data) as Settlement);
-    return () => source.close();
+    const timer = window.setInterval(() => {
+      void http.get<Settlement[]>('/payments/settlements').then((rows) => {
+        const latest = rows[0];
+        if (latest) onSettlement(latest);
+      });
+    }, 8_000);
+    return () => window.clearInterval(timer);
   },
 
   listStaff(): Promise<StaffMember[]> {
     if (env.useMocks) return mockResponse(mockStaff);
-    return http.get<StaffMember[]>('/business/staff');
+    return http.get<StaffMember[]>('/payments/staff');
   },
 
   addStaff(body: AddStaffRequest): Promise<StaffMember> {
@@ -67,7 +63,7 @@ export const businessService = {
       mockStaff.push(member);
       return mockResponse(member, 600);
     }
-    return http.post<StaffMember>('/business/staff', body);
+    return http.post<StaffMember>('/payments/staff', body);
   },
 
   removeStaff(id: string): Promise<void> {
@@ -78,7 +74,7 @@ export const businessService = {
       );
       return mockResponse(undefined, 400);
     }
-    return http.delete<void>(`/business/staff/${id}`);
+    return http.delete<void>(`/payments/staff/${id}`);
   },
 };
 

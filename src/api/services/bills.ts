@@ -1,5 +1,6 @@
 import { env } from '@/config/env';
 import { http, mockResponse } from '../client';
+import { discoProvider, NETWORK_PROVIDER, providerToNetwork } from '../mappers';
 import { mockDataPlans, mockDiscos } from '../mocks/bills';
 import type {
   BillPaymentRequest,
@@ -11,24 +12,49 @@ import type {
   Network,
 } from '../types';
 
-// TODO(api): confirm biller endpoints (PRD FR-07: direct VTU integration).
+type BudPayList = { data?: Array<Record<string, unknown>> };
+
+function asList(payload: BudPayList | Array<Record<string, unknown>> | undefined) {
+  if (Array.isArray(payload)) return payload;
+  return payload?.data ?? [];
+}
+
 export const billService = {
-  listDataPlans(network: Network): Promise<DataPlan[]> {
+  async listDataPlans(network: Network): Promise<DataPlan[]> {
     if (env.useMocks)
       return mockResponse(
         mockDataPlans.filter((p) => p.network === network),
         250,
       );
-    return http.get<DataPlan[]>('/bills/data-plans', { network });
+    const provider = NETWORK_PROVIDER[network];
+    const payload = await http.get<BudPayList>(`/bills/data/plans/${provider}`);
+    return asList(payload).map((item) => ({
+      id: String(item.id ?? item.code ?? ''),
+      network: providerToNetwork(String(item.provider ?? provider)),
+      name: String(item.name ?? 'Data plan'),
+      validity: String(item.validity ?? item.name ?? ''),
+      price: Number(item.amount ?? item.price ?? 0),
+    }));
   },
 
-  listDiscos(): Promise<Disco[]> {
+  async listDiscos(): Promise<Disco[]> {
     if (env.useMocks) return mockResponse(mockDiscos);
-    return http.get<Disco[]>('/bills/discos');
+    const payload = await http.get<BudPayList>('/bills/electricity/providers');
+    return asList(payload).map((item) => {
+      const shortName = String(item.provider ?? item.shortName ?? item.name ?? '');
+      return {
+        id: shortName.toLowerCase(),
+        name: String(item.name ?? shortName),
+        shortName,
+      };
+    });
   },
 
-  /** Validates a meter number and returns the registered customer. */
-  lookupMeter(discoId: string, meterNumber: string, meterType: MeterType): Promise<MeterLookup> {
+  async lookupMeter(
+    discoId: string,
+    meterNumber: string,
+    meterType: MeterType,
+  ): Promise<MeterLookup> {
     if (env.useMocks) {
       return mockResponse(
         {
@@ -41,10 +67,24 @@ export const billService = {
         700,
       );
     }
-    return http.get<MeterLookup>('/bills/meter', { discoId, meterNumber, meterType });
+    const payload = await http.post<Record<string, unknown>>('/bills/electricity/validate', {
+      provider: discoProvider(discoId),
+      type: meterType,
+      number: meterNumber,
+    });
+    const nested = payload.data;
+    const data =
+      nested && typeof nested === 'object' ? (nested as Record<string, unknown>) : payload;
+    return {
+      customerName: String(data.Customer_Name ?? data.customer_name ?? 'Customer'),
+      address: String(data.address ?? ''),
+      meterNumber,
+      meterType,
+      discoId,
+    };
   },
 
-  pay(body: BillPaymentRequest): Promise<BillPaymentResult> {
+  async pay(body: BillPaymentRequest): Promise<BillPaymentResult> {
     if (env.useMocks) {
       const result: BillPaymentResult = { reference: `RB${Date.now()}` };
       if (body.type === 'electricity' && body.meterType === 'prepaid') {
@@ -55,6 +95,26 @@ export const billService = {
       }
       return mockResponse(result, 900);
     }
-    return http.post<BillPaymentResult>('/bills/pay', body);
+    if (body.type === 'airtime') {
+      return http.post<BillPaymentResult>('/bills/airtime', {
+        provider: NETWORK_PROVIDER[body.network],
+        number: body.phone,
+        amount: body.amount,
+      });
+    }
+    if (body.type === 'data') {
+      return http.post<BillPaymentResult>('/bills/data', {
+        provider: NETWORK_PROVIDER[body.network],
+        number: body.phone,
+        planId: body.planId,
+        amount: body.amount,
+      });
+    }
+    return http.post<BillPaymentResult>('/bills/electricity', {
+      provider: discoProvider(body.discoId),
+      number: body.meterNumber,
+      type: body.meterType,
+      amount: body.amount,
+    });
   },
 };

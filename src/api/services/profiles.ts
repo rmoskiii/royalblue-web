@@ -7,6 +7,6 @@ export const profileService = {
   /** Personal profile plus any business profiles the customer owns (PRD FR-04). */
   list(): Promise<Profile[]> {
     if (env.useMocks) return mockResponse(mockProfiles, 200);
-    return http.get<Profile[]>('/profiles');
+    return http.get<Profile[]>('/profile/switcher');
   },
 };

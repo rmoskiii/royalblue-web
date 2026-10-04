@@ -4,9 +4,20 @@ import { mockAccount, mockBusinessAccount, mockUser } from '../mocks/data';
 import type { Account, User } from '../types';
 
 export const accountService = {
-  getMe(): Promise<User> {
+  async getMe(): Promise<User> {
     if (env.useMocks) return mockResponse(mockUser);
-    return http.get<User>('/me');
+    const row = await http.get<{
+      id: string;
+      email: string;
+      firstName?: string;
+      lastName?: string;
+    }>('/auth/me');
+    return {
+      id: row.id,
+      email: row.email,
+      firstName: row.firstName ?? row.email.split('@')[0],
+      lastName: row.lastName ?? '',
+    };
   },
 
   /** Account for the active profile (personal or business). */

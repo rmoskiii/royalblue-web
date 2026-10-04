@@ -13,14 +13,22 @@ function applyFilters(list: Transaction[], f: TransactionFilters) {
   );
 }
 
+type TxnPage = { items: Transaction[] };
+
 export const transactionService = {
-  list(filters: TransactionFilters = {}): Promise<Transaction[]> {
+  async list(filters: TransactionFilters = {}): Promise<Transaction[]> {
     if (env.useMocks) return mockResponse(applyFilters(mockTransactions, filters), 250);
-    return http.get<Transaction[]>('/transactions', { ...filters });
+    const page = await http.get<TxnPage>('/accounts/transactions', {
+      direction: filters.direction,
+      status: filters.status,
+      search: filters.search,
+      limit: 50,
+    });
+    return page.items ?? [];
   },
 
   getInsights(): Promise<InsightsSummary> {
     if (env.useMocks) return mockResponse(mockInsights);
-    return http.get<InsightsSummary>('/insights/current-month');
+    return http.get<InsightsSummary>('/accounts/insights');
   },
 };
