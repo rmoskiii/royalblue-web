@@ -161,7 +161,17 @@ export function SignUpPage() {
       <EmailStep
         email={email}
         onEmail={setEmail}
-        onDone={(next) => setState({ step: 'otp', email: next.email, otpHint: next.otpHint })}
+        onDone={(next) => {
+          if (!next.mfaRequired) {
+            setState({
+              step: 'password',
+              email: next.email,
+              otp: next.otpHint ?? '000000',
+            });
+            return;
+          }
+          setState({ step: 'otp', email: next.email, otpHint: next.otpHint });
+        }}
       />
     );
   }
@@ -180,9 +190,15 @@ export function SignUpPage() {
   if (state.step === 'password') {
     return (
       <PasswordStep
-        onBack={() => setState({ step: 'otp', email: state.email })}
+        onBack={() => setState({ step: 'email' })}
         onDone={(password) =>
-          setState({ step: 'totp', email: state.email, otp: state.otp, password })
+          setState({
+            step: 'kind',
+            email: state.email,
+            otp: state.otp,
+            password,
+            totpCode: '',
+          })
         }
       />
     );
@@ -231,10 +247,9 @@ export function SignUpPage() {
           <BackButton
             onClick={() =>
               setState({
-                step: 'totp',
+                step: 'password',
                 email: state.email,
                 otp: state.otp,
-                password: state.password,
               })
             }
           />
@@ -582,11 +597,16 @@ function EmailStep({
 }: {
   email: string;
   onEmail: (value: string) => void;
-  onDone: (next: { email: string; otpHint?: string }) => void;
+  onDone: (next: { email: string; otpHint?: string; mfaRequired?: boolean }) => void;
 }) {
   const start = useMutation({
     mutationFn: () => authService.startEmail(email.trim()),
-    onSuccess: (result) => onDone({ email: email.trim(), otpHint: result.otp }),
+    onSuccess: (result) =>
+      onDone({
+        email: email.trim(),
+        otpHint: result.otp,
+        mfaRequired: result.mfaRequired,
+      }),
   });
 
   return (
@@ -611,7 +631,7 @@ function EmailStep({
         />
         {start.isError && <p className="text-[13px] text-primary-text">{start.error.message}</p>}
         <Button type="submit" size="lg" block disabled={!email.includes('@') || start.isPending}>
-          {start.isPending ? 'Sending code…' : 'Proceed'}
+          {start.isPending ? 'Continuing…' : 'Proceed'}
         </Button>
         <p className="text-center text-sm font-medium text-brand">
           Already have an account?{' '}

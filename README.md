@@ -63,14 +63,15 @@ Login field: `POST /auth/login` `{ identifier, password }` — email **or** Nige
 
 Use a **new** email (not the seeded ones) at [https://royalblue-web.vercel.app/sign-up](https://royalblue-web.vercel.app/sign-up) or local `/sign-up`.
 
-1. Email → 6-digit OTP (pre-filled on the verify step when Resend is not configured)
-2. Password
-3. Google Authenticator (scan QR, enter 6-digit code)
-4. Personal or business → details
-5. BVN / NIN optional (skip for starter ₦50k limits)
-6. Confirm → **6-digit transaction PIN**
+Until Resend is configured, **email OTP and Google Authenticator are skipped**. Hosted signup is:
 
-Then `/login` with that email or phone. Authenticator is on for new sign-ups, so login asks for a TOTP after the password.
+1. Email
+2. Password
+3. Personal or business → details
+4. BVN / NIN optional (skip for starter ₦50k limits)
+5. Confirm → **6-digit transaction PIN**
+
+Then you land on Home. Login is password-only (no authenticator) for these sandbox accounts. OTP + TOTP come back when `RESEND_API_KEY` is set on Nest.
 
 ---
 
@@ -80,7 +81,7 @@ Then `/login` with that email or phone. Authenticator is on for new sign-ups, so
 | --------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | Website         | `/welcome` (where `/` opens), `/terms`, `/privacy`      | Figma "Desktop - 2" exports; HTML CTAs are cropped so they do not sit on the artwork buttons     |
 | Login           | `/login`                                                | Email **or** phone + password; authenticator step when TOTP is enabled                            |
-| Sign-up         | `/sign-up`                                              | OTP → password → TOTP → details → BVN/NIN → confirm → **transaction PIN** (6 digits)             |
+| Sign-up         | `/sign-up`                                              | Password → details → PIN. OTP/TOTP only when Nest has Resend |
 | Account limits  | `/verification`                                         | BVN via KYC `validate-bvn`. No freeze. Starter ₦50k until BVN/NIN. Tiers 1–3 after.            |
 | Home            | `/dashboard` (personal)                                 | Staff never land here. Balance, Send / Receive / Pay / Add money                                 |
 | Merchant portal | `/dashboard` (business), `/payments`, `/staff`          | Volume / payout / terminals, live payments, cashier access                                       |

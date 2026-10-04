@@ -156,10 +156,23 @@ export const authService = {
     return Promise.resolve();
   },
 
-  async startEmail(email: string): Promise<{ email: string; otp?: string; message?: string }> {
+  async startEmail(email: string): Promise<{
+    email: string;
+    otp?: string;
+    message?: string;
+    mfaRequired?: boolean;
+  }> {
     if (env.useMocks) {
       writeDraft({ ...(readDraft() ?? { phone: '08000000000' }), firstName: mockUser.firstName });
-      return mockResponse({ email, otp: '575235', message: 'We’ve sent a 6-digit code to your email.' }, 400);
+      return mockResponse(
+        {
+          email,
+          otp: '575235',
+          message: 'We’ve sent a 6-digit code to your email.',
+          mfaRequired: false,
+        },
+        400,
+      );
     }
     writeDraft({ ...(readDraft() ?? { phone: '08000000000' }) });
     return http.post('/auth/start', { email });
@@ -260,7 +273,6 @@ export const authService = {
     const draft = readDraft();
     const session = await http.post<NestLogin>('/auth/complete', {
       email: body.email,
-      otp: body.signUpToken,
       password: body.password,
       phone: body.phone ?? draft?.phone,
       firstName: body.firstName,
@@ -268,10 +280,11 @@ export const authService = {
       bvn: body.bvn,
       nin: body.nin,
       pin: body.pin,
-      totpCode: body.totpCode,
       accountKind: body.accountKind,
       entityType: body.entityType,
       business: body.business,
+      ...(body.signUpToken && body.signUpToken !== '000000' ? { otp: body.signUpToken } : {}),
+      ...(body.totpCode?.length === 6 ? { totpCode: body.totpCode } : {}),
     });
     const next = toSession(session);
     setAccessToken(next.accessToken);
