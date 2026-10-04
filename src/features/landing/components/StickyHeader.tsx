@@ -1,4 +1,4 @@
-import { BrandBar, LoginButton, OpenAccountButton } from '@/components/layout/BrandBar';
+import { BrandBar, MarketingAuthButtons } from '@/components/layout/BrandBar';
 import { cn } from '@/lib/cn';
 import { useScrolled } from '../hooks/useScrolled';
 
@@ -17,14 +17,7 @@ export function StickyHeader() {
     >
       <BrandBar
         showMarketingNav
-        trailing={
-          <>
-            <LoginButton />
-            <span className="hidden sm:inline">
-              <OpenAccountButton />
-            </span>
-          </>
-        }
+        trailing={<MarketingAuthButtons />}
       />
     </header>
   );

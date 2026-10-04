@@ -59,15 +59,11 @@ export function HotspotImage({
         />
       ))}
       {hotspots.map((h) => {
-        const painted = Boolean(h.cover);
         const className = cn(
           'absolute outline-offset-2 transition-colors focus-visible:outline-2 focus-visible:outline-primary',
-          painted &&
-            'inline-flex items-center justify-center rounded-full text-[13px] font-medium leading-none',
-          h.cover === 'primary' && 'bg-[#c93c38] text-white hover:brightness-110',
-          h.cover === 'outline' && 'border border-white/40 bg-[#2f1d4b] text-white hover:bg-white/10',
-          !painted && h.shape === 'button' && 'rounded-[10px] hover:bg-white/15',
-          !painted && h.shape !== 'button' && 'rounded-md hover:bg-current/10',
+          h.shape === 'button'
+            ? 'rounded-[10px] hover:bg-white/15'
+            : 'rounded-md hover:bg-current/10',
         );
         const style = {
           left: pct(h.x, width),
@@ -75,15 +71,10 @@ export function HotspotImage({
           width: pct(h.w, width),
           height: pct(h.h, height),
         };
-        const label = painted ? h.label : undefined;
         return h.to ? (
-          <Link key={h.label} to={h.to} aria-label={h.label} className={className} style={style}>
-            {label}
-          </Link>
+          <Link key={h.label} to={h.to} aria-label={h.label} className={className} style={style} />
         ) : (
-          <a key={h.label} href={h.href} aria-label={h.label} className={className} style={style}>
-            {label}
-          </a>
+          <a key={h.label} href={h.href} aria-label={h.label} className={className} style={style} />
         );
       })}
     </div>

@@ -57,14 +57,24 @@ export function BrandBar({
   );
 }
 
+export function MarketingAuthButtons({ onDark }: { onDark?: boolean }) {
+  return (
+    <>
+      <LoginButton onDark={onDark} />
+      <span className="hidden sm:inline">
+        <OpenAccountButton onDark={onDark} />
+      </span>
+    </>
+  );
+}
+
 export function LoginButton({ onDark }: { onDark?: boolean }) {
   return (
     <Link
       to={paths.login}
       className={buttonClass({
-        size: 'sm',
+        size: 'md',
         variant: onDark ? 'glass' : 'outline',
-        className: 'min-w-[4.75rem] px-3.5 text-[13px]',
       })}
     >
       Login
@@ -77,9 +87,8 @@ export function OpenAccountButton({ onDark }: { onDark?: boolean }) {
     <Link
       to={paths.signUp}
       className={buttonClass({
-        size: 'sm',
+        size: 'md',
         variant: 'primary',
-        className: 'min-w-[8.25rem] px-3.5 text-[13px]',
       })}
     >
       Open an account

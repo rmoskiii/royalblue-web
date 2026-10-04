@@ -1,5 +1,7 @@
-import { StickyHeader } from './components/StickyHeader';
+import { BrandBar, MarketingAuthButtons } from '@/components/layout/BrandBar';
+import { HeroCtas } from './components/HeroCtas';
 import { HotspotImage } from './components/HotspotImage';
+import { StickyHeader } from './components/StickyHeader';
 import { DESIGN_WIDTH, sections } from './sections';
 
 /** Figma pixels → a length that scales with the page (the design is capped at 1440px wide). */
@@ -27,6 +29,17 @@ export function LandingPage() {
               className="relative w-full"
               style={{ background: s.background, marginTop: scaled(s.gapAbove) }}
             >
+              {i === 0 && (
+                <>
+                  <div aria-hidden className="absolute inset-x-0 top-0 z-10 h-[72px] bg-[#1b194e]" />
+                  <BrandBar
+                    onDark
+                    showMarketingNav
+                    className="pointer-events-auto absolute inset-x-0 top-0 z-20"
+                    trailing={<MarketingAuthButtons onDark />}
+                  />
+                </>
+              )}
               <div id={s.id} className="relative mx-auto scroll-mt-[72px]" style={{ width: frameWidth }}>
                 <HotspotImage
                   srcSet={s.srcSet}
@@ -37,6 +50,7 @@ export function LandingPage() {
                   anchors={s.anchors}
                   eager={i === 0}
                 />
+                {i === 0 ? <HeroCtas /> : null}
               </div>
             </section>
           );
