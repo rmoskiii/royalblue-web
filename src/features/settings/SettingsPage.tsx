@@ -90,7 +90,14 @@ export function SettingsPage() {
             label="Login & security"
           />
           {!staff && (
-            <SettingsRow to={paths.verification} icon={ShieldCheck} label="Identity & limits" value={kyc} />
+            <SettingsRow
+              to={paths.verification}
+              icon={ShieldCheck}
+              label="Identity & limits"
+              value={
+                account?.restrictedNoBvn ? 'Starter ₦50k' : account ? `Tier ${account.tier}` : kyc
+              }
+            />
           )}
           {!staff && (
             <SettingsRow to={paths.settingsPayments} icon={CreditCard} label="Payment methods" />

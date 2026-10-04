@@ -54,8 +54,8 @@ Staff and two retail customers are seeded by Nest (`npx prisma db seed`). Staff 
 | Administrator | `admin@royalblue.ng` | `08011111111` | `RoyalBlueAdmin1!` | — | Desk — pipeline, freeze, team, recommend + decide |
 | Loan officer | `officer@royalblue.ng` | `08022222222` | `RoyalBlueOfficer1!` | — | Desk — claim / recommend (no freeze or final decision) |
 | Credit manager | `manager@royalblue.ng` | `08033333333` | `RoyalBlueManager1!` | — | Desk — review, decide, freeze |
-| Customer (funded) | `customer@royalblue.ng` | `08044444444` | `RoyalBlueCustomer1!` | `123456` | Home — BVN, NUBAN `8044444444`, ₦185,000 |
-| Starter KYC | `starter@royalblue.ng` | `08055555555` | `RoyalBlueStarter1!` | `123456` | Home — no BVN (₦50k CBN cap), NUBAN `8055555555`, ₦32,500 |
+| Customer (funded) | `customer@royalblue.ng` | `08044444444` | `RoyalBlueCustomer1!` | `123456` | Home — BVN + NIN + ID, **Tier 2**, NUBAN `8044444444`, ₦185,000. Upload proof of address for Tier 3 |
+| Starter KYC | `starter@royalblue.ng` | `08055555555` | `RoyalBlueStarter1!` | `123456` | Home — no BVN/docs (**Starter ₦50k**), NUBAN `8055555555`, ₦32,500 |
 
 Login field: `POST /auth/login` `{ identifier, password }` — email **or** Nigerian number (`080…`, `803…`, `+234…`). Staff have no transaction PIN, so they cannot send customer funds until they set one under **Me → Security**.
 

@@ -6,7 +6,16 @@ import { formatNaira } from '@/lib/format';
 const limit = (value: number | null) => (value === null ? 'Unlimited' : formatNaira(value));
 
 /** PRD §3B tier structure, with the customer's current tier highlighted. */
-export function TierLimitsTable({ tiers, current }: { tiers: TierLimit[]; current: KycTier }) {
+export function TierLimitsTable({
+  tiers,
+  current,
+  restrictedNoBvn,
+}: {
+  tiers: TierLimit[];
+  current: KycTier;
+  restrictedNoBvn?: boolean;
+}) {
+  const currentRestricted = Boolean(restrictedNoBvn);
   return (
     <div className="overflow-x-auto rounded-tile border border-line">
       <table className="w-full min-w-[560px] border-collapse text-[13px] tabular">
@@ -33,12 +42,19 @@ export function TierLimitsTable({ tiers, current }: { tiers: TierLimit[]; curren
               }
               className={cn(
                 'border-t border-line [&>td]:px-3.5 [&>td]:py-3',
-                t.tier === current && !t.restrictedNoBvn && 'bg-primary-soft/60',
+                t.restrictedNoBvn
+                  ? currentRestricted && 'bg-primary-soft/60'
+                  : t.tier === current && !currentRestricted && 'bg-primary-soft/60',
               )}
             >
               <td className="font-semibold whitespace-nowrap">
                 {t.restrictedNoBvn ? 'Starter' : `Tier ${t.tier}`}{' '}
-                {!t.restrictedNoBvn && t.tier === current && (
+                {!t.restrictedNoBvn && t.tier === current && !currentRestricted && (
+                  <Chip tone="danger" className="ml-1">
+                    You
+                  </Chip>
+                )}
+                {t.restrictedNoBvn && currentRestricted && (
                   <Chip tone="danger" className="ml-1">
                     You
                   </Chip>
