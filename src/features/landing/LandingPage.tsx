@@ -47,15 +47,7 @@ export function LandingPage() {
                   />
                 </>
               )}
-              <div
-                id={s.id}
-                className={
-                  i === 0
-                    ? 'landing-hero-frame relative mx-auto scroll-mt-[72px]'
-                    : 'relative mx-auto scroll-mt-[72px]'
-                }
-                style={{ width: frameWidth }}
-              >
+              <div id={s.id} className="relative mx-auto scroll-mt-[72px]" style={{ width: frameWidth }}>
                 <HotspotImage
                   srcSet={s.srcSet}
                   alt={s.alt}
@@ -64,7 +56,6 @@ export function LandingPage() {
                   hotspots={s.hotspots}
                   anchors={s.anchors}
                   eager={i === 0}
-                  coverMobile={i === 0}
                 />
                 {i === 0 ? <HeroCtas /> : null}
               </div>

@@ -209,28 +209,11 @@
   }
 }
 
-/* Phone only. Desktop landing stays the 1440 Figma scale. HTML width/height on the
-   export would otherwise lock a ~215px-tall hero on a 390px screen. */
+/* Phone only. Keep the full Figma frame (no cover-zoom — that clipped the headline).
+   Lengthen the navy band under the art so the hero isn’t a short strip. */
 @media (max-width: 1023px) {
-  .landing-hero,
-  .landing-hero-frame,
-  .landing-hero-art {
-    min-height: 100svh;
-  }
-
-  .landing-hero-art {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .landing-hero-art > img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    max-width: none;
-    aspect-ratio: auto;
-    object-fit: cover;
-    object-position: center 30%;
+  .landing-hero {
+    min-height: 52svh;
+    padding-bottom: 1.5rem;
   }
 }
