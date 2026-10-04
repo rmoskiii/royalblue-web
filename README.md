@@ -67,9 +67,9 @@ Until Resend is configured, **email OTP and Google Authenticator are skipped**. 
 
 1. Email
 2. Password
-3. Personal or business → details
-4. BVN / NIN optional (skip for starter ₦50k limits)
-5. Confirm → **6-digit transaction PIN**
+3. Personal or business → name and phone
+4. **BVN or NIN** — enter the 11 digits, then Continue. If BudPay is slow, **Continue without waiting** still saves the number. **Skip for now** is starter ₦50k only.
+5. Confirm name → **6-digit transaction PIN**
 
 Then you land on Home. Login is password-only (no authenticator) for these sandbox accounts. OTP + TOTP come back when `RESEND_API_KEY` is set on Nest.
 
@@ -81,7 +81,7 @@ Then you land on Home. Login is password-only (no authenticator) for these sandb
 | --------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | Website         | `/welcome` (where `/` opens), `/terms`, `/privacy`      | Figma "Desktop - 2" exports; HTML CTAs are cropped so they do not sit on the artwork buttons     |
 | Login           | `/login`                                                | Email **or** phone + password; authenticator step when TOTP is enabled                            |
-| Sign-up         | `/sign-up`                                              | Password → details → PIN. OTP/TOTP only when Nest has Resend |
+| Sign-up         | `/sign-up`                                              | Password → details → BVN/NIN (continue if slow) → PIN. OTP/TOTP only when Nest has Resend |
 | Account limits  | `/verification`                                         | BVN via KYC `validate-bvn`. No freeze. Starter ₦50k until BVN/NIN. Tiers 1–3 after.            |
 | Home            | `/dashboard` (personal)                                 | Staff never land here. Balance, Send / Receive / Pay / Add money                                 |
 | Merchant portal | `/dashboard` (business), `/payments`, `/staff`          | Volume / payout / terminals, live payments, cashier access                                       |

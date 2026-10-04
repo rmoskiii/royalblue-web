@@ -360,7 +360,7 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Identity verification"
-        subtitle="We confirm your name with BudPay KYC. You can continue if the lookup is slow."
+        subtitle="Enter your BVN or NIN. If BudPay is slow, continue with the number — we’ll finish the name check in the background."
         back={
           <BackButton
             onClick={() =>
