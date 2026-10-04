@@ -36,7 +36,7 @@ export function BrandBar({
       {showMarketingNav && (
         <nav
           aria-label="Website"
-          className="mx-3 hidden min-w-0 flex-1 items-center justify-end gap-4 self-center overflow-x-auto text-[15px] font-medium sm:flex md:gap-7 lg:gap-8"
+          className="mx-2 flex min-w-0 flex-1 items-center justify-end gap-3 self-center overflow-x-auto text-[13px] font-medium sm:mx-3 sm:gap-4 sm:text-[15px] md:gap-7 lg:gap-8"
         >
           {marketingLinks.map((item) => (
             <a

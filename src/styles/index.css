@@ -209,19 +209,18 @@
   }
 }
 
-/* Phone: draw the 1440 hero a bit larger than the screen (sides crop),
-   so the band is taller and type stays readable. No full-viewport zoom. */
+/* Phone: hero is 1.5× the services image height (787/1270). Desktop unchanged. */
 @media (max-width: 1023px) {
   .landing-hero-art {
+    height: calc(100vw * 787 / 1270 * 1.5);
     overflow: hidden;
   }
 
   .landing-hero-art > img {
-    position: relative;
-    left: 50%;
-    width: 116%;
+    width: 100%;
+    height: 100%;
     max-width: none;
-    height: auto;
-    transform: translateX(-50%);
+    object-fit: cover;
+    object-position: center 36%;
   }
 }
