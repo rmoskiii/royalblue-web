@@ -23,7 +23,6 @@ export function HotspotImage({
   hotspots = [],
   anchors = [],
   eager,
-  coverMobile,
 }: {
   /** From an '…&as=srcset' import */
   srcSet: string;
@@ -34,11 +33,9 @@ export function HotspotImage({
   anchors?: Anchor[];
   /** Load immediately (above the fold) instead of lazily */
   eager?: boolean;
-  /** Phone only: fill a tall frame, crop sides, keep the Figma aspect. Desktop unchanged. */
-  coverMobile?: boolean;
 }) {
   return (
-    <div className={cn('relative', coverMobile && 'landing-hero-art')}>
+    <div className="relative">
       <img
         // Smallest (1x) file as the fallback; srcSet does the real work
         src={srcSet.split(' ')[0]}
