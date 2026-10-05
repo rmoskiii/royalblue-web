@@ -19,7 +19,7 @@ export function SavingsPage() {
         title="Savings"
         subtitle="Grow your money with target and fixed vaults."
         action={
-          <Button onClick={() => setCreateOpen(true)}>
+          <Button onClick={() => setCreateOpen(true)} className="w-full sm:w-auto">
             <Plus className="size-4" /> New vault
           </Button>
         }

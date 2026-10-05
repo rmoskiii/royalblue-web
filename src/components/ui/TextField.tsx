@@ -43,7 +43,7 @@ export function TextField({
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           className={cn(
-            'h-12 w-full rounded-field border border-transparent bg-surface-2 px-3.5 text-[15px] text-ink outline-none placeholder:text-ink-3',
+            'h-12 w-full rounded-field border border-transparent bg-surface-2 px-3.5 text-base text-ink outline-none placeholder:text-ink-3',
             'focus:border-brand focus:ring-3 focus:ring-brand/15',
             error && 'border-primary',
             prefix && 'pl-8',

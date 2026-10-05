@@ -43,7 +43,7 @@ export function Stepper({
                 >
                   {done ? <Check className="size-3.5" /> : i + 1}
                 </span>
-                <span className={cn('text-[13px] font-medium', !isActive && 'text-ink-2')}>
+                <span className={cn('truncate text-[11px] font-medium sm:text-[13px]', !isActive && 'text-ink-2')}>
                   {s.label}
                 </span>
               </span>

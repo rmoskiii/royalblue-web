@@ -20,12 +20,12 @@ export function AppShell() {
     <ProfileProvider>
       <LogoutProvider>
         <TransferProvider>
-          <div className="flex h-dvh overflow-hidden">
+          <div className="flex h-dvh min-h-0 overflow-hidden">
             <Sidebar className="hidden lg:flex" />
             <div className="flex min-w-0 flex-1 flex-col">
               <TopBar />
-              <main className="flex-1 overflow-y-auto overscroll-contain px-4 pt-5 pb-6 lg:px-7 lg:pt-6 lg:pb-10">
-                <div className="mx-auto max-w-[1180px]">
+              <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-4 pt-4 pb-5 lg:px-7 lg:pt-6 lg:pb-10">
+                <div className="mx-auto min-w-0 max-w-[1180px]">
                   <Outlet />
                 </div>
               </main>

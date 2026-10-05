@@ -32,7 +32,7 @@ export function TierBanner() {
               'Complete ID and proof of address to raise your limits.')}
         </p>
       </div>
-      <Link to={paths.verification} className={buttonClass({ variant: 'secondary' })}>
+      <Link to={paths.verification} className={buttonClass({ variant: 'secondary', className: 'w-full sm:w-auto' })}>
         {restricted ? 'Add BVN' : 'Continue KYC'}
       </Link>
     </section>

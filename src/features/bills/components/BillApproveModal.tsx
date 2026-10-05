@@ -30,9 +30,8 @@ export function BillApproveModal({ draft, onClose }: { draft: BillDraft; onClose
       open
       onClose={onClose}
       title={result ? 'Payment successful' : 'Confirm payment'}
-      fullScreenOnMobile
     >
-      <div className="px-5.5 pt-3 pb-6">
+      <div className="px-4 pt-2 pb-4">
         {!result ? (
           <PinApproval
             onApprove={pay.mutateAsync}
@@ -42,7 +41,7 @@ export function BillApproveModal({ draft, onClose }: { draft: BillDraft; onClose
                 <Money
                   amount={draft.payment.amount}
                   decimals={2}
-                  className="mt-1 block text-[32px] leading-tight font-semibold tracking-tight text-brand"
+                  className="mt-1 block text-[26px] leading-tight font-semibold tracking-tight text-brand sm:text-[32px]"
                 />
                 <dl className="mt-3 grid gap-1 text-left text-[13px]">
                   {draft.details.slice(0, -1).map(([k, v]) => (

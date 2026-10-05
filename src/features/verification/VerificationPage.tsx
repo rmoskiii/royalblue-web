@@ -75,7 +75,7 @@ export function VerificationPage() {
             )}
           </div>
           {currentTier && (
-            <dl className="grid flex-[2_1_320px] grid-cols-3 gap-3 text-[13px]">
+            <dl className="grid w-full flex-[2_1_320px] grid-cols-1 gap-3 text-[13px] sm:grid-cols-3">
               {[
                 ['Per transfer', currentTier.singleTransactionLimit],
                 ['Daily limit', currentTier.dailyLimit],

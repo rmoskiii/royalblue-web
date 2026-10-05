@@ -26,7 +26,7 @@ export function LoanProducts({
   return (
     <section>
       <h2 className="mt-2 mb-2.5 text-base font-semibold">Financing options</h2>
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,220px),1fr))] gap-3">
         {products.map((p) => {
           const Icon = productIcon(p.id, p.name);
           return (

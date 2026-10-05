@@ -51,6 +51,7 @@ export const transferService = {
     }
     return http.post<TransferResult>('/transfers/outward', {
       destinationBankCode: body.bankCode,
+      destinationBankName: body.bankName,
       destinationAccountNumber: body.accountNumber,
       amount: body.amount,
       narration,

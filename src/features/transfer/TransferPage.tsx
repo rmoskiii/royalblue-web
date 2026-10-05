@@ -52,12 +52,12 @@ export function TransferPage() {
   };
 
   return (
-    <div className="grid gap-6">
-      <h1 className="text-[28px] font-semibold tracking-tight text-brand lg:text-[34px]">Transfer</h1>
-      <div className="rounded-[26px] border border-line bg-surface p-4 lg:p-6">
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:items-start">
-          <form className="grid gap-4" onSubmit={handleSubmit} noValidate>
-            <div className="flex h-12 w-full max-w-sm rounded-[12px] bg-surface-2 p-1">
+    <div className="grid min-w-0 gap-5">
+      <h1 className="text-[24px] font-semibold tracking-tight text-brand sm:text-[28px] lg:text-[34px]">Transfer</h1>
+      <div className="min-w-0 rounded-[26px] border border-line bg-surface p-3.5 sm:p-4 lg:p-6">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:items-start">
+          <form className="grid min-w-0 gap-4" onSubmit={handleSubmit} noValidate>
+            <div className="flex h-12 w-full rounded-[12px] bg-surface-2 p-1">
               {(
                 [
                   ['royalblue', 'To RoyalBlue'],
@@ -69,7 +69,7 @@ export function TransferPage() {
                   type="button"
                   onClick={() => setDestination(value)}
                   className={cn(
-                    'flex-1 rounded-[10px] text-sm font-medium',
+                    'flex-1 rounded-[10px] px-1 text-xs font-medium sm:text-sm',
                     destination === value ? 'bg-surface text-brand shadow-sm' : 'text-ink-3',
                   )}
                 >
@@ -84,7 +84,7 @@ export function TransferPage() {
                 <select
                   value={bankCode}
                   onChange={(e) => setBankCode(e.target.value)}
-                  className="h-12 rounded-[10px] border-0 bg-surface-2 px-3.5 text-[15px] outline-none"
+                  className="h-12 w-full rounded-[10px] border-0 bg-surface-2 px-3.5 text-base outline-none"
                 >
                   <option value="">Select bank</option>
                   {banks.map((bank) => (
@@ -130,7 +130,7 @@ export function TransferPage() {
               hint={account ? `Available: ${formatNaira(account.balance, 2)}` : undefined}
             />
 
-            <Button type="submit" size="lg" disabled={!enquiry.data || amount <= 0} className="w-40">
+            <Button type="submit" size="lg" disabled={!enquiry.data || amount <= 0} className="w-full lg:w-40">
               Proceed
             </Button>
           </form>

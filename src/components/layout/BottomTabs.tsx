@@ -5,7 +5,7 @@ import { useWorkspaceNav } from './useWorkspaceNav';
 
 const tabClass = (isActive: boolean) =>
   cn(
-    'flex flex-col items-center gap-0 py-1 text-[10px] font-medium text-ink-3',
+    'flex flex-col items-center gap-0 py-1 text-[11px] font-medium text-ink-3',
     isActive && 'text-primary-text',
   );
 

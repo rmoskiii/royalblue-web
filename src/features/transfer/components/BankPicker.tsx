@@ -51,7 +51,7 @@ export function BankPicker({
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="flex h-12 w-full items-center justify-between rounded-field bg-surface-2 px-3.5 text-left text-[15px] outline-none focus-visible:ring-3 focus-visible:ring-brand/15"
+        className="flex h-12 w-full items-center justify-between rounded-field bg-surface-2 px-3.5 text-left text-base outline-none focus-visible:ring-3 focus-visible:ring-brand/15"
       >
         <span className={cn(!selected && 'text-ink-3')}>{selected?.name ?? 'Choose a bank'}</span>
         <ChevronDown className="size-4 text-ink-3" />
@@ -74,7 +74,7 @@ export function BankPicker({
                 }
               }}
               placeholder="Search banks"
-              className="h-11 w-full bg-transparent text-ink outline-none placeholder:text-ink-3"
+              className="h-11 w-full bg-transparent text-base text-ink outline-none placeholder:text-ink-3"
             />
           </label>
           <ul

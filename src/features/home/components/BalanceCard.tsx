@@ -60,7 +60,7 @@ export function BalanceCard({
         <button
           type="button"
           onClick={copyAccountNumber}
-          className="inline-flex h-8 items-center gap-2 rounded-[9px] border border-white/15 bg-white/12 px-2.5 text-[13px] font-medium hover:bg-white/20"
+          className="inline-flex max-w-full items-center gap-2 rounded-[9px] border border-white/15 bg-white/12 px-2.5 py-1.5 text-[13px] font-medium hover:bg-white/20"
         >
           <span className="font-normal text-white/65">{account.bankName}</span>
           <span className="tabular">{formatAccountNumber(account.accountNumber)}</span>

@@ -18,7 +18,7 @@ const titles: Record<Step['name'], string> = {
   success: 'Transfer sent',
 };
 
-/** PRD View 3: centred modal on desktop, full-screen drawer on phones. */
+/** PRD View 3: centred card on every screen size. */
 export function TransferModal({
   initial,
   preset,
@@ -33,15 +33,8 @@ export function TransferModal({
   );
 
   return (
-    <Modal
-      open
-      onClose={onClose}
-      title={titles[step.name]}
-      hideHeader
-      fullScreenOnMobile
-      className="md:w-[min(480px,100%)]"
-    >
-      <div className="flex items-center gap-2 px-4.5 pt-4">
+    <Modal open onClose={onClose} title={titles[step.name]} hideHeader>
+      <div className="flex shrink-0 items-center gap-2 px-4 pt-3">
         {step.name === 'approve' && (
           <button
             type="button"
@@ -52,11 +45,11 @@ export function TransferModal({
             <ArrowLeft className="size-5" />
           </button>
         )}
-        <h2 className="text-lg font-semibold">{titles[step.name]}</h2>
+        <h2 className="min-w-0 truncate text-lg font-semibold">{titles[step.name]}</h2>
         <CloseButton onClick={onClose} className="ml-auto" />
       </div>
 
-      <div className="px-5.5 pt-3 pb-6">
+      <div className="px-4 pt-2 pb-4">
         {/* Details stay mounted while approving so Back keeps what was typed. */}
         <div hidden={step.name !== 'details'}>
           <TransferDetailsStep

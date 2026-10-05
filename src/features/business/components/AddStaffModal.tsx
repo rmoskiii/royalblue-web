@@ -40,7 +40,7 @@ export function AddStaffModal({ open, onClose }: { open: boolean; onClose: () =>
 
   return (
     <Modal open={open} onClose={onClose} title="Add a cashier">
-      <form className="grid gap-4 px-5.5 pt-2 pb-5.5" onSubmit={submit}>
+      <form className="grid gap-4 px-4 pt-2 pb-4" onSubmit={submit}>
         <p className="flex gap-2.5 rounded-xl bg-surface-2 p-3 text-[13px] text-ink-2">
           <Info className="size-4 shrink-0 text-brand" />
           Cashiers only see incoming payment alerts. They can’t send money, see your balance or

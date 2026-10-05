@@ -33,7 +33,7 @@ export function PhysicalCardSection() {
             Use it at POS terminals and ATMs. We deliver to your door in 3 to 5 working days.
           </p>
         </div>
-        <Button onClick={() => setOpen(true)}>Order card</Button>
+        <Button onClick={() => setOpen(true)} className="w-full sm:w-auto">Order card</Button>
         <OrderPhysicalCardModal key={String(open)} open={open} onClose={() => setOpen(false)} />
       </Card>
     );

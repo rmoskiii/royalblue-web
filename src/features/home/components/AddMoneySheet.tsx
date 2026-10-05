@@ -68,7 +68,7 @@ export function AddMoneySheet({ open, onClose }: { open: boolean; onClose: () =>
 
   return (
     <Modal open={open} onClose={close} title="Add money">
-      <div className="px-5.5 pt-2 pb-5.5">
+      <div className="px-4 pt-2 pb-4">
         {method === 'choose' ? (
           <ul className="grid gap-2">
             {options.map(({ icon: Icon, title, body, onClick }) => (

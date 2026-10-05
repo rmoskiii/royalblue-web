@@ -10,7 +10,7 @@ export function MoreSheet({ open, onClose }: { open: boolean; onClose: () => voi
   const { more } = useWorkspaceNav();
 
   return (
-    <Modal open={open} onClose={onClose} title="More" hideHeader>
+    <Modal open={open} onClose={onClose} title="More" hideHeader placement="sheet">
       <div className="flex items-center justify-between px-4.5 pt-4">
         <Logo compact className="h-7" />
         <CloseButton onClick={onClose} />

@@ -62,7 +62,7 @@ export function StaffAccountsPage() {
                     Unfreeze
                   </Button>
                 ) : target === row.id ? (
-                  <div className="flex min-w-[220px] flex-col gap-2">
+                  <div className="flex w-full min-w-0 flex-col gap-2 sm:w-[220px]">
                     <TextField
                       label="Reason"
                       value={reason}

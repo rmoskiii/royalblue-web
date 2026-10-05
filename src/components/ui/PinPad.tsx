@@ -41,12 +41,12 @@ export function PinPad({
   });
 
   const keyClass =
-    'grid h-14 place-items-center rounded-2xl text-xl font-semibold transition hover:bg-surface-2 active:bg-surface-3 disabled:opacity-40';
+    'grid h-11 place-items-center rounded-xl text-lg font-semibold transition hover:bg-surface-2 active:bg-surface-3 disabled:opacity-40 sm:h-12 sm:rounded-2xl sm:text-xl';
 
   return (
-    <div className="grid justify-items-center gap-6">
+    <div className="grid justify-items-center gap-4">
       <div
-        className="flex gap-4"
+        className="flex gap-3"
         aria-label={`${value.length} of ${length} digits entered`}
         role="status"
       >
@@ -54,14 +54,14 @@ export function PinPad({
           <span
             key={i}
             className={cn(
-              'size-3.5 rounded-full border-2 border-ink-3 transition',
+              'size-3 rounded-full border-2 border-ink-3 transition',
               i < value.length && 'border-brand bg-brand',
             )}
           />
         ))}
       </div>
 
-      <div className="grid w-full max-w-[280px] grid-cols-3 gap-2">
+      <div className="grid w-full max-w-[240px] grid-cols-3 gap-1.5">
         {KEYS.map((k) => (
           <button
             key={k}

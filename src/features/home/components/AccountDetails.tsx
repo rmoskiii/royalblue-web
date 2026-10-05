@@ -34,9 +34,9 @@ export function AccountDetails() {
     <>
       <dl className="my-4 border-t border-line">
         {rows.map(([k, v]) => (
-          <div key={k} className="flex justify-between gap-4 border-b border-line py-2.5">
-            <dt className="text-[13px] text-ink-3">{k}</dt>
-            <dd className="text-right font-medium tabular">{v}</dd>
+          <div key={k} className="flex justify-between gap-3 border-b border-line py-2.5">
+            <dt className="shrink-0 text-[13px] text-ink-3">{k}</dt>
+            <dd className="min-w-0 truncate text-right font-medium tabular">{v}</dd>
           </div>
         ))}
       </dl>

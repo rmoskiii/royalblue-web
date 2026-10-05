@@ -61,7 +61,7 @@ export function ApplyLoanPage() {
         title="Loan application"
         subtitle="Same details as the paper application and personal guarantor form."
       />
-      <Card className="grid max-w-3xl gap-5 p-5">
+      <Card className="grid w-full max-w-3xl gap-5 p-4 sm:p-5">
         {step === 'borrower' && (
           <form
             className="grid gap-4"

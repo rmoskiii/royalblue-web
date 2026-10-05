@@ -25,7 +25,7 @@ export function ReceiptSheet({
 
   return (
     <Modal open onClose={onClose} title="Transaction details">
-      <div className="px-5.5 pt-2 pb-5.5 text-center">
+      <div className="px-4 pt-2 pb-4 text-center">
         <div className="mx-auto mt-1.5 mb-2.5 w-fit">
           <TransactionIcon credit={credit} large />
         </div>
@@ -35,7 +35,7 @@ export function ReceiptSheet({
           decimals={2}
           signed
           className={cn(
-            'my-1.5 block text-[34px] leading-tight font-semibold tracking-tight',
+            'my-1.5 block text-[26px] leading-tight font-semibold tracking-tight sm:text-[32px]',
             credit && 'text-success',
           )}
         />
@@ -49,9 +49,9 @@ export function ReceiptSheet({
 
         <dl className="my-4.5 border-t border-line text-left text-[13px]">
           {rows.map(([k, v]) => (
-            <div key={k} className="flex justify-between gap-4 border-b border-line py-2.5">
-              <dt className="text-ink-3">{k}</dt>
-              <dd className="text-right font-medium tabular">{v}</dd>
+            <div key={k} className="flex justify-between gap-3 border-b border-line py-2.5">
+              <dt className="shrink-0 text-ink-3">{k}</dt>
+              <dd className="min-w-0 break-all text-right font-medium tabular">{v}</dd>
             </div>
           ))}
         </dl>
