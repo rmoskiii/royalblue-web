@@ -56,5 +56,8 @@ function friendlyPinError(message: string) {
   if (/invalid signature|intrusion detected/i.test(message)) {
     return 'BudPay rejected the payout signature. Try again in a moment.';
   }
+  if (/unauthorized access/i.test(message)) {
+    return 'Your PIN was accepted. BudPay blocked the payout (Unauthorized Access) — usually an IP allowlist or payout permission on the live merchant key, not the PIN.';
+  }
   return message;
 }
