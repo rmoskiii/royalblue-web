@@ -73,6 +73,11 @@ export function VerificationPage() {
             {status.kycStatus && (
               <p className="text-[13px] text-ink-3">KYC {status.kycStatus.replaceAll('_', ' ').toLowerCase()}</p>
             )}
+            {status.identityVerified === false && (status.hasBvn || status.hasNin) && (
+              <p className="mt-1 text-[13px] text-amber-800 dark:text-amber-200">
+                Identity not confirmed yet. Retry BVN below when live BudPay KYC is available.
+              </p>
+            )}
           </div>
           {currentTier && (
             <dl className="grid w-full flex-[2_1_320px] grid-cols-1 gap-3 text-[13px] sm:grid-cols-3">

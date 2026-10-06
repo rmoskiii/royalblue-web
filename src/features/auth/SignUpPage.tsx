@@ -360,7 +360,7 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Identity verification"
-        subtitle="Enter your BVN or NIN. If BudPay is slow, continue with the number — we’ll finish the name check in the background."
+        subtitle="Enter your BVN or NIN. We try live BudPay first. If that check is not ready, you can still open the account and finish later in Settings."
         back={
           <BackButton
             onClick={() =>
@@ -398,7 +398,12 @@ export function SignUpPage() {
   if (state.step === 'confirm') {
     return (
       <AuthCard
-        title="Is this you?"
+        title={state.identity.verified && !state.identity.pending ? 'Is this you?' : 'Verification not completed'}
+        subtitle={
+          state.identity.verified && !state.identity.pending
+            ? undefined
+            : 'Your account can still be created. KYC banners will point you to Settings when live identity is available.'
+        }
         back={
           <BackButton
             onClick={() =>

@@ -16,6 +16,7 @@ import { useLogoutConfirm } from '@/components/layout/LogoutProvider';
 import { paths } from '@/components/layout/navigation';
 import { Avatar, Button, Card, Chip, PageHeader } from '@/components/ui';
 import { formatAccountNumber } from '@/lib/format';
+import { TierBanner } from '@/features/home/components/TierBanner';
 import { SettingsRow } from './SettingsRow';
 
 export function SettingsPage() {
@@ -41,6 +42,7 @@ export function SettingsPage() {
     <>
       <PageHeader title="Me" subtitle="Profile, security and how RoyalBlue talks to you." />
       <div className="mx-auto grid max-w-xl gap-4">
+        {!staff && <TierBanner />}
         <Card className="grid gap-4 p-5">
           <div className="flex items-start gap-3">
             <Avatar name={name || 'RB'} size="lg" className="size-14 text-base bg-navy text-white" />

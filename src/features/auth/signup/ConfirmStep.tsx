@@ -3,7 +3,7 @@ import { Avatar, Button } from '@/components/ui';
 import { formatDate } from '@/lib/format';
 import { submitOnEnter, useEnterToSubmit } from '../lib/submitOnEnter';
 
-/** Shows what NIBSS returned so the customer can confirm it's them. */
+/** Live BudPay match, or fail-open so the customer can still open the account. */
 export function ConfirmStep({
   identity,
   onConfirm,
@@ -13,7 +13,8 @@ export function ConfirmStep({
   onConfirm: () => void;
   onReject: () => void;
 }) {
-  const name = `${identity.firstName} ${identity.lastName}`;
+  const verified = identity.verified === true && !identity.pending;
+  const name = [identity.firstName, identity.lastName].filter(Boolean).join(' ');
   const formRef = useEnterToSubmit();
   return (
     <form
@@ -29,23 +30,29 @@ export function ConfirmStep({
         {identity.photoUrl ? (
           <img src={identity.photoUrl} alt="" className="size-16 rounded-full object-cover" />
         ) : (
-          <Avatar name={name} className="size-16 text-lg" />
+          <Avatar name={name || 'RB'} className="size-16 text-lg" />
         )}
         <dl className="grid gap-0.5">
           <dt className="sr-only">Name</dt>
-          <dd className="text-lg font-semibold">{name}</dd>
-          <dt className="sr-only">Date of birth</dt>
-          <dd className="text-[13px] text-ink-2">Born {formatDate(identity.dateOfBirth)}</dd>
-          {identity.pending && (
-            <dd className="text-[13px] text-ink-3">Name check is still pending. You can continue.</dd>
+          <dd className="text-lg font-semibold">{name || 'Identity not confirmed'}</dd>
+          {verified && identity.dateOfBirth ? (
+            <>
+              <dt className="sr-only">Date of birth</dt>
+              <dd className="text-[13px] text-ink-2">Born {formatDate(identity.dateOfBirth)}</dd>
+            </>
+          ) : (
+            <dd className="text-[13px] text-ink-2">
+              Verification not completed. You can still create your account. We’ll remind you in
+              Settings to finish KYC when live BudPay identity is available.
+            </dd>
           )}
         </dl>
       </div>
       <Button type="submit" size="lg" block>
-        Yes, this is me
+        {verified ? 'Yes, this is me' : 'Continue anyway'}
       </Button>
       <Button type="button" variant="secondary" size="lg" block onClick={onReject}>
-        This isn’t me
+        {verified ? 'This isn’t me' : 'Try a different number'}
       </Button>
     </form>
   );

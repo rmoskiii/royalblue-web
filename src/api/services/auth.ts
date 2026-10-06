@@ -200,6 +200,7 @@ export const authService = {
           dateOfBirth: '1994-03-12',
           photoUrl: null,
           pending: false,
+          verified: true,
         },
         400,
       );
@@ -209,9 +210,10 @@ export const authService = {
       const lookedUp = await http.post<{
         firstName: string;
         lastName: string;
-        dateOfBirth: string;
+        dateOfBirth: string | null;
         photoUrl: string | null;
         pending?: boolean;
+        verified?: boolean;
       }>('/auth/identity-lookup', {
         type,
         number,
@@ -225,7 +227,7 @@ export const authService = {
         identityNumber: number,
         firstName: lookedUp.firstName,
         lastName: lookedUp.lastName,
-        dateOfBirth: lookedUp.dateOfBirth,
+        dateOfBirth: lookedUp.dateOfBirth ?? undefined,
       });
       return {
         firstName: lookedUp.firstName,
@@ -233,14 +235,16 @@ export const authService = {
         dateOfBirth: lookedUp.dateOfBirth,
         photoUrl: lookedUp.photoUrl,
         pending: lookedUp.pending,
+        verified: lookedUp.verified,
       };
     } catch {
       return {
-        firstName: extras?.firstName || 'Pending',
-        lastName: extras?.lastName || 'Customer',
-        dateOfBirth: '1990-01-01',
+        firstName: extras?.firstName || '',
+        lastName: extras?.lastName || '',
+        dateOfBirth: null,
         photoUrl: null,
         pending: true,
+        verified: false,
       };
     }
   },

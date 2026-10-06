@@ -50,9 +50,10 @@ export interface PhoneVerification {
 export interface IdentityLookup {
   firstName: string;
   lastName: string;
-  dateOfBirth: ISODateString;
+  dateOfBirth?: ISODateString | null;
   photoUrl: string | null;
   pending?: boolean;
+  verified?: boolean;
 }
 
 export type AccountKind = 'personal' | 'business';
@@ -308,6 +309,7 @@ export interface VerificationStatus {
   kycStatus?: string;
   hasBvn?: boolean;
   hasNin?: boolean;
+  identityVerified?: boolean;
   completedSteps: VerificationStepId[];
   missing?: string[];
   limits?: {
