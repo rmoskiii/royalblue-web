@@ -107,31 +107,31 @@ export function CameraCapture({
         ) : preview ? (
           <img src={preview} alt={label} className="size-full object-cover" />
         ) : (
-          <div className="grid justify-items-center gap-1 px-4 text-center text-[13px] text-ink-3">
+          <div className="grid justify-items-center gap-1 px-4 text-center text-[13px] break-words text-ink-3">
             <Camera className="size-6" />
             {hint}
           </div>
         )}
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:flex-wrap">
         {live ? (
           <>
-            <Button onClick={capture}>
+            <Button className="max-sm:w-full" onClick={capture}>
               <Camera className="size-4" /> Take photo
             </Button>
-            <Button variant="secondary" onClick={stop}>
+            <Button variant="secondary" className="max-sm:w-full" onClick={stop}>
               Cancel
             </Button>
           </>
         ) : (
           <>
-            <Button variant="secondary" onClick={start}>
+            <Button variant="secondary" className="max-sm:w-full" onClick={start}>
               {value ? <RefreshCw className="size-4" /> : <Camera className="size-4" />}
               {value ? 'Retake' : 'Use camera'}
             </Button>
-            <label htmlFor={inputId} className="cursor-pointer">
-              <span className="inline-flex h-10 items-center gap-2 rounded-field bg-surface-2 px-4 font-medium hover:bg-surface-3">
+            <label htmlFor={inputId} className="max-sm:w-full cursor-pointer">
+              <span className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-field bg-surface-2 px-4 font-medium hover:bg-surface-3 sm:w-auto">
                 <ImageUp className="size-4" /> Upload photo
               </span>
             </label>

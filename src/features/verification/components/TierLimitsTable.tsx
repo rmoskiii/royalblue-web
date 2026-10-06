@@ -11,7 +11,7 @@ function isCurrent(t: TierLimit, current: KycTier, currentRestricted: boolean) {
 
 function YouChip() {
   return (
-    <Chip tone="danger" className="ml-1">
+    <Chip tone="danger" className="shrink-0">
       You
     </Chip>
   );
@@ -30,39 +30,39 @@ export function TierLimitsTable({
   const currentRestricted = Boolean(restrictedNoBvn);
   return (
     <>
-      <ul className="grid gap-2 md:hidden">
+      <ul className="grid min-w-0 gap-2 lg:hidden">
         {tiers.map((t, i) => (
           <li
             key={`${t.tier}-${t.restrictedNoBvn ? 'starter' : 'full'}-${i}`}
             className={cn(
-              'rounded-tile border border-line px-4 py-3',
+              'min-w-0 overflow-hidden rounded-tile border border-line px-4 py-3',
               isCurrent(t, current, currentRestricted) && 'bg-primary-soft/60',
             )}
           >
-            <p className="font-semibold">
+            <p className="flex min-w-0 flex-wrap items-center gap-1 font-semibold">
               {t.restrictedNoBvn ? 'Starter' : `Tier ${t.tier}`}
               {isCurrent(t, current, currentRestricted) && <YouChip />}
             </p>
-            <p className="mt-1 text-[13px] text-ink-2">{t.requirements}</p>
-            <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[13px] tabular">
-              <div>
-                <dt className="text-ink-3">Per transfer</dt>
-                <dd className="font-medium">{limit(t.singleTransactionLimit)}</dd>
+            <p className="mt-1 text-[13px] break-words text-ink-2">{t.requirements}</p>
+            <dl className="mt-2 grid grid-cols-1 gap-y-1 text-[13px] tabular">
+              <div className="flex min-w-0 justify-between gap-3">
+                <dt className="shrink-0 text-ink-3">Per transfer</dt>
+                <dd className="min-w-0 text-right font-medium break-words">{limit(t.singleTransactionLimit)}</dd>
               </div>
-              <div>
-                <dt className="text-ink-3">Daily</dt>
-                <dd className="font-medium">{limit(t.dailyLimit)}</dd>
+              <div className="flex min-w-0 justify-between gap-3">
+                <dt className="shrink-0 text-ink-3">Daily</dt>
+                <dd className="min-w-0 text-right font-medium break-words">{limit(t.dailyLimit)}</dd>
               </div>
-              <div className="col-span-2">
-                <dt className="text-ink-3">Max balance</dt>
-                <dd className="font-medium">{limit(t.maxBalance)}</dd>
+              <div className="flex min-w-0 justify-between gap-3">
+                <dt className="shrink-0 text-ink-3">Max balance</dt>
+                <dd className="min-w-0 text-right font-medium break-words">{limit(t.maxBalance)}</dd>
               </div>
             </dl>
           </li>
         ))}
       </ul>
 
-      <div className="hidden overflow-x-auto rounded-tile border border-line md:block">
+      <div className="hidden overflow-x-auto rounded-tile border border-line lg:block">
         <table className="w-full min-w-[560px] border-collapse text-[13px] tabular">
           <caption className="sr-only">Account tiers and limits</caption>
           <thead className="bg-surface-2 text-[11px] tracking-wider text-ink-3 uppercase">

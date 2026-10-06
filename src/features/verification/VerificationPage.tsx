@@ -60,12 +60,12 @@ export function VerificationPage() {
   return (
     <>
       <PageHeader title="Account limits" subtitle="Verify your identity to raise your limits." />
-      <div className="grid gap-4">
-        <Card className="flex flex-wrap items-center gap-4">
-          <span className="grid size-12 place-items-center rounded-2xl bg-primary-soft text-primary-text">
+      <div className="grid min-w-0 gap-4">
+        <Card className="flex min-w-0 flex-col gap-4 lg:flex-row lg:flex-wrap lg:items-center">
+          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary-soft text-primary-text">
             <ShieldCheck className="size-6" />
           </span>
-          <div className="min-w-0 flex-[1_1_200px]">
+          <div className="min-w-0 lg:flex-[1_1_200px]">
             <p className="text-xs font-semibold tracking-wider text-ink-3 uppercase">Your tier</p>
             <p className="text-2xl font-semibold tracking-tight">
               {status.restrictedNoBvn ? 'Starter' : `Tier ${status.tier}`}
@@ -80,15 +80,15 @@ export function VerificationPage() {
             )}
           </div>
           {currentTier && (
-            <dl className="grid w-full flex-[2_1_320px] grid-cols-1 gap-3 text-[13px] sm:grid-cols-3">
+            <dl className="grid min-w-0 w-full grid-cols-1 gap-3 text-[13px] lg:flex-[2_1_320px] lg:grid-cols-3">
               {[
                 ['Per transfer', currentTier.singleTransactionLimit],
                 ['Daily limit', currentTier.dailyLimit],
                 ['Max balance', currentTier.maxBalance],
               ].map(([label, value]) => (
-                <div key={label as string}>
+                <div key={label as string} className="min-w-0">
                   <dt className="text-ink-3">{label}</dt>
-                  <dd className="font-semibold tabular">
+                  <dd className="font-semibold break-words tabular">
                     {value === null ? 'Unlimited' : formatNaira(value as number)}
                   </dd>
                 </div>
@@ -97,7 +97,7 @@ export function VerificationPage() {
           )}
         </Card>
 
-        <Card>
+        <Card className="min-w-0 overflow-hidden">
           <h2 className="mb-4 text-base font-semibold">Upgrade to Tier 3</h2>
           <Stepper
             completed={completed}
@@ -108,7 +108,7 @@ export function VerificationPage() {
             }}
           />
 
-          <div className="mt-6 max-w-2xl">
+          <div className="mt-6 min-w-0 max-w-2xl">
             {allDone && !selected ? (
               <div className="flex gap-3">
                 <CircleCheck className="size-6 shrink-0 text-success" />
@@ -127,9 +127,9 @@ export function VerificationPage() {
                 </h3>
                 <p className="mt-1 mb-4 text-sm text-ink-2">{stepCopy[active].lead}</p>
                 {!showForm ? (
-                  <div className="flex flex-wrap items-center gap-3 rounded-tile bg-success-soft px-4 py-3">
-                    <CircleCheck className="size-5 text-success" />
-                    <span className="flex-1 font-medium text-success">Verified</span>
+                  <div className="flex min-w-0 flex-wrap items-center gap-3 rounded-tile bg-success-soft px-4 py-3">
+                    <CircleCheck className="size-5 shrink-0 text-success" />
+                    <span className="min-w-0 flex-1 font-medium text-success">Verified</span>
                     <Button variant="secondary" size="sm" onClick={() => setEditing(true)}>
                       Update
                     </Button>
@@ -146,7 +146,7 @@ export function VerificationPage() {
           </div>
         </Card>
 
-        <section>
+        <section className="min-w-0">
           <h2 className="mb-2.5 text-base font-semibold">Tiers and limits</h2>
           <TierLimitsTable tiers={tiers} current={status.tier} restrictedNoBvn={status.restrictedNoBvn} />
         </section>
