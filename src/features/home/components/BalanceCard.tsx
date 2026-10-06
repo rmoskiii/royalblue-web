@@ -45,18 +45,18 @@ export function BalanceCard({
         </button>
       </div>
 
-      {isLoading || !account ? (
+      {isLoading && !account ? (
         <div className="my-3 h-10 w-64 animate-pulse rounded-lg bg-white/10" />
       ) : (
         <Money
-          amount={account.balance}
+          amount={account?.balance ?? 0}
           decimals={2}
           masked={hidden}
           className="mt-2 mb-2 block text-[34px] leading-tight font-semibold tracking-tight md:text-[42px]"
         />
       )}
 
-      {account && (
+      {account?.accountNumber ? (
         <button
           type="button"
           onClick={copyAccountNumber}
@@ -66,6 +66,12 @@ export function BalanceCard({
           <span className="tabular">{formatAccountNumber(account.accountNumber)}</span>
           <Copy className="size-3.5" />
         </button>
+      ) : (
+        !isLoading && (
+          <p className="mt-1 text-[13px] text-white/70">
+            Issuing your account number with BudPay. This page will update when it is ready.
+          </p>
+        )
       )}
 
       <div className="mt-5 grid grid-cols-2 gap-2 md:flex md:flex-wrap">

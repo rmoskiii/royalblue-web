@@ -126,6 +126,8 @@ export interface Account {
   freeTransfersPerMonth: number;
   /** True when the API will accept a BudPay sandbox / test top-up. */
   sandbox?: boolean;
+  /** Dedicated VA is still being issued by BudPay. */
+  provisionPending?: boolean;
 }
 
 export interface CustomerProfile {

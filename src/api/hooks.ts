@@ -58,7 +58,12 @@ export const queryKeys = {
 export const useMe = () => useQuery({ queryKey: queryKeys.me, queryFn: accountService.getMe });
 
 export const useAccount = () =>
-  useQuery({ queryKey: queryKeys.account, queryFn: accountService.getAccount });
+  useQuery({
+    queryKey: queryKeys.account,
+    queryFn: accountService.getAccount,
+    retry: 1,
+    refetchInterval: (query) => (query.state.data?.provisionPending ? 8_000 : false),
+  });
 
 export const useTransactions = (filters: TransactionFilters = {}) =>
   useQuery({

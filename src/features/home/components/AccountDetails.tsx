@@ -9,7 +9,14 @@ import { formatAccountNumber } from '@/lib/format';
 export function AccountDetails() {
   const { data: account } = useAccount();
   const { showToast } = useToast();
-  if (!account) return null;
+  if (!account?.accountNumber) {
+    return (
+      <p className="mt-4 text-[13px] text-ink-2">
+        BudPay is still issuing your dedicated account number. Stay on this page — it will appear
+        here when the virtual account is ready.
+      </p>
+    );
+  }
 
   const text = `${account.accountName}\n${account.bankName}\n${account.accountNumber}`;
   const copy = async () => {
