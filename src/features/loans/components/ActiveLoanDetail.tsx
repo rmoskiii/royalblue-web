@@ -49,8 +49,8 @@ export function ActiveLoanDetail({ loan }: { loan: Loan }) {
       <RepaymentSchedule loan={loan} />
 
       <div className="mt-3.5 flex flex-wrap gap-2">
-        <Button onClick={() => showToast('Repayments are coming soon')}>Repay now</Button>
-        <Button variant="secondary" onClick={() => showToast('Statements are coming soon')}>
+        <Button onClick={() => showToast('In-app repayment isn’t available yet')}>Repay now</Button>
+        <Button variant="secondary" onClick={() => showToast('Email statements aren’t available yet')}>
           Download statement
         </Button>
       </div>

@@ -69,7 +69,7 @@ export function BalanceCard({
       ) : (
         !isLoading && (
           <p className="mt-1 text-[13px] text-white/70">
-            Issuing your account number with BudPay. This page will update when it is ready.
+            We’re setting up your account number. This page will update when it’s ready.
           </p>
         )
       )}

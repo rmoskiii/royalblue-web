@@ -18,10 +18,11 @@ export function ApproveStep({
 
   const send = useMutation({
     mutationFn: (authorisation: TransactionAuthorisation) => {
-      const { destination, bankCode, accountNumber, amount, narration } = draft;
+      const { destination, bankCode, bankName, accountNumber, amount, narration } = draft;
       return transferService.send({
         destination,
         bankCode,
+        bankName,
         accountNumber,
         amount,
         narration,

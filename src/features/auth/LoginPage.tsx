@@ -4,7 +4,6 @@ import { Link, useLocation, useNavigate } from 'react-router';
 import { authService } from '@/api/services/auth';
 import type { MfaChallenge } from '@/api/types';
 import { useAuth } from '@/app/providers/AuthProvider';
-import { useToast } from '@/app/providers/ToastProvider';
 import { AuthCard } from '@/components/layout/AuthCard';
 import { paths, homePathForRole } from '@/components/layout/navigation';
 import { Button, TextField } from '@/components/ui';
@@ -15,7 +14,6 @@ import { demo } from '@/config/demo';
 
 export function LoginPage() {
   const { establishSession } = useAuth();
-  const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo = (location.state as { from?: string } | null)?.from;
@@ -107,13 +105,9 @@ export function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button
-            type="button"
-            className="justify-self-end text-sm font-medium text-brand"
-            onClick={() => showToast('Password reset is coming soon')}
-          >
-            Forgot Password
-          </button>
+          <p className="text-right text-[13px] text-ink-3">
+            Keep this password safe. In-app reset is not available yet.
+          </p>
         </div>
         {submit.isError && <p className="text-[13px] text-primary-text">{submit.error.message}</p>}
         <Button type="submit" size="lg" block disabled={!identifier.trim() || !password || submit.isPending}>

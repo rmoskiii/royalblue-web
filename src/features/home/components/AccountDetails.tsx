@@ -12,8 +12,8 @@ export function AccountDetails() {
   if (!account?.accountNumber) {
     return (
       <p className="mt-4 text-[13px] text-ink-2">
-        BudPay is still issuing your dedicated account number. Stay on this page — it will appear
-        here when the virtual account is ready.
+        We’re still setting up your account number. Stay on this page — it will appear here when
+        it’s ready.
       </p>
     );
   }

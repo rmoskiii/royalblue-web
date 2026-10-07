@@ -262,6 +262,7 @@ export type TransactionAuthorisation =
 export interface TransferRequest {
   destination: TransferDestination;
   bankCode: string;
+  bankName?: string;
   accountNumber: string;
   amount: number;
   narration?: string;

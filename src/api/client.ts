@@ -1,4 +1,5 @@
 import { env } from '@/config/env';
+import { friendlyApiMessage } from '@/lib/api-errors';
 
 /**
  * Minimal fetch wrapper. Every service goes through this, so auth headers,
@@ -108,7 +109,7 @@ async function request<T>(
     if (sessionExpired) {
       onUnauthorized?.();
     }
-    throw new ApiError(res.status, message, data);
+    throw new ApiError(res.status, friendlyApiMessage(message, res.status), data);
   }
   return data as T;
 }

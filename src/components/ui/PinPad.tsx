@@ -5,8 +5,8 @@ import { cn } from '@/lib/cn';
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 /**
- * 4-digit PIN pad (PRD FR-08). Works with taps and the physical keyboard.
- * Calls onComplete as soon as the fourth digit is entered.
+ * Transaction PIN pad. Works with taps and the physical keyboard.
+ * Calls onComplete as soon as every digit is entered.
  */
 export function PinPad({
   value,

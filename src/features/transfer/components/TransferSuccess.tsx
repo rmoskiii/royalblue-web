@@ -2,6 +2,8 @@ import { CircleCheck } from 'lucide-react';
 import type { TransferResult } from '@/api/types';
 import { useToast } from '@/app/providers/ToastProvider';
 import { Button, Money } from '@/components/ui';
+import { formatNaira } from '@/lib/format';
+import { shareOrCopy } from '@/lib/clipboard';
 import type { TransferDraft } from '../types';
 
 export function TransferSuccess({
@@ -30,7 +32,16 @@ export function TransferSuccess({
       </p>
       <p className="text-xs text-ink-3 tabular">Reference {result.reference}</p>
       <div className="mt-5 grid w-full grid-cols-2 gap-2">
-        <Button variant="secondary" onClick={() => showToast('Receipt sharing is coming soon')}>
+        <Button
+          variant="secondary"
+          onClick={async () => {
+            const resultShare = await shareOrCopy(
+              'RoyalBlue transfer',
+              `Sent ${formatNaira(draft.amount, 2)} to ${draft.accountName} (${draft.bankName} ${draft.accountNumber}).\nReference ${result.reference}`,
+            );
+            if (resultShare === 'copied') showToast('Receipt copied');
+          }}
+        >
           Share receipt
         </Button>
         <Button onClick={onDone}>Done</Button>

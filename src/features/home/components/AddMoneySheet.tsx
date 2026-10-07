@@ -53,7 +53,7 @@ export function AddMoneySheet({ open, onClose }: { open: boolean; onClose: () =>
     {
       icon: CreditCard,
       title: 'Debit card',
-      body: 'Pay on BudPay checkout (Visa, Mastercard or Verve). Test cards work with a test secret key.',
+      body: 'Pay with Visa, Mastercard or Verve.',
       onClick: () => cardTopUp.mutate(),
     },
   ];
@@ -93,8 +93,8 @@ export function AddMoneySheet({ open, onClose }: { open: boolean; onClose: () =>
         ) : (
           <>
             <p className="text-ink-2">
-              This is your BudPay dedicated virtual account. Transfer from any Nigerian bank; the
-              credit webhook (or a dashboard sync) lands it on your RoyalBlue balance.
+              Transfer from any Nigerian bank to this account. It usually appears on your RoyalBlue
+              balance within a few minutes.
             </p>
             <AccountDetails />
           </>

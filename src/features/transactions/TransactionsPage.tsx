@@ -40,7 +40,7 @@ export function TransactionsPage() {
         title="Transactions"
         subtitle={insights?.periodLabel}
         action={
-          <Button variant="secondary" onClick={() => showToast('Statements are coming soon')}>
+          <Button variant="secondary" onClick={() => showToast('Email statements aren’t available yet')}>
             Get statement
           </Button>
         }

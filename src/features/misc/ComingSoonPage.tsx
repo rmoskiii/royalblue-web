@@ -11,7 +11,9 @@ export function ComingSoonPage({ item }: { item: NavItem }) {
         <Icon className="size-6" strokeWidth={1.8} />
       </span>
       <h1 className="text-[28px] font-semibold tracking-tight text-brand">{item.label}</h1>
-      <p className="text-ink-2">This section is coming in a later release.</p>
+      <p className="text-ink-2">
+        {item.label} isn’t in this web app yet. We’ll open it here when it’s ready.
+      </p>
       <Link to={paths.home} className={buttonClass({ variant: 'secondary' })}>
         Back to home
       </Link>

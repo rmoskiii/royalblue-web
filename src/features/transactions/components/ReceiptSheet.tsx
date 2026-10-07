@@ -3,6 +3,7 @@ import { useToast } from '@/app/providers/ToastProvider';
 import { Button, Chip, Modal, Money } from '@/components/ui';
 import { cn } from '@/lib/cn';
 import { formatDate, formatNaira, formatTime } from '@/lib/format';
+import { shareOrCopy } from '@/lib/clipboard';
 import { TransactionIcon } from './TransactionRow';
 
 export function ReceiptSheet({
@@ -57,10 +58,28 @@ export function ReceiptSheet({
         </dl>
 
         <div className="grid grid-cols-2 gap-2">
-          <Button variant="secondary" onClick={() => showToast('Receipt sharing is coming soon')}>
+          <Button
+            variant="secondary"
+            onClick={async () => {
+              const outcome = await shareOrCopy(
+                'RoyalBlue receipt',
+                `${t.title}\n${formatNaira(t.amount, 2)} · ${t.status}\n${t.counterparty}\nReference ${t.reference}`,
+              );
+              if (outcome === 'copied') showToast('Receipt copied');
+            }}
+          >
             Share receipt
           </Button>
-          <Button variant="secondary" onClick={() => showToast('We’ll connect this to support')}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              const subject = encodeURIComponent(`Transaction ${t.reference}`);
+              const body = encodeURIComponent(
+                `I need help with this RoyalBlue transaction.\n\nReference: ${t.reference}\nAmount: ${formatNaira(t.amount, 2)}\n`,
+              );
+              window.location.href = `mailto:support@royalblue.ng?subject=${subject}&body=${body}`;
+            }}
+          >
             Report an issue
           </Button>
         </div>
