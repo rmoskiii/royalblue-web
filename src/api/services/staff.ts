@@ -69,6 +69,10 @@ export const staffService = {
     return http.post(`/staff/applications/${id}/decide`, body);
   },
 
+  disburse(id: string) {
+    return http.post(`/staff/applications/${id}/disburse`);
+  },
+
   freeze(id: string, reason: string) {
     return http.post(`/staff/accounts/${id}/freeze`, { reason });
   },

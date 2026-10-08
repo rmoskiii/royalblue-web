@@ -60,8 +60,8 @@ export const learnArticles: LearnArticle[] = [
     href: paths.savings,
     body: [
       'Create a vault with a name and target. Interest on the calculator is illustrative until a product is booked.',
-      'Loans need a complete identity file. Staff on the credit desk review applications — the app does not auto-disburse.',
-      'Repayments and schedules show on the loan once it is active.',
+      'Loans need a complete identity file. An officer recommends, a credit manager approves, then disbursement credits your RoyalBlue account.',
+      'Repayments and schedules show on the loan once it is disbursed.',
     ],
   },
 ];

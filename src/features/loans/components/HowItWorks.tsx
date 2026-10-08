@@ -2,9 +2,9 @@ import { Card } from '@/components/ui';
 
 // RoyalBlue's published loan process.
 const steps = [
-  ['Fund your account', 'Deposit 20% of the loan amount in your RoyalBlue account.'],
+  ['Fund your account', 'Hold 20% of the loan amount in your RoyalBlue account. Credit checks this before disbursement.'],
   ['Apply online', 'Complete the application and guarantor forms and upload your documents.'],
-  ['Get approved', 'Credit desk reviews the file. Once approved, funds land in your RoyalBlue account.'],
+  ['Approval then disbursement', 'The credit desk reviews and approves. Disbursement credits your RoyalBlue account; the schedule then shows here.'],
 ];
 
 export function HowItWorks() {

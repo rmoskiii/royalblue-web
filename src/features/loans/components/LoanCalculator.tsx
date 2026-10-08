@@ -6,7 +6,6 @@ import { buttonClass, Card, CardHeader, Chip, Money } from '@/components/ui';
 import { formatNaira } from '@/lib/format';
 import { estimateLoan } from '../lib/amortization';
 
-const MIN_AMOUNT = 100_000;
 const STEP = 50_000;
 const DEFAULT_AMOUNT = 1_500_000;
 
@@ -17,7 +16,10 @@ interface LoanCalculatorProps {
 
 /** Remount with key={product.id} to reset when the product changes. */
 export function LoanCalculator({ product, ref }: LoanCalculatorProps) {
-  const [amount, setAmount] = useState(Math.min(DEFAULT_AMOUNT, product.maxAmount));
+  const minAmount = product.minAmount || STEP;
+  const [amount, setAmount] = useState(
+    Math.min(Math.max(DEFAULT_AMOUNT, minAmount), product.maxAmount),
+  );
   const [tenor, setTenor] = useState(product.tenorOptions.at(-1) ?? 12);
   const estimate = estimateLoan(amount, product.monthlyRate, tenor);
 
@@ -41,7 +43,7 @@ export function LoanCalculator({ product, ref }: LoanCalculatorProps) {
       <input
         id="loan-amount"
         type="range"
-        min={MIN_AMOUNT}
+        min={minAmount}
         max={product.maxAmount}
         step={STEP}
         value={amount}
@@ -49,7 +51,7 @@ export function LoanCalculator({ product, ref }: LoanCalculatorProps) {
         className="my-2 w-full accent-primary"
       />
       <div className="flex justify-between text-xs text-ink-3">
-        <span>{formatNaira(MIN_AMOUNT)}</span>
+        <span>{formatNaira(minAmount)}</span>
         <span>{formatNaira(product.maxAmount)}</span>
       </div>
 
@@ -82,7 +84,7 @@ export function LoanCalculator({ product, ref }: LoanCalculatorProps) {
       </div>
 
       <Link
-        to={paths.loanApply}
+        to={`${paths.loanApply}?product=${product.id}&amount=${amount}&tenor=${tenor}`}
         className={buttonClass({ size: 'lg', block: true })}
       >
         Start application

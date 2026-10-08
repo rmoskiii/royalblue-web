@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
-import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router';
+import { useEffect, useState, type FormEvent } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
 import { loanService } from '@/api/services/loans';
 import type { ApplyLoanRequest, LoanProduct } from '@/api/types';
 import { useLoanProducts } from '@/api/hooks';
@@ -44,6 +44,7 @@ const emptyGuarantor = {
 export function ApplyLoanPage() {
   const { data: products } = useLoanProducts();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const [step, setStep] = useState<Step>('borrower');
   const [borrower, setBorrower] = useState(emptyBorrower);
   const [guarantor, setGuarantor] = useState(emptyGuarantor);
@@ -52,6 +53,19 @@ export function ApplyLoanPage() {
     mutationFn: () => loanService.apply(toRequest(borrower, guarantor, products), files),
     onSuccess: () => navigate(paths.loans, { replace: true }),
   });
+
+  useEffect(() => {
+    const productId = params.get('product') ?? '';
+    const amount = params.get('amount') ?? '';
+    const tenor = params.get('tenor') ?? '';
+    if (!productId && !amount && !tenor) return;
+    setBorrower((b) => ({
+      ...b,
+      loanProductId: productId || b.loanProductId,
+      requestedAmount: amount || b.requestedAmount,
+      tenorMonths: tenor || b.tenorMonths,
+    }));
+  }, [params]);
 
   const product = products?.find((p) => p.id === borrower.loanProductId);
 
