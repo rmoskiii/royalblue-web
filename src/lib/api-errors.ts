@@ -50,19 +50,19 @@ export function friendlyApiMessage(raw: string, status = 0, path = ''): string {
 
 function networkRefusalCopy(path: string): string {
   if (/\/bills\/airtime/i.test(path)) {
-    return 'We couldn’t buy this airtime. The payment network refused it — this is not your PIN. Please try again later.';
+    return 'We couldn’t buy this airtime. The payment network refused the request. Please try again later.';
   }
   if (/\/bills\/data/i.test(path)) {
-    return 'We couldn’t buy this data. The payment network refused it — this is not your PIN. Please try again later.';
+    return 'We couldn’t buy this data. The payment network refused the request. Please try again later.';
   }
   if (/\/bills\/electricity/i.test(path)) {
-    return 'We couldn’t complete this electricity payment. The payment network refused it — this is not your PIN. Please try again later.';
+    return 'We couldn’t complete this electricity payment. The payment network refused the request. Please try again later.';
   }
   if (/\/bills\/tv/i.test(path)) {
-    return 'We couldn’t complete this TV payment. The payment network refused it — this is not your PIN. Please try again later.';
+    return 'We couldn’t complete this TV payment. The payment network refused the request. Please try again later.';
   }
   if (/\/bills\//i.test(path)) {
-    return 'We couldn’t complete this bill payment. The payment network refused it — this is not your PIN. Please try again later.';
+    return 'We couldn’t complete this bill payment. The payment network refused the request. Please try again later.';
   }
   return 'We couldn’t send this transfer. The payment network refused the payout — this is not your PIN. Please try again later.';
 }
