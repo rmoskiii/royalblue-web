@@ -5,6 +5,7 @@ import type { Beneficiary, TransferDestination } from '@/api/types';
 import { Avatar, Button, TextField } from '@/components/ui';
 import { cn } from '@/lib/cn';
 import { formatNaira, formatNumber, parseAmount } from '@/lib/format';
+import { BankPicker } from './components/BankPicker';
 import { TransferModal } from './components/TransferModal';
 import { avatarColour } from './lib/avatarColour';
 import { transferFee } from './lib/fees';
@@ -54,14 +55,14 @@ export function TransferPage() {
   return (
     <div className="grid min-w-0 gap-5">
       <h1 className="text-[24px] font-semibold tracking-tight text-brand sm:text-[28px] lg:text-[34px]">Transfer</h1>
-      <div className="min-w-0 rounded-[26px] border border-line bg-surface p-3.5 sm:p-4 lg:p-6">
+      <div className="min-w-0 overflow-x-hidden rounded-[26px] border border-line bg-surface p-3.5 sm:p-4 lg:p-6">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)] lg:items-start">
           <form className="grid min-w-0 gap-4" onSubmit={handleSubmit} noValidate>
             <div className="flex h-12 w-full rounded-[12px] bg-surface-2 p-1">
               {(
                 [
                   ['royalblue', 'To RoyalBlue'],
-                  ['other', 'To Other Banks'],
+                  ['other', 'To other banks'],
                 ] as const
               ).map(([value, label]) => (
                 <button
@@ -79,25 +80,11 @@ export function TransferPage() {
             </div>
 
             {destination === 'other' && (
-              <label className="grid gap-1.5">
-                <span className="text-[13px] font-medium text-ink-2">Bank</span>
-                <select
-                  value={bankCode}
-                  onChange={(e) => setBankCode(e.target.value)}
-                  className="h-12 w-full rounded-[10px] border-0 bg-surface-2 px-3.5 text-base outline-none"
-                >
-                  <option value="">Select bank</option>
-                  {banks.map((bank) => (
-                    <option key={`${bank.code}-${bank.name}`} value={bank.code}>
-                      {bank.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <BankPicker banks={banks} value={bankCode} onChange={setBankCode} />
             )}
 
             <TextField
-              label="Account Number"
+              label="Account number"
               inputMode="numeric"
               autoComplete="off"
               maxLength={10}
@@ -131,11 +118,11 @@ export function TransferPage() {
             />
 
             <Button type="submit" size="lg" disabled={!enquiry.data || amount <= 0} className="w-full lg:w-40">
-              Proceed
+              Continue
             </Button>
           </form>
 
-          <div>
+          <div className="min-w-0">
             <p className="mb-4 text-lg font-semibold">Beneficiaries</p>
             {beneficiaries.length === 0 ? (
               <p className="text-sm text-ink-3">Saved recipients will show here after your first transfer.</p>
@@ -149,8 +136,8 @@ export function TransferPage() {
                       className="flex w-full flex-col items-start gap-2 rounded-2xl p-2 text-left hover:bg-surface-2"
                     >
                       <Avatar name={b.name} color={avatarColour(i)} size="lg" />
-                      <span className="text-sm font-semibold">{b.name}</span>
-                      <span className="text-xs text-ink-3">
+                      <span className="w-full truncate text-sm font-semibold">{b.name}</span>
+                      <span className="w-full truncate text-xs text-ink-3">
                         {b.accountNumber} · {b.bankName}
                       </span>
                     </button>
