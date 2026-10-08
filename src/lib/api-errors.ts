@@ -64,5 +64,5 @@ function networkRefusalCopy(path: string): string {
   if (/\/bills\//i.test(path)) {
     return 'We couldn’t complete this bill payment. The payment network refused the request. Please try again later.';
   }
-  return 'We couldn’t send this transfer. The payment network refused the payout — this is not your PIN. Please try again later.';
+  return 'We couldn’t send this transfer. The payment network refused the payout. Please try again later.';
 }
