@@ -25,7 +25,7 @@ export function AddMoneySheet({ open, onClose }: { open: boolean; onClose: () =>
       queryClient.invalidateQueries({ queryKey: queryKeys.account });
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: queryKeys.insights });
-      showToast(`₦${result.amount.toLocaleString('en-NG')} test credit landed`);
+      showToast(`₦${result.amount.toLocaleString('en-NG')} added`);
       close();
     },
     onError: (error) => showToast(error.message),
@@ -35,7 +35,7 @@ export function AddMoneySheet({ open, onClose }: { open: boolean; onClose: () =>
     mutationFn: () => accountService.startCardTopup(5_000),
     onSuccess: ({ authorizationUrl }) => {
       if (!authorizationUrl) {
-        showToast('BudPay did not return a checkout URL');
+        showToast('Card checkout isn’t ready. Try a bank transfer, or try again later.');
         return;
       }
       window.location.assign(authorizationUrl);
@@ -60,8 +60,8 @@ export function AddMoneySheet({ open, onClose }: { open: boolean; onClose: () =>
   if (account?.sandbox) {
     options.push({
       icon: FlaskConical,
-      title: 'BudPay sandbox top-up',
-      body: 'Credit ₦50,000 through the dedicated-account webhook payload (test keys / mock).',
+      title: 'Test credit',
+      body: 'Add ₦50,000 on this test environment only.',
       onClick: () => sandboxTopUp.mutate(),
     });
   }

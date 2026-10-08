@@ -84,7 +84,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthCard title="Login to RoyalBlue" subtitle="Use your email or phone number, then your password">
+    <AuthCard title="Log in to RoyalBlue" subtitle="Use your email or phone number, then your password">
       <form className="grid gap-4" onKeyDown={submitOnEnter} onSubmit={handleSubmit}>
         <TextField
           label="Email or phone number"
@@ -105,18 +105,20 @@ export function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <p className="text-right text-[13px] text-ink-3">
-            Keep this password safe. In-app reset is not available yet.
+          <p className="text-right text-[13px]">
+            <Link to={paths.forgot} className="font-medium text-brand">
+              Forgot password
+            </Link>
           </p>
         </div>
         {submit.isError && <p className="text-[13px] text-primary-text">{submit.error.message}</p>}
         <Button type="submit" size="lg" block disabled={!identifier.trim() || !password || submit.isPending}>
-          {submit.isPending ? 'Logging in…' : 'Login'}
+          {submit.isPending ? 'Logging in…' : 'Log in'}
         </Button>
         <p className="text-center text-sm font-medium text-brand">
           Don’t have an account?{' '}
           <Link to={paths.signUp} className="text-primary-text">
-            Create Account
+            Create account
           </Link>
         </p>
       </form>

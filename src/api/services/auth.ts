@@ -116,6 +116,24 @@ export const authService = {
     return http.patch('/auth/password', { currentPassword, newPassword });
   },
 
+  requestPasswordReset(email: string): Promise<{ email: string; message?: string; otp?: string }> {
+    if (env.useMocks) {
+      return mockResponse({
+        email,
+        message: 'If that email is on an account, we sent a 6-digit code.',
+        otp: '575235',
+      });
+    }
+    return http.post('/auth/forgot', { email });
+  },
+
+  resetPassword(email: string, otp: string, newPassword: string): Promise<{ message: string }> {
+    if (env.useMocks) {
+      return mockResponse({ message: 'Password updated. Sign in with your new password.' });
+    }
+    return http.post('/auth/forgot/reset', { email, otp, newPassword });
+  },
+
   setPin(pin: string, currentPin?: string) {
     if (env.useMocks) return mockResponse({ pinSet: true });
     return http.patch('/auth/pin', { pin, currentPin });

@@ -83,6 +83,7 @@ Then you land on Home. Login is password-only (no authenticator) for these sandb
 | --------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | Website         | `/welcome` (where `/` opens), `/terms`, `/privacy`      | Figma "Desktop - 2" exports; hero CTAs are Login / Open an account over the original buttons     |
 | Login           | `/login`                                                | Email **or** phone + password; authenticator step when TOTP is enabled                            |
+| Forgot password | `/forgot`                                               | Email code, then a new password. Does not sign you in. OTP is echoed when Nest has no Resend |
 | Sign-up         | `/sign-up`                                              | Password → details → BVN/NIN (continue if slow) → PIN. OTP/TOTP only when Nest has Resend |
 | Account limits  | `/verification`                                         | BVN via KYC `validate-bvn`. No freeze. Starter ₦50k until BVN/NIN. Tiers 1–3 after.            |
 | Home            | `/dashboard` (personal)                                 | Staff never land here. Balance, Send / Receive / Pay / Add money                                 |
@@ -240,5 +241,5 @@ Signed-out visitors who open a deep link go to `/login` first, then land on the 
 - **Components:** named exports, PascalCase files, one main component per file.
 - **Styling:** Tailwind classes only. Combine conditional classes with `cn()`. For a link that should look like a button, use `buttonClass()` instead of nesting a `<button>` inside a `<Link>`.
 - **State:** server data lives in React Query. Local UI state uses `useState`. App-wide concerns (theme, auth, toasts, active profile, the transfer modal) are React context in `app/providers` or the owning feature.
-- **Copy:** sentence case, plain words, and messages that say what happened and what to do next.
+- **Copy:** sentence case everywhere a customer reads it — buttons, titles, labels, toasts. Capitalise proper nouns and acronyms only (RoyalBlue, BVN, NIN, PIN, CAC). Use “Log in” / “Log out” as verbs, never “Login”. Prefer “Continue” over “Proceed”, and “code” over “OTP” except when talking to an authenticator app. Write “and”, not “&”. Messages should say what happened and what to do next.
 - **Accessibility:** icon-only buttons need an `aria-label`. Toggles use `aria-pressed`. Dialogs use `Modal`, which handles Escape and focus.

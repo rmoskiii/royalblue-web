@@ -78,7 +78,7 @@ export function IdentityStep({
         inputClassName="tabular"
         hint={
           type === 'bvn'
-            ? 'We try a live BudPay KYC check. If it is not available yet, you can still create the account and finish later in Settings.'
+            ? 'We’ll try to confirm this now. If we can’t, you can still create the account and finish later in Settings.'
             : 'Dial *346# from your NIN-linked phone if you don’t know it.'
         }
         error={submit.isError ? submit.error.message : undefined}

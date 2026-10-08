@@ -89,13 +89,13 @@ export function SettingsPage() {
           <SettingsRow
             to={paths.settingsSecurity}
             icon={LockKeyhole}
-            label="Login & security"
+            label="Sign-in and security"
           />
           {!staff && (
             <SettingsRow
               to={paths.verification}
               icon={ShieldCheck}
-              label="Identity & limits"
+              label="Identity and limits"
               value={
                 account?.restrictedNoBvn ? 'Starter ₦50k' : account ? `Tier ${account.tier}` : kyc
               }
@@ -108,7 +108,7 @@ export function SettingsPage() {
         </Card>
 
         <Card className="overflow-hidden p-0">
-          <SettingsRow to={paths.help} icon={CircleHelp} label="Help & support" />
+          <SettingsRow to={paths.help} icon={CircleHelp} label="Help and support" />
           <SettingsRow href={paths.terms} icon={FileText} label="Terms of service" />
           <SettingsRow href={paths.privacy} icon={FileText} label="Privacy policy" />
         </Card>

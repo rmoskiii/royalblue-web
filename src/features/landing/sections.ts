@@ -135,8 +135,8 @@ export const sections: ImageSection[] = [
     height: 105,
     gapAbove: 68,
     hotspots: [
-      { label: 'Terms of Service', x: 440, y: -6, w: 108, h: 28, to: paths.terms, shape: 'text' },
-      { label: 'Privacy Policy', x: 608, y: -6, w: 92, h: 28, to: paths.privacy, shape: 'text' },
+      { label: 'Terms of service', x: 440, y: -6, w: 108, h: 28, to: paths.terms, shape: 'text' },
+      { label: 'Privacy policy', x: 608, y: -6, w: 92, h: 28, to: paths.privacy, shape: 'text' },
     ],
   },
   {

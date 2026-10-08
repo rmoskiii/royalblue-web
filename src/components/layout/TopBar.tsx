@@ -4,7 +4,7 @@ import { useAccount, useMe } from '@/api/hooks';
 import { isStaffRole } from '@/api/types';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { useProfile } from '@/app/providers/ProfileProvider';
-import { useToast } from '@/app/providers/ToastProvider';
+import { useInbox } from '@/features/inbox/useInbox';
 import { Chip } from '@/components/ui';
 import { staffRoleLabel } from '@/features/admin/staffAccess';
 import { formatGreetingDate, greeting } from '@/lib/format';
@@ -17,7 +17,7 @@ export function TopBar() {
   const { data: user } = useMe();
   const { data: account } = useAccount();
   const { session } = useAuth();
-  const { showToast } = useToast();
+  const { unreadCount } = useInbox();
   const { profile, profileType } = useProfile();
   const hello = greeting();
   const staff = isStaffRole(session?.user.role);
@@ -69,14 +69,16 @@ export function TopBar() {
             )}
           </Link>
         )}
-        <button
-          type="button"
-          aria-label="No new notifications"
-          onClick={() => showToast('You’re all caught up')}
+        <Link
+          to={paths.notifications}
+          aria-label={unreadCount ? `${unreadCount} unread notifications` : 'Notifications'}
           className="relative grid size-9.5 place-items-center rounded-field text-ink-2 hover:bg-surface-2"
         >
           <Bell className="size-5" strokeWidth={1.8} />
-        </button>
+          {unreadCount > 0 && (
+            <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-primary-text" />
+          )}
+        </Link>
         <ThemeToggle />
       </div>
     </header>

@@ -80,7 +80,7 @@ export function SecuritySettingsPage() {
     <>
       <SettingsBack />
       <PageHeader
-        title="Login & security"
+        title="Sign-in and security"
         subtitle="Password, PIN and authenticator — the same controls you’ll get on the RoyalBlue app."
       />
       <div className="mx-auto grid max-w-xl gap-4">
@@ -90,7 +90,7 @@ export function SecuritySettingsPage() {
               <KeyRound className="size-5" />
             </span>
             <div>
-              <h2 className="font-semibold">Login password</h2>
+              <h2 className="font-semibold">Password</h2>
               <p className="text-[13px] text-ink-3">Used on web. The app can also sign in with PIN.</p>
             </div>
           </div>

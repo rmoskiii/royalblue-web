@@ -71,11 +71,13 @@ export function VerificationPage() {
               {status.restrictedNoBvn ? 'Starter' : `Tier ${status.tier}`}
             </p>
             {status.kycStatus && (
-              <p className="text-[13px] text-ink-3">KYC {status.kycStatus.replaceAll('_', ' ').toLowerCase()}</p>
+              <p className="text-[13px] text-ink-3">
+                Verification {status.kycStatus.replaceAll('_', ' ').toLowerCase()}
+              </p>
             )}
             {status.identityVerified === false && (status.hasBvn || status.hasNin) && (
               <p className="mt-1 text-[13px] text-amber-800 dark:text-amber-200">
-                Identity not confirmed yet. Retry BVN below when live BudPay KYC is available.
+                Identity not confirmed yet. You can retry BVN below.
               </p>
             )}
           </div>
@@ -115,8 +117,7 @@ export function VerificationPage() {
                 <div>
                   <p className="font-semibold">You’re on Tier 3</p>
                   <p className="text-[13px] text-ink-2">
-                    BVN, ID and proof of address are on file. Daily and balance caps are off. Live
-                    BudPay review can still re-check these documents later.
+                    BVN, ID and proof of address are on file. Daily and balance caps are off.
                   </p>
                 </div>
               </div>

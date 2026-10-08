@@ -43,7 +43,7 @@ export function PersonDetailsStep({
         onChange={(e) => setPhone(e.target.value)}
       />
       <Button type="submit" size="lg" block disabled={!firstName.trim() || !lastName.trim() || phone.replace(/\D/g, '').length < 10}>
-        Proceed
+        Continue
       </Button>
     </form>
   );

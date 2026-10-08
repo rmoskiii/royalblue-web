@@ -22,7 +22,7 @@ export function HeroCtas() {
           to={paths.login}
           className={`${base} min-w-[8.25rem] border border-white/55 bg-[#2f1d4b] text-white hover:bg-white/10`}
         >
-          Login
+          Log in
         </Link>
       </div>
     </div>

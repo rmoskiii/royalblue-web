@@ -43,7 +43,7 @@ export function ConfirmStep({
           ) : (
             <dd className="text-[13px] text-ink-2">
               Verification not completed. You can still create your account. We’ll remind you in
-              Settings to finish KYC when live BudPay identity is available.
+              Settings to finish verification.
             </dd>
           )}
         </dl>

@@ -21,14 +21,14 @@ export function TierBanner() {
     ? 'Identity not confirmed'
     : restricted
       ? `Starter limit ${formatNaira(cap)} — add BVN`
-      : `Finish KYC · Tier ${status.tier}`;
+      : `Finish verification · Tier ${status.tier}`;
   const body = identityPending
     ? (status.missing?.[0] ??
-      'BudPay has not confirmed this BVN yet. Keep using the account, then finish verification in Settings when live KYC is available.')
+      'We have not confirmed this BVN yet. Keep using the account, then finish verification in Settings.')
     : restricted
-      ? 'You skipped identity checks. CBN starter KYC caps balance, daily send and a single transfer at ₦50,000 until BVN or NIN is linked.'
+      ? 'You skipped identity checks. Starter limits cap balance, daily send and a single transfer at ₦50,000 until BVN or NIN is linked.'
       : (status.missing?.[0] ?? 'Complete ID and proof of address to raise your limits.');
-  const cta = identityPending ? 'Finish in Settings' : restricted ? 'Add BVN' : 'Continue KYC';
+  const cta = identityPending ? 'Finish in Settings' : restricted ? 'Add BVN' : 'Continue verification';
 
   return (
     <section className="flex flex-wrap items-center gap-x-3.5 gap-y-3 rounded-card border border-amber-500/30 bg-amber-500/10 px-4 py-3.5">

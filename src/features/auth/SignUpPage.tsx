@@ -242,7 +242,7 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Account type"
-        subtitle="Personal banking, or a BudPay business KYC profile."
+        subtitle="Personal banking, or a registered business."
         back={
           <BackButton
             onClick={() =>
@@ -284,7 +284,7 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Business type"
-        subtitle="This maps to BudPay KYC v2 (individual, sole, limited, NGO, government)."
+        subtitle="Choose how this business is registered."
         back={
           <BackButton
             onClick={() =>
@@ -360,7 +360,7 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Identity verification"
-        subtitle="Enter your BVN or NIN. We try live BudPay first. If that check is not ready, you can still open the account and finish later in Settings."
+        subtitle="Enter your BVN or NIN. If we can’t confirm it right now, you can still open the account and finish later in Settings."
         back={
           <BackButton
             onClick={() =>
@@ -402,7 +402,7 @@ export function SignUpPage() {
         subtitle={
           state.identity.verified && !state.identity.pending
             ? undefined
-            : 'Your account can still be created. KYC banners will point you to Settings when live identity is available.'
+            : 'Your account can still be created. We’ll remind you in Settings to finish verification.'
         }
         back={
           <BackButton
@@ -527,7 +527,7 @@ export function SignUpPage() {
   return (
     <AuthCard
       title="Transaction PIN"
-      subtitle="You’ll enter this 6-digit PIN to send money, pay bills, or make a payout. Not your login password."
+      subtitle="You’ll enter this 6-digit PIN to send money, pay bills, or make a payout. Not your sign-in password."
       back={
         <BackButton
           onClick={() =>
@@ -615,7 +615,7 @@ function EmailStep({
   });
 
   return (
-    <AuthCard title="Create Account" subtitle="Enter your email to get started">
+    <AuthCard title="Create account" subtitle="Enter your email to get started">
       <form
         className="grid gap-4"
         onKeyDown={submitOnEnter}
@@ -636,12 +636,12 @@ function EmailStep({
         />
         {start.isError && <p className="text-[13px] text-primary-text">{start.error.message}</p>}
         <Button type="submit" size="lg" block disabled={!email.includes('@') || start.isPending}>
-          {start.isPending ? 'Continuing…' : 'Proceed'}
+          {start.isPending ? 'Continuing…' : 'Continue'}
         </Button>
         <p className="text-center text-sm font-medium text-brand">
           Already have an account?{' '}
           <Link to={paths.login} className="text-primary-text">
-            Login
+            Log in
           </Link>
         </p>
       </form>
@@ -671,7 +671,7 @@ function VerifyEmailStep({
   return (
     <AuthCard
       title="Verify email"
-      subtitle="We've just sent you a 6 digit OTP to your email."
+      subtitle="We’ve sent a 6-digit code to your email."
       back={<BackButton onClick={onBack} />}
     >
       <form
@@ -682,12 +682,12 @@ function VerifyEmailStep({
           if (code.length === 6) onDone(code);
         }}
       >
-        <CodeInput label="Email OTP" value={code} onChange={setCode} />
+        <CodeInput label="Email code" value={code} onChange={setCode} />
         <button type="button" className="justify-self-start text-sm font-medium text-brand" onClick={() => resend.mutate()}>
-          {resend.isPending ? 'Sending…' : 'Resend Code'}
+          {resend.isPending ? 'Sending…' : 'Resend code'}
         </button>
         <Button type="submit" size="lg" block disabled={code.length !== 6}>
-          Proceed
+          Continue
         </Button>
       </form>
     </AuthCard>
@@ -704,7 +704,7 @@ function PasswordStep({
   const [password, setPassword] = useState(demo?.signUp.password ?? '');
   return (
     <AuthCard
-      title="Create Account"
+      title="Create account"
       subtitle="Choose a password, then tell us if this is personal or business."
       back={<BackButton onClick={onBack} />}
     >
@@ -725,7 +725,7 @@ function PasswordStep({
           onChange={(e) => setPassword(e.target.value)}
         />
         <Button type="submit" size="lg" block disabled={password.length < 8}>
-          Proceed
+          Continue
         </Button>
       </form>
     </AuthCard>
