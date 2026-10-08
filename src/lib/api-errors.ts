@@ -1,12 +1,18 @@
 /** Map Nest/BudPay messages into copy a customer can act on. */
-export function friendlyApiMessage(raw: string, status = 0): string {
+export function friendlyApiMessage(raw: string, status = 0, path = ''): string {
   const message = raw.trim();
+  const bills = /\/bills\//i.test(path);
   if (
     /unauthorized access/i.test(message) ||
     /live payout api is refusing/i.test(message) ||
     /payment network refused/i.test(message)
   ) {
-    return 'We couldn’t send this transfer. The payment network refused the payout — this is not your PIN. Please try again later.';
+    return networkRefusalCopy(path);
+  }
+  if (/rejected the payout hmac/i.test(message) || /invalid signature|intrusion detected/i.test(message)) {
+    return bills
+      ? 'The payment network rejected this bill payment. Try again in a moment.'
+      : 'The payment network rejected this transfer. Try again in a moment.';
   }
   if (/^unauthorized$/i.test(message)) {
     return 'Your session expired. Sign in again.';
@@ -27,7 +33,7 @@ export function friendlyApiMessage(raw: string, status = 0): string {
     return 'There isn’t enough money in this account.';
   }
   if (/merchant wallet/i.test(message)) {
-    return 'We can’t complete transfers just now. Please try again shortly.';
+    return 'We can’t complete payments just now. Please try again shortly.';
   }
   if (/budpay is unreachable|payment network is unavailable/i.test(message)) {
     return 'The payment network is unavailable. Try again in a moment.';
@@ -40,4 +46,23 @@ export function friendlyApiMessage(raw: string, status = 0): string {
     return 'That request didn’t go through. Try again.';
   }
   return message;
+}
+
+function networkRefusalCopy(path: string): string {
+  if (/\/bills\/airtime/i.test(path)) {
+    return 'We couldn’t buy this airtime. The payment network refused it — this is not your PIN. Please try again later.';
+  }
+  if (/\/bills\/data/i.test(path)) {
+    return 'We couldn’t buy this data. The payment network refused it — this is not your PIN. Please try again later.';
+  }
+  if (/\/bills\/electricity/i.test(path)) {
+    return 'We couldn’t complete this electricity payment. The payment network refused it — this is not your PIN. Please try again later.';
+  }
+  if (/\/bills\/tv/i.test(path)) {
+    return 'We couldn’t complete this TV payment. The payment network refused it — this is not your PIN. Please try again later.';
+  }
+  if (/\/bills\//i.test(path)) {
+    return 'We couldn’t complete this bill payment. The payment network refused it — this is not your PIN. Please try again later.';
+  }
+  return 'We couldn’t send this transfer. The payment network refused the payout — this is not your PIN. Please try again later.';
 }
