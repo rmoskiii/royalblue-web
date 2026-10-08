@@ -111,7 +111,7 @@ async function request<T>(
     if (sessionExpired) {
       onUnauthorized?.();
     }
-    throw new ApiError(res.status, friendlyApiMessage(message, res.status), data);
+    throw new ApiError(res.status, friendlyApiMessage(message, res.status, path), data);
   }
   return data as T;
 }

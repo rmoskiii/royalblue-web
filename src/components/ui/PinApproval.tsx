@@ -54,7 +54,9 @@ export function PinApproval({
 
 function friendlyPinError(message: string) {
   if (/invalid signature|intrusion detected/i.test(message)) {
-    return 'The payment network rejected this transfer. Try again in a moment.';
+    return /airtime|bill|electricity|data|TV payment/i.test(message)
+      ? 'The payment network rejected this bill payment. Try again in a moment.'
+      : 'The payment network rejected this transfer. Try again in a moment.';
   }
   return message;
 }
