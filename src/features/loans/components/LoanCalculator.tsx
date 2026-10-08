@@ -1,7 +1,8 @@
 import { useState, type Ref } from 'react';
+import { Link } from 'react-router';
 import type { LoanProduct } from '@/api/types';
-import { useToast } from '@/app/providers/ToastProvider';
-import { Button, Card, CardHeader, Chip, Money } from '@/components/ui';
+import { paths } from '@/components/layout/navigation';
+import { buttonClass, Card, CardHeader, Chip, Money } from '@/components/ui';
 import { formatNaira } from '@/lib/format';
 import { estimateLoan } from '../lib/amortization';
 
@@ -16,7 +17,6 @@ interface LoanCalculatorProps {
 
 /** Remount with key={product.id} to reset when the product changes. */
 export function LoanCalculator({ product, ref }: LoanCalculatorProps) {
-  const { showToast } = useToast();
   const [amount, setAmount] = useState(Math.min(DEFAULT_AMOUNT, product.maxAmount));
   const [tenor, setTenor] = useState(product.tenorOptions.at(-1) ?? 12);
   const estimate = estimateLoan(amount, product.monthlyRate, tenor);
@@ -36,7 +36,7 @@ export function LoanCalculator({ product, ref }: LoanCalculatorProps) {
       </label>
       <Money
         amount={amount}
-        className="mt-1 block text-[30px] leading-tight font-semibold tracking-tight text-brand"
+        className="mt-1 block text-[24px] leading-tight font-semibold tracking-tight text-brand sm:text-[30px]"
       />
       <input
         id="loan-amount"
@@ -54,14 +54,14 @@ export function LoanCalculator({ product, ref }: LoanCalculatorProps) {
       </div>
 
       <p className="mt-3.5 mb-1.5 text-[13px] font-medium text-ink-2">Repay over</p>
-      <div className="grid grid-cols-4 gap-1.5" role="group" aria-label="Repayment period">
+      <div className="flex flex-wrap gap-1.5" role="group" aria-label="Repayment period">
         {product.tenorOptions.map((m) => (
           <button
             key={m}
             type="button"
             aria-pressed={tenor === m}
             onClick={() => setTenor(m)}
-            className="h-9.5 rounded-field border border-line bg-surface font-medium aria-pressed:border-primary aria-pressed:bg-primary-soft aria-pressed:text-primary-text"
+            className="h-9.5 min-w-14 flex-1 rounded-field border border-line bg-surface font-medium aria-pressed:border-primary aria-pressed:bg-primary-soft aria-pressed:text-primary-text"
           >
             {m} mo
           </button>
@@ -70,24 +70,23 @@ export function LoanCalculator({ product, ref }: LoanCalculatorProps) {
 
       <div className="my-4 grid gap-2.5 rounded-tile bg-surface-2 p-3.5">
         <div className="flex items-baseline justify-between gap-3">
-          <span className="text-[13px] text-ink-2">Monthly repayment</span>
-          <Money amount={estimate.monthly} className="text-[26px] font-semibold text-brand" />
+          <span className="min-w-0 text-[13px] text-ink-2">Monthly repayment</span>
+          <Money amount={estimate.monthly} className="shrink-0 text-xl font-semibold text-brand sm:text-[26px]" />
         </div>
         {rows.map(([label, value]) => (
-          <div key={label} className="flex justify-between text-[13px] text-ink-2">
-            <span>{label}</span>
-            <Money amount={value} className="font-semibold text-ink" />
+          <div key={label} className="flex justify-between gap-3 text-[13px] text-ink-2">
+            <span className="min-w-0">{label}</span>
+            <Money amount={value} className="shrink-0 font-semibold text-ink" />
           </div>
         ))}
       </div>
 
-      <Button
-        block
-        size="lg"
-        onClick={() => showToast('The application form is next on the build list')}
+      <Link
+        to={paths.loanApply}
+        className={buttonClass({ size: 'lg', block: true })}
       >
         Start application
-      </Button>
+      </Link>
       <p className="mt-2.5 text-xs text-ink-3">
         Estimate at {product.monthlyRate * 100}% per month on a reducing balance. Your final rate
         depends on approval.

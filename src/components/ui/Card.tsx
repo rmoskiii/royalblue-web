@@ -15,8 +15,8 @@ interface CardHeaderProps {
 
 export function CardHeader({ title, action, className }: CardHeaderProps) {
   return (
-    <div className={cn('mb-2.5 flex items-center justify-between gap-3', className)}>
-      <h3 className="text-base font-semibold">{title}</h3>
+    <div className={cn('mb-2.5 flex flex-wrap items-center justify-between gap-2', className)}>
+      <h3 className="min-w-0 text-base font-semibold">{title}</h3>
       {action}
     </div>
   );

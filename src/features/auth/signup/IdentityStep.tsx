@@ -19,12 +19,13 @@ export function IdentityStep({
 }) {
   const [type, setType] = useState<IdentityType>('bvn');
   const [number, setNumber] = useState(demo?.signUp.bvn ?? '');
-  const fallback = (): IdentityLookup => ({
-    firstName: firstName || 'Pending',
-    lastName: lastName || 'Customer',
-    dateOfBirth: '1990-01-01',
+  const unverified = (): IdentityLookup => ({
+    firstName: firstName || '',
+    lastName: lastName || '',
+    dateOfBirth: null,
     photoUrl: null,
     pending: true,
+    verified: false,
   });
   const submit = useMutation({
     mutationFn: async () => {
@@ -36,13 +37,13 @@ export function IdentityStep({
         }),
       ]);
       if (timed.ok) return timed.identity;
-      return fallback();
+      return unverified();
     },
     onSuccess: (identity) => onDone(identity, { type, number }),
   });
 
-  const skipIdentity = () => onDone(fallback(), { type, number: '' });
-  const continuePending = () => onDone(fallback(), { type, number });
+  const skipIdentity = () => onDone(unverified(), { type, number: '' });
+  const continueUnverified = () => onDone(unverified(), { type, number });
 
   return (
     <form
@@ -77,7 +78,7 @@ export function IdentityStep({
         inputClassName="tabular"
         hint={
           type === 'bvn'
-            ? 'We confirm your name via BudPay KYC. This does not freeze other bank accounts or pull loan history.'
+            ? 'We’ll try to confirm this now. If we can’t, you can still create the account and finish later in Settings.'
             : 'Dial *346# from your NIN-linked phone if you don’t know it.'
         }
         error={submit.isError ? submit.error.message : undefined}
@@ -89,7 +90,7 @@ export function IdentityStep({
         type="button"
         className="text-sm font-medium text-brand"
         disabled={number.length !== 11 || submit.isPending}
-        onClick={continuePending}
+        onClick={continueUnverified}
       >
         Continue without waiting
       </button>

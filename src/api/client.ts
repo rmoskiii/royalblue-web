@@ -1,4 +1,5 @@
 import { env } from '@/config/env';
+import { friendlyApiMessage } from '@/lib/api-errors';
 
 /**
  * Minimal fetch wrapper. Every service goes through this, so auth headers,
@@ -20,6 +21,8 @@ const PUBLIC_AUTH_PATHS = [
   '/auth/cac-lookup',
   '/auth/verify-otp',
   '/auth/resend-otp',
+  '/auth/forgot',
+  '/auth/forgot/reset',
 ];
 
 export function setAccessToken(token: string | null) {
@@ -98,10 +101,17 @@ async function request<T>(
   const data = res.status === 204 ? undefined : await res.json().catch(() => undefined);
 
   if (!res.ok) {
-    if (res.status === 401 && !PUBLIC_AUTH_PATHS.includes(path)) {
+    const message = errorMessage(data, res.status);
+    // Wrong PIN and payout-provider 403s used to return 401/"Unauthorized Access"
+    // and this handler treated them as a dead JWT.
+    const sessionExpired =
+      res.status === 401 &&
+      !PUBLIC_AUTH_PATHS.includes(path) &&
+      !/pin|unauthorized access|payout/i.test(message);
+    if (sessionExpired) {
       onUnauthorized?.();
     }
-    throw new ApiError(res.status, errorMessage(data, res.status), data);
+    throw new ApiError(res.status, friendlyApiMessage(message, res.status), data);
   }
   return data as T;
 }

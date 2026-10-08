@@ -5,7 +5,8 @@ import { paths } from './navigation';
 
 /** Navy background with red light streaks, as in the Figma auth screens. */
 export function AuthLayout() {
-  const onSignUp = useLocation().pathname === paths.signUp;
+  const pathname = useLocation().pathname;
+  const showLogin = pathname === paths.signUp || pathname === paths.forgot;
   return (
     <div className="relative flex min-h-dvh flex-col bg-navy">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -15,7 +16,7 @@ export function AuthLayout() {
         <BrandBar
           onDark
           homeTo={paths.welcome}
-          trailing={onSignUp ? <LoginButton onDark /> : <OpenAccountButton onDark />}
+          trailing={showLogin ? <LoginButton onDark /> : <OpenAccountButton onDark />}
         />
       </header>
       <main className="relative grid flex-1 place-items-center px-4 py-6">

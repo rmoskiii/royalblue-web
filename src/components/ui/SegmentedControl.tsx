@@ -27,7 +27,7 @@ export function SegmentedControl<T extends string>({
           type="button"
           aria-pressed={o.value === value}
           onClick={() => onChange(o.value)}
-          className="h-9.5 rounded-[9px] font-medium text-ink-2 aria-pressed:bg-surface aria-pressed:text-brand aria-pressed:shadow-sm"
+          className="h-9.5 truncate rounded-[9px] px-1 text-xs font-medium text-ink-2 aria-pressed:bg-surface aria-pressed:text-brand aria-pressed:shadow-sm sm:text-sm"
         >
           {o.label}
         </button>

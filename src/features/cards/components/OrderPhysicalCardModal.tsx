@@ -38,7 +38,7 @@ export function OrderPhysicalCardModal({ open, onClose }: { open: boolean; onClo
 
   return (
     <Modal open={open} onClose={onClose} title="Order a physical card">
-      <form className="grid gap-4 px-5.5 pt-2 pb-5.5" onSubmit={submit}>
+      <form className="grid gap-4 px-4 pt-2 pb-4" onSubmit={submit}>
         <div className="grid gap-1.5">
           <label htmlFor="address-search" className="text-[13px] font-medium text-ink-2">
             Find your address
@@ -51,7 +51,7 @@ export function OrderPhysicalCardModal({ open, onClose }: { open: boolean; onClo
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Start typing a street or area"
               autoComplete="off"
-              className="h-12 w-full rounded-field border border-transparent bg-surface-2 pr-3.5 pl-10 text-[15px] outline-none focus:border-brand focus:ring-3 focus:ring-brand/15"
+              className="h-12 w-full rounded-field border border-transparent bg-surface-2 pr-3.5 pl-10 text-base outline-none focus:border-brand focus:ring-3 focus:ring-brand/15"
             />
           </div>
           {query.trim().length >= 3 && (

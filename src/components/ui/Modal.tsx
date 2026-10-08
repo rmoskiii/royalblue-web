@@ -9,26 +9,27 @@ interface ModalProps {
   /** Accessible name; shown as the header unless `hideHeader` */
   title: string;
   hideHeader?: boolean;
-  /** Phones: take the whole screen instead of a bottom sheet */
-  fullScreenOnMobile?: boolean;
+  /** Bottom sheet on phones (More menu). Default is a centred card on every size. */
+  placement?: 'dialog' | 'sheet';
   children: ReactNode;
   className?: string;
 }
 
 /**
- * Centred dialog on tablet/desktop, bottom sheet on phones.
- * Closes on Escape and on backdrop click; locks page scroll while open.
+ * Centred card that hugs its content. Caps height so the page behind stays still.
+ * `placement="sheet"` is the phone More menu only.
  */
 export function Modal({
   open,
   onClose,
   title,
   hideHeader,
-  fullScreenOnMobile,
+  placement = 'dialog',
   children,
   className,
 }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const sheet = placement === 'sheet';
 
   useEffect(() => {
     if (!open) return;
@@ -50,8 +51,8 @@ export function Modal({
   return createPortal(
     <div
       className={cn(
-        'fixed inset-0 z-50 grid animate-fade-in bg-scrim md:place-items-center md:p-4',
-        fullScreenOnMobile ? 'items-stretch' : 'items-end',
+        'fixed inset-0 z-50 grid animate-fade-in bg-scrim',
+        sheet ? 'items-end md:place-items-center md:p-4' : 'place-items-center p-3 sm:p-4',
       )}
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
@@ -62,20 +63,21 @@ export function Modal({
         aria-label={title}
         tabIndex={-1}
         className={cn(
-          'w-full animate-sheet-up overflow-auto bg-surface pb-[env(safe-area-inset-bottom)] shadow-card outline-none md:max-h-[90dvh] md:w-[min(440px,100%)] md:rounded-[24px] md:pb-0',
-          fullScreenOnMobile
-            ? 'h-dvh pt-[env(safe-area-inset-top)] md:h-auto md:pt-0'
-            : 'max-h-[92dvh] rounded-t-[24px]',
+          'flex w-full flex-col overflow-hidden bg-surface shadow-card outline-none',
+          'max-h-[min(90dvh,640px)] pb-[env(safe-area-inset-bottom)]',
+          sheet
+            ? 'rounded-t-[24px] md:w-[min(400px,calc(100%-2rem))] md:rounded-[24px] md:pb-0'
+            : 'w-[min(100%,400px)] rounded-[24px] pb-0',
           className,
         )}
       >
         {!hideHeader && (
-          <div className="flex items-center justify-between px-4.5 pt-4">
+          <div className="flex shrink-0 items-center justify-between px-4 pt-3.5">
             <h2 className="font-semibold">{title}</h2>
             <CloseButton onClick={onClose} />
           </div>
         )}
-        {children}
+        <div className="min-h-0 overflow-y-auto overscroll-contain">{children}</div>
       </div>
     </div>,
     document.body,

@@ -14,3 +14,22 @@ export async function copyText(text: string) {
     el.remove();
   }
 }
+
+/** System share sheet, or copy if the browser cannot share. */
+export async function shareOrCopy(
+  title: string,
+  text: string,
+): Promise<'shared' | 'copied' | 'cancelled'> {
+  try {
+    if (typeof navigator.share === 'function') {
+      await navigator.share({ title, text });
+      return 'shared';
+    }
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      return 'cancelled';
+    }
+  }
+  await copyText(text);
+  return 'copied';
+}

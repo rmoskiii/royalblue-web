@@ -122,7 +122,7 @@ export function LoginButton({ onDark }: { onDark?: boolean }) {
         variant: onDark ? 'glass' : 'outline',
       })}
     >
-      Login
+      Log in
     </Link>
   );
 }

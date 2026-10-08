@@ -60,7 +60,7 @@ export function ActiveLoanCard() {
       )}
 
       <div className="mt-3.5 flex flex-wrap gap-2">
-        <Button onClick={() => showToast('Early repayment is coming soon')}>Repay early</Button>
+        <Button onClick={() => showToast('In-app repayment isn’t available yet')}>Repay early</Button>
         <Link to={paths.loans} className={buttonClass({ variant: 'secondary' })}>
           View schedule
         </Link>

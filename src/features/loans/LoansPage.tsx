@@ -31,7 +31,7 @@ export function LoansPage() {
         title="Loans"
         subtitle="Business and personal financing, from 2% per month."
         action={
-          <Link to={paths.loanApply} className={buttonClass({ variant: 'primary' })}>
+          <Link to={paths.loanApply} className={buttonClass({ variant: 'primary', block: true })}>
             Apply for a loan
           </Link>
         }

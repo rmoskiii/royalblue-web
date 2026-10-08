@@ -2,22 +2,26 @@ import { useToast } from '@/app/providers/ToastProvider';
 import { Button, Card, buttonClass } from '@/components/ui';
 import { Link } from 'react-router';
 import { paths } from '@/components/layout/navigation';
+import { shareOrCopy } from '@/lib/clipboard';
 
 export function ReferCard() {
   const { showToast } = useToast();
   return (
     <section className="relative overflow-hidden rounded-card bg-navy-600 p-4.5 text-white">
       <LeafArt />
-      <h3 className="text-2xl font-semibold tracking-tight">Refer and earn</h3>
+      <h3 className="text-2xl font-semibold tracking-tight">Share RoyalBlue</h3>
       <p className="relative mt-1.5 mb-3.5 max-w-[30ch] text-[13px] text-white/78">
-        Your friend gets ₦500 when they sign up. You get ₦1,000 cashback after their first
-        transaction.
+        Send someone the sign-up link. Referral cashback will run when that programme launches.
       </p>
       <Button
         variant="outline"
         size="sm"
         className="relative border-white/85 text-white hover:bg-white/10"
-        onClick={() => showToast('Invites are coming soon')}
+        onClick={async () => {
+          const url = `${window.location.origin}${paths.signUp}`;
+          const outcome = await shareOrCopy('Join me on RoyalBlue', `Open a RoyalBlue account: ${url}`);
+          if (outcome === 'copied') showToast('Invite link copied');
+        }}
       >
         Invite friends
       </Button>

@@ -32,7 +32,9 @@ export function HomePage() {
     if (!reference || verifying.current) return;
     verifying.current = true;
     if (status && status !== 'success') {
-      showToast(`Card payment ${status}`);
+      showToast(
+        status === 'cancelled' ? 'Card payment was cancelled.' : 'Card payment did not complete.',
+      );
       setParams({}, { replace: true });
       return;
     }

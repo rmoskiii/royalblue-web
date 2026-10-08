@@ -4,6 +4,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { comingSoon, paths } from '@/components/layout/navigation';
 import { PageLoader } from '@/components/ui';
+import { ForgotPasswordPage } from '@/features/auth/ForgotPasswordPage';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { SignUpPage } from '@/features/auth/SignUpPage';
 import { BusinessOnly } from '@/features/business/BusinessOnly';
@@ -33,6 +34,7 @@ export const router = createBrowserRouter([
         element: <AuthLayout />,
         children: [
           { path: paths.login, element: <LoginPage /> },
+          { path: paths.forgot, element: <ForgotPasswordPage /> },
           { path: paths.signUp, element: <SignUpPage /> },
         ],
       },
@@ -166,6 +168,55 @@ export const router = createBrowserRouter([
             ],
           },
           {
+            path: paths.notifications,
+            ...page(
+              () => import('@/features/inbox/NotificationsPage'),
+              (m) => m.NotificationsPage,
+            ),
+          },
+          {
+            path: paths.rewards,
+            ...page(
+              () => import('@/features/rewards/RewardsPage'),
+              (m) => m.RewardsPage,
+            ),
+          },
+          {
+            path: paths.refer,
+            ...page(
+              () => import('@/features/rewards/ReferPage'),
+              (m) => m.ReferPage,
+            ),
+          },
+          {
+            path: paths.learn,
+            ...page(
+              () => import('@/features/learn/LearnPage'),
+              (m) => m.LearnPage,
+            ),
+          },
+          {
+            path: `${paths.learn}/:slug`,
+            ...page(
+              () => import('@/features/learn/LearnArticlePage'),
+              (m) => m.LearnArticlePage,
+            ),
+          },
+          {
+            path: paths.help,
+            ...page(
+              () => import('@/features/help/HelpPage'),
+              (m) => m.HelpPage,
+            ),
+          },
+          {
+            path: paths.insights,
+            ...page(
+              () => import('@/features/insights/InsightsPage'),
+              (m) => m.InsightsPage,
+            ),
+          },
+          {
             path: paths.settings,
             children: [
               {
@@ -212,7 +263,7 @@ export const router = createBrowserRouter([
   },
   // Public website pages, available whether or not you're signed in
   { path: paths.welcome, element: <LandingPage /> },
-  { path: paths.terms, element: <LegalPage title="Terms of Service" /> },
-  { path: paths.privacy, element: <LegalPage title="Privacy Policy" /> },
+  { path: paths.terms, element: <LegalPage title="Terms of service" /> },
+  { path: paths.privacy, element: <LegalPage title="Privacy policy" /> },
   { path: '*', element: <NotFoundPage /> },
 ]);

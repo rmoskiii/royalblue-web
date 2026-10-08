@@ -290,6 +290,7 @@ export const mockVerification: VerificationStatus = {
   tier: 2,
   restrictedNoBvn: false,
   hasBvn: true,
+  identityVerified: true,
   completedSteps: ['bvn', 'id-document'],
   missing: ['Add proof of address to unlock Tier 3 limits.'],
 };

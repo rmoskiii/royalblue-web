@@ -40,7 +40,7 @@ export function CodeInput({
   };
 
   return (
-    <div role="group" aria-label={label} className="grid grid-cols-6 gap-2">
+    <div role="group" aria-label={label} className="grid grid-cols-6 gap-1.5">
       {digits.map((d, i) => (
         <input
           key={i}
@@ -58,7 +58,7 @@ export function CodeInput({
           onChange={(e) => setDigit(i, e.target.value.replace(/\D/g, '').slice(-1))}
           onKeyDown={(e) => onKeyDown(i, e)}
           onPaste={onPaste}
-          className="size-14 w-full rounded-[10px] border border-transparent bg-surface-2 text-center text-xl font-semibold tabular outline-none focus:border-brand focus:ring-3 focus:ring-brand/15"
+          className="h-12 min-w-0 w-full rounded-[10px] border border-transparent bg-surface-2 text-center text-lg font-semibold tabular outline-none focus:border-brand focus:ring-3 focus:ring-brand/15"
         />
       ))}
     </div>

@@ -1,4 +1,6 @@
+import { Link } from 'react-router';
 import { useInsights } from '@/api/hooks';
+import { paths } from '@/components/layout/navigation';
 import { Card, CardHeader, Money } from '@/components/ui';
 
 /** Chart slots in fixed order (see --rb-series-* in styles/index.css). */
@@ -11,7 +13,11 @@ export function InsightsCard() {
     <Card>
       <CardHeader
         title="Insights"
-        action={<span className="text-xs text-ink-3">{data?.periodLabel}</span>}
+        action={
+          <Link to={paths.insights} className="text-xs font-medium text-brand hover:underline">
+            {data?.periodLabel ?? 'See all'}
+          </Link>
+        }
       />
       {data && (
         <>

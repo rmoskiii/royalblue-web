@@ -41,7 +41,7 @@ export function BankPicker({
   };
 
   return (
-    <div ref={rootRef} className="relative grid gap-1.5">
+    <div ref={rootRef} className="relative grid min-w-0 gap-1.5">
       <span id={labelId} className="text-[13px] font-medium text-ink-2">
         Bank
       </span>
@@ -51,14 +51,16 @@ export function BankPicker({
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="flex h-12 w-full items-center justify-between rounded-field bg-surface-2 px-3.5 text-left text-[15px] outline-none focus-visible:ring-3 focus-visible:ring-brand/15"
+        className="flex h-12 w-full min-w-0 items-center justify-between gap-2 rounded-field bg-surface-2 px-3.5 text-left text-base outline-none focus-visible:ring-3 focus-visible:ring-brand/15"
       >
-        <span className={cn(!selected && 'text-ink-3')}>{selected?.name ?? 'Choose a bank'}</span>
-        <ChevronDown className="size-4 text-ink-3" />
+        <span className={cn('min-w-0 truncate', !selected && 'text-ink-3')}>
+          {selected?.name ?? 'Choose a bank'}
+        </span>
+        <ChevronDown className="size-4 shrink-0 text-ink-3" />
       </button>
 
       {open && (
-        <div className="absolute inset-x-0 top-full z-10 mt-1.5 overflow-hidden rounded-tile border border-line bg-surface shadow-card">
+        <div className="absolute inset-x-0 top-full z-10 mt-1.5 max-w-full overflow-hidden rounded-tile border border-line bg-surface shadow-card">
           <label className="flex items-center gap-2 border-b border-line px-3 text-ink-3">
             <Search className="size-4" />
             <span className="sr-only">Search banks</span>
@@ -74,7 +76,7 @@ export function BankPicker({
                 }
               }}
               placeholder="Search banks"
-              className="h-11 w-full bg-transparent text-ink outline-none placeholder:text-ink-3"
+              className="h-11 w-full bg-transparent text-base text-ink outline-none placeholder:text-ink-3"
             />
           </label>
           <ul
@@ -88,9 +90,9 @@ export function BankPicker({
                 <button
                   type="button"
                   onClick={() => choose(b.code)}
-                  className="flex w-full items-center justify-between px-3.5 py-2.5 text-left hover:bg-surface-2"
+                  className="flex w-full min-w-0 items-center justify-between gap-2 px-3.5 py-2.5 text-left hover:bg-surface-2"
                 >
-                  {b.name}
+                  <span className="min-w-0 truncate">{b.name}</span>
                   {b.code === value && <Check className="size-4 text-primary-text" />}
                 </button>
               </li>

@@ -59,6 +59,7 @@ export const paths = {
   refer: '/refer',
   learn: '/learn',
   help: '/help',
+  notifications: '/notifications',
   settings: '/settings',
   settingsProfile: '/settings/profile',
   settingsSecurity: '/settings/security',
@@ -67,6 +68,7 @@ export const paths = {
   payments: '/payments',
   staff: '/staff',
   login: '/login',
+  forgot: '/forgot',
   /** Public website; where "/" (the bare Vercel link) lands */
   welcome: '/welcome',
   terms: '/terms',
@@ -169,7 +171,7 @@ export function navigationForStaff(role: StaffRole): NavigationSet {
       primary: [desk, queue],
       learnAndEarn: [],
       mobileTabs: [desk, queue],
-      more: [item.settings],
+      more: [item.help, item.settings],
     };
   }
   if (role === 'CREDIT_MANAGER') {
@@ -177,14 +179,14 @@ export function navigationForStaff(role: StaffRole): NavigationSet {
       primary: [desk, queue, item.accounts],
       learnAndEarn: [],
       mobileTabs: [desk, queue, item.accounts],
-      more: [item.settings],
+      more: [item.help, item.settings],
     };
   }
   return {
     primary: [desk, queue, item.accounts, item.team],
     learnAndEarn: [],
     mobileTabs: [desk, queue, item.accounts, item.team],
-    more: [item.settings],
+    more: [item.help, item.settings],
   };
 }
 
@@ -197,11 +199,4 @@ export const settingsNav = item.settings;
 export const adminNav = item.admin;
 
 /** Destinations in the nav that aren't built yet. */
-export const comingSoon: (NavItem & { to: string })[] = [
-  item.invest,
-  item.insights,
-  item.rewards,
-  item.refer,
-  item.learn,
-  item.help,
-];
+export const comingSoon: (NavItem & { to: string })[] = [item.invest];

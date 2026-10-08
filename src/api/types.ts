@@ -50,9 +50,10 @@ export interface PhoneVerification {
 export interface IdentityLookup {
   firstName: string;
   lastName: string;
-  dateOfBirth: ISODateString;
+  dateOfBirth?: ISODateString | null;
   photoUrl: string | null;
   pending?: boolean;
+  verified?: boolean;
 }
 
 export type AccountKind = 'personal' | 'business';
@@ -125,6 +126,8 @@ export interface Account {
   freeTransfersPerMonth: number;
   /** True when the API will accept a BudPay sandbox / test top-up. */
   sandbox?: boolean;
+  /** Dedicated VA is still being issued by BudPay. */
+  provisionPending?: boolean;
 }
 
 export interface CustomerProfile {
@@ -259,6 +262,7 @@ export type TransactionAuthorisation =
 export interface TransferRequest {
   destination: TransferDestination;
   bankCode: string;
+  bankName?: string;
   accountNumber: string;
   amount: number;
   narration?: string;
@@ -308,6 +312,7 @@ export interface VerificationStatus {
   kycStatus?: string;
   hasBvn?: boolean;
   hasNin?: boolean;
+  identityVerified?: boolean;
   completedSteps: VerificationStepId[];
   missing?: string[];
   limits?: {

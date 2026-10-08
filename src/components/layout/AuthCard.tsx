@@ -13,10 +13,10 @@ export function AuthCard({
   children: ReactNode;
 }) {
   return (
-    <div className="grid w-[min(450px,100%)] gap-6 rounded-[26px] border border-line bg-surface p-6 shadow-[0_30px_60px_-30px_rgb(0_0_0/0.5)]">
+    <div className="grid w-full max-w-[450px] gap-4 rounded-[26px] border border-line bg-surface p-4 shadow-[0_30px_60px_-30px_rgb(0_0_0/0.5)] sm:gap-6 sm:p-6">
       {back}
       <div>
-        <h1 className="text-[40px] leading-[1.1] font-semibold tracking-[-0.8px] text-brand">
+        <h1 className="text-[28px] leading-[1.1] font-semibold tracking-[-0.8px] text-brand sm:text-[40px]">
           {title}
         </h1>
         {subtitle && <p className="mt-1 text-sm text-ink-3">{subtitle}</p>}

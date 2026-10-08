@@ -1,10 +1,10 @@
-import { Bell, Search, ShieldCheck } from 'lucide-react';
+import { Bell, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router';
 import { useAccount, useMe } from '@/api/hooks';
 import { isStaffRole } from '@/api/types';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { useProfile } from '@/app/providers/ProfileProvider';
-import { useToast } from '@/app/providers/ToastProvider';
+import { useInbox } from '@/features/inbox/useInbox';
 import { Chip } from '@/components/ui';
 import { staffRoleLabel } from '@/features/admin/staffAccess';
 import { formatGreetingDate, greeting } from '@/lib/format';
@@ -17,7 +17,7 @@ export function TopBar() {
   const { data: user } = useMe();
   const { data: account } = useAccount();
   const { session } = useAuth();
-  const { showToast } = useToast();
+  const { unreadCount } = useInbox();
   const { profile, profileType } = useProfile();
   const hello = greeting();
   const staff = isStaffRole(session?.user.role);
@@ -28,7 +28,7 @@ export function TopBar() {
       : (user?.firstName ?? profile?.name ?? ' ');
 
   return (
-    <header className="flex items-center gap-3 border-b border-line bg-surface px-4 py-2.5 pt-[max(2.75rem,calc(env(safe-area-inset-top)+0.75rem))] lg:px-7 lg:py-3.5 lg:pt-3.5">
+    <header className="flex items-center gap-2 border-b border-line bg-surface px-3 py-2 pt-[calc(env(safe-area-inset-top)+0.5rem)] lg:gap-3 lg:px-7 lg:py-3.5 lg:pt-3.5">
       {/* Phones: avatar opens the profile switcher */}
       <div className="lg:hidden">{staff ? null : <ProfileSwitcher />}</div>
 
@@ -52,13 +52,6 @@ export function TopBar() {
       </div>
 
       <div className="ml-auto flex shrink-0 items-center gap-0.5 lg:gap-1.5">
-        <label className="mr-2 hidden h-9.5 w-64 items-center gap-2 rounded-field bg-surface-2 px-3 text-ink-3 2xl:flex">
-          <Search className="size-4" />
-          <input
-            placeholder={staff ? 'Search applications' : 'Search transactions or people'}
-            className="w-full bg-transparent text-[13px] text-ink outline-none placeholder:text-ink-3"
-          />
-        </label>
         {account && !staff && (
           <Link
             to={paths.verification}
@@ -76,15 +69,16 @@ export function TopBar() {
             )}
           </Link>
         )}
-        <button
-          type="button"
-          aria-label="Notifications"
-          onClick={() => showToast('Notifications are coming soon')}
+        <Link
+          to={paths.notifications}
+          aria-label={unreadCount ? `${unreadCount} unread notifications` : 'Notifications'}
           className="relative grid size-9.5 place-items-center rounded-field text-ink-2 hover:bg-surface-2"
         >
           <Bell className="size-5" strokeWidth={1.8} />
-          <span className="absolute top-2 right-2.5 size-1.75 rounded-full border-[1.5px] border-surface bg-primary" />
-        </button>
+          {unreadCount > 0 && (
+            <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-primary-text" />
+          )}
+        </Link>
         <ThemeToggle />
       </div>
     </header>

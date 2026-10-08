@@ -44,11 +44,11 @@ export function AccountKindStep({
         />
         <p className="text-[15px] font-semibold text-brand">Business</p>
         <p className="mt-1 text-sm text-ink-3">
-          Individual trader, sole proprietor, limited company, NGO, or government agency (BudPay KYC).
+          Individual trader, sole proprietor, limited company, NGO, or government agency.
         </p>
       </label>
       <Button type="submit" size="lg" block>
-        Proceed
+        Continue
       </Button>
     </form>
   );
@@ -100,7 +100,7 @@ export function EntityTypeStep({
         </label>
       ))}
       <Button type="submit" size="lg" block className="mt-1">
-        Proceed
+        Continue
       </Button>
     </form>
   );

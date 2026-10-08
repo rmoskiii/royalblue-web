@@ -18,10 +18,11 @@ export function ApproveStep({
 
   const send = useMutation({
     mutationFn: (authorisation: TransactionAuthorisation) => {
-      const { destination, bankCode, accountNumber, amount, narration } = draft;
+      const { destination, bankCode, bankName, accountNumber, amount, narration } = draft;
       return transferService.send({
         destination,
         bankCode,
+        bankName,
         accountNumber,
         amount,
         narration,
@@ -40,13 +41,13 @@ export function ApproveStep({
       onApprove={send.mutateAsync}
       summary={
         <>
-          <p className="text-ink-3">Sending to {draft.accountName}</p>
+          <p className="truncate px-1 text-ink-3">Sending to {draft.accountName}</p>
           <Money
             amount={draft.amount + draft.fee}
             decimals={2}
-            className="mt-1 block text-[32px] leading-tight font-semibold tracking-tight text-brand"
+            className="mt-1 block text-[26px] leading-tight font-semibold tracking-tight text-brand sm:text-[32px]"
           />
-          <p className="mt-1 text-xs text-ink-3">
+          <p className="mt-1 truncate text-xs text-ink-3">
             {formatAccountNumber(draft.accountNumber)} · {draft.bankName}
             {draft.fee === 0 ? ' · No fee' : ''}
           </p>

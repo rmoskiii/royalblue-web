@@ -54,7 +54,7 @@ export function CreateVaultModal({ open, onClose }: { open: boolean; onClose: ()
 
   return (
     <Modal open={open} onClose={onClose} title="New savings vault">
-      <form className="grid gap-4 px-5.5 pt-2 pb-5.5" onSubmit={submit}>
+      <form className="grid gap-4 px-4 pt-2 pb-4" onSubmit={submit}>
         <SegmentedControl
           label="Vault type"
           value={type}
@@ -93,7 +93,7 @@ export function CreateVaultModal({ open, onClose }: { open: boolean; onClose: ()
             onChange={(e) => setLockedUntil(e.target.value)}
           />
         )}
-        <div className="grid grid-cols-[minmax(0,1fr)_140px] gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_140px]">
           <TextField
             label={
               <>

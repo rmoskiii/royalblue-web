@@ -194,7 +194,7 @@ export function TransferDetailsStep({
       </div>
 
       <Button type="submit" size="lg" block disabled={!canContinue} className="rounded-full">
-        Complete transfer
+        Continue
       </Button>
     </form>
   );

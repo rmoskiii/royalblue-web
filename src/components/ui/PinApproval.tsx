@@ -31,8 +31,8 @@ export function PinApproval({
   };
 
   return (
-    <div className="grid gap-6 pb-2">
-      <div className="text-center">{summary}</div>
+    <div className="grid gap-3 pb-1">
+      <div className="min-w-0 text-center">{summary}</div>
       <p className="text-center text-sm font-medium">
         {pending ? 'Processing…' : 'Enter your 6-digit transaction PIN'}
       </p>
@@ -44,10 +44,17 @@ export function PinApproval({
         disabled={pending}
       />
       {error && (
-        <p role="alert" className="text-center text-[13px] text-primary-text">
-          {error}
+        <p role="alert" className="mx-auto max-w-full px-1 text-center text-[13px] break-all text-primary-text">
+          {friendlyPinError(error)}
         </p>
       )}
     </div>
   );
+}
+
+function friendlyPinError(message: string) {
+  if (/invalid signature|intrusion detected/i.test(message)) {
+    return 'The payment network rejected this transfer. Try again in a moment.';
+  }
+  return message;
 }

@@ -19,12 +19,12 @@ const services: { label: string; to: string; icon: LucideIcon; tint: string }[] 
 
 export function QuickServices() {
   return (
-    <nav aria-label="Quick services" className="grid grid-cols-5 gap-2">
+    <nav aria-label="Quick services" className="grid grid-cols-5 gap-1 sm:gap-2">
       {services.map(({ label, to, icon, tint }) => (
         <Link
           key={label}
           to={to}
-          className="flex flex-col items-center gap-1.75 rounded-tile border border-line bg-surface px-1 py-3 text-xs font-medium hover:bg-surface-2 md:flex-row md:gap-2.5 md:px-3 md:py-2.5 md:text-sm"
+          className="flex min-w-0 flex-col items-center gap-1.5 rounded-tile border border-line bg-surface px-1 py-2.5 text-center text-xs font-medium hover:bg-surface-2 md:flex-row md:gap-2.5 md:px-3 md:py-2.5 md:text-sm"
         >
           <IconTile icon={icon} className={`${tint} md:size-8 md:rounded-[9px]`} />
           <span className="text-ink">{label}</span>

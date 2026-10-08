@@ -4,7 +4,6 @@ import { Link, useLocation, useNavigate } from 'react-router';
 import { authService } from '@/api/services/auth';
 import type { MfaChallenge } from '@/api/types';
 import { useAuth } from '@/app/providers/AuthProvider';
-import { useToast } from '@/app/providers/ToastProvider';
 import { AuthCard } from '@/components/layout/AuthCard';
 import { paths, homePathForRole } from '@/components/layout/navigation';
 import { Button, TextField } from '@/components/ui';
@@ -15,7 +14,6 @@ import { demo } from '@/config/demo';
 
 export function LoginPage() {
   const { establishSession } = useAuth();
-  const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo = (location.state as { from?: string } | null)?.from;
@@ -86,7 +84,7 @@ export function LoginPage() {
   }
 
   return (
-    <AuthCard title="Login to RoyalBlue" subtitle="Use your email or phone number, then your password">
+    <AuthCard title="Log in to RoyalBlue" subtitle="Use your email or phone number, then your password">
       <form className="grid gap-4" onKeyDown={submitOnEnter} onSubmit={handleSubmit}>
         <TextField
           label="Email or phone number"
@@ -107,22 +105,20 @@ export function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button
-            type="button"
-            className="justify-self-end text-sm font-medium text-brand"
-            onClick={() => showToast('Password reset is coming soon')}
-          >
-            Forgot Password
-          </button>
+          <p className="text-right text-[13px]">
+            <Link to={paths.forgot} className="font-medium text-brand">
+              Forgot password
+            </Link>
+          </p>
         </div>
         {submit.isError && <p className="text-[13px] text-primary-text">{submit.error.message}</p>}
         <Button type="submit" size="lg" block disabled={!identifier.trim() || !password || submit.isPending}>
-          {submit.isPending ? 'Logging in…' : 'Login'}
+          {submit.isPending ? 'Logging in…' : 'Log in'}
         </Button>
         <p className="text-center text-sm font-medium text-brand">
           Don’t have an account?{' '}
           <Link to={paths.signUp} className="text-primary-text">
-            Create Account
+            Create account
           </Link>
         </p>
       </form>

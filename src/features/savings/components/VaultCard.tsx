@@ -61,14 +61,14 @@ export function VaultCard({ vault: v }: { vault: SavingsVault }) {
       </ul>
 
       <div className="mt-auto flex gap-2">
-        <Button size="sm" onClick={() => showToast('Topping up vaults is coming soon')}>
+        <Button size="sm" onClick={() => showToast('Vault top-ups aren’t available yet')}>
           Add money
         </Button>
         {!locked && (
           <Button
             size="sm"
             variant="secondary"
-            onClick={() => showToast('Withdrawals are coming soon')}
+            onClick={() => showToast('Vault withdrawals aren’t available yet')}
           >
             Withdraw
           </Button>

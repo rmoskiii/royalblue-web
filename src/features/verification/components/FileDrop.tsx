@@ -43,12 +43,14 @@ export function FileDrop({
           pick(e.dataTransfer.files[0]);
         }}
         className={cn(
-          'grid cursor-pointer place-items-center gap-1.5 rounded-tile border-[1.5px] border-dashed border-surface-3 px-3.5 py-6.5 text-center text-[13px] text-ink-2 hover:border-brand',
+          'grid min-w-0 cursor-pointer place-items-center gap-1.5 overflow-hidden rounded-tile border-[1.5px] border-dashed border-surface-3 px-3.5 py-6.5 text-center text-[13px] break-words text-ink-2 hover:border-brand',
           dragging && 'border-brand bg-surface-2',
         )}
       >
         <Upload className="size-5" />
-        <b className="font-semibold text-ink">{value?.name ?? 'Choose a file or drag it here'}</b>
+        <b className="max-w-full font-semibold break-all text-ink">
+          {value?.name ?? 'Choose a file or drag it here'}
+        </b>
         <span className="text-ink-3">{hint}</span>
       </label>
       <input
