@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router';
 import { ArrowRight } from 'lucide-react';
 import { paths } from '@/components/layout/navigation';
@@ -17,6 +18,11 @@ const kindDot: Record<InboxKind, string> = {
 
 export function NotificationsPage() {
   const { items, unreadCount, isUnread, markRead, markAllRead } = useInbox();
+
+  useEffect(() => {
+    if (items.length === 0) return;
+    markAllRead();
+  }, [items, markAllRead]);
 
   return (
     <div className="mx-auto min-w-0 max-w-xl">

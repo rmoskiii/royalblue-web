@@ -19,7 +19,6 @@ export function buildInbox(input: {
   verification?: VerificationStatus;
 }): InboxItem[] {
   const items: InboxItem[] = [];
-  const now = new Date().toISOString();
 
   if (input.account?.provisionPending) {
     items.push({
@@ -27,7 +26,7 @@ export function buildInbox(input: {
       kind: 'account',
       title: 'Your account number is still being set up',
       body: 'You can keep using the app. We’ll show the NUBAN on Home as soon as it’s ready.',
-      createdAt: now,
+      createdAt: '2020-01-01T00:00:00.000Z',
       href: paths.home,
     });
   }
@@ -38,7 +37,7 @@ export function buildInbox(input: {
       kind: 'limits',
       title: 'You’re on starter limits',
       body: 'Raise your daily cap by completing identity on Account limits.',
-      createdAt: now,
+      createdAt: '2020-01-01T00:00:00.000Z',
       href: paths.verification,
     });
   } else if (input.verification && input.verification.tier < 3) {
@@ -47,7 +46,7 @@ export function buildInbox(input: {
       kind: 'limits',
       title: `You’re on tier ${input.verification.tier}`,
       body: 'Add the next identity step to raise how much you can hold and send.',
-      createdAt: now,
+      createdAt: '2020-01-01T00:00:00.000Z',
       href: paths.verification,
     });
   }
@@ -58,7 +57,7 @@ export function buildInbox(input: {
       kind: 'account',
       title: 'This month’s free sends are used',
       body: 'Sends to other banks now include the standard fee. Intra-RoyalBlue stays free.',
-      createdAt: now,
+      createdAt: '2020-01-01T00:00:00.000Z',
       href: paths.transfer,
     });
   }
