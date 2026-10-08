@@ -281,6 +281,7 @@ export interface LoanProduct {
   id: LoanProductId;
   name: string;
   description: string;
+  minAmount: number;
   maxAmount: number;
   tenorOptions: number[];
   /** Monthly interest rate, e.g. 0.02 for 2% per month */
@@ -595,7 +596,13 @@ export interface CreditFile {
   payrollMandateRef?: string | null;
   submittedAt?: ISODateString | null;
   createdAt: ISODateString;
-  loanProduct?: { id: string; name: string; code: string };
+  disbursedAt?: ISODateString | null;
+  firstRepaymentAt?: ISODateString | null;
+  repaymentsMade?: number;
+  monthlyRate?: number | string | null;
+  approvedTenorMonths?: number | null;
+  disbursementReference?: string | null;
+  loanProduct?: { id: string; name: string; code: string; interestRatePA?: number | string };
   applicant?: {
     ippisNumber?: string | null;
     user?: { email: string; phone: string };

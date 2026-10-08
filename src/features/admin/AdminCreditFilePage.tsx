@@ -66,12 +66,18 @@ export function AdminCreditFilePage() {
       }),
     onSuccess: refresh,
   });
+  const disburse = useMutation({
+    mutationFn: () => staffService.disburse(id),
+    onSuccess: refresh,
+  });
 
   if (!data) return null;
   const name = applicantName(data);
   const latestAssessment = data.assessments?.[0];
-  const openForRecommend = canRecommend(role) && !['APPROVED', 'DECLINED', 'DISBURSED', 'ACTIVE'].includes(data.status);
+  const openForRecommend = canRecommend(role) && !['APPROVED', 'APPROVED_WITH_CONDITIONS', 'DECLINED', 'DISBURSED', 'ACTIVE'].includes(data.status);
   const openForDecide = canDecide(role) && data.status === 'CREDIT_REVIEW';
+  const openForDisburse =
+    canDecide(role) && (data.status === 'APPROVED' || data.status === 'APPROVED_WITH_CONDITIONS');
 
   return (
     <>
@@ -89,6 +95,10 @@ export function AdminCreditFilePage() {
           </p>
           <p>Purpose: {data.purpose}</p>
           {data.applicant?.ippisNumber && <p>IPPIS {data.applicant.ippisNumber}</p>}
+          {data.approvedAmount != null && (
+            <p>Approved {formatNaira(Number(data.approvedAmount))} · {data.approvedTenorMonths ?? data.tenorMonths} months</p>
+          )}
+          {data.disbursementReference && <p>Disbursed to RoyalBlue · {data.disbursementReference}</p>}
           {data.payrollMandateRef && <p>Payroll mandate {data.payrollMandateRef}</p>}
           {data.bureauProvider && <p>Bureau {data.bureauProvider}</p>}
           <p className="text-ink-2">Officer {data.assignedOfficer?.email ?? 'unassigned'}</p>
@@ -203,6 +213,19 @@ export function AdminCreditFilePage() {
                 Decline
               </Button>
             </div>
+          </Card>
+        )}
+        {openForDisburse && (
+          <Card className="grid gap-3 p-4 text-sm lg:col-span-2">
+            <h2 className="font-semibold">Disburse to RoyalBlue account</h2>
+            <p>
+              Credits {formatNaira(Number(data.approvedAmount ?? data.requestedAmount))} to the customer’s
+              passbook. They must already hold 20% equity in that account.
+            </p>
+            {disburse.isError && <p className="text-primary-text">{disburse.error.message}</p>}
+            <Button onClick={() => disburse.mutate()} disabled={disburse.isPending}>
+              Disburse funds
+            </Button>
           </Card>
         )}
         {canRecommend(role) && !canDecide(role) && data.status === 'CREDIT_REVIEW' && (

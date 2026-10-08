@@ -26,25 +26,36 @@ function mapProduct(p: NestProduct): LoanProduct {
     id: p.id,
     name: p.name,
     description: p.code,
+    minAmount: naira(p.minAmount),
     maxAmount: naira(p.maxAmount),
     tenorOptions,
     monthlyRate: naira(p.interestRatePA) / 100 / 12,
   };
 }
 
+function loanStatus(status: CreditFile['status']): Loan['status'] {
+  if (status === 'DISBURSED' || status === 'ACTIVE') return 'active';
+  if (status === 'COMPLETED') return 'closed';
+  if (status === 'DECLINED' || status === 'DEFAULTED') return 'declined';
+  if (status === 'CREDIT_REVIEW' || status === 'UNDER_REVIEW') return 'under_review';
+  return 'pending';
+}
+
 function mapLoan(row: CreditFile): Loan {
-  const active = row.status === 'DISBURSED' || row.status === 'ACTIVE' || row.status === 'APPROVED';
+  const rateFromProduct = row.loanProduct?.interestRatePA
+    ? naira(row.loanProduct.interestRatePA) / 100 / 12
+    : 0.02;
   return {
     id: row.id,
     productId: row.loanProduct?.id ?? '',
     productName: row.loanProduct?.name ?? 'Loan',
     principal: naira(row.approvedAmount ?? row.requestedAmount),
-    monthlyRate: 0.02,
-    tenorMonths: row.tenorMonths,
-    disbursedAt: row.submittedAt ?? row.createdAt,
-    firstRepaymentAt: row.submittedAt ?? row.createdAt,
-    repaymentsMade: 0,
-    status: active ? 'active' : row.status === 'DECLINED' ? 'closed' : 'pending',
+    monthlyRate: naira(row.monthlyRate) || rateFromProduct,
+    tenorMonths: row.approvedTenorMonths ?? row.tenorMonths,
+    disbursedAt: row.disbursedAt ?? row.submittedAt ?? row.createdAt,
+    firstRepaymentAt: row.firstRepaymentAt ?? row.disbursedAt ?? row.createdAt,
+    repaymentsMade: row.repaymentsMade ?? 0,
+    status: loanStatus(row.status),
     autoDebit: Boolean(row.payrollMandateRef),
   };
 }
@@ -69,6 +80,16 @@ export const loanService = {
 
   getApplication(id: string): Promise<CreditFile> {
     return http.get(`/applications/${id}`);
+  },
+
+  quote(productId: string, amount: number, tenor: number) {
+    return http.get<{
+      monthlyPayment: number;
+      totalRepayable: number;
+      totalInterest: number;
+      equity: number;
+      monthlyRate: number;
+    }>(`/applications/products/${productId}/quote`, { amount, tenor });
   },
 
   async apply(body: ApplyLoanRequest, files: File[]): Promise<CreditFile> {
