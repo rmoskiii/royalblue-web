@@ -33,7 +33,7 @@ export function IdentityStep({
       const timed = await Promise.race([
         lookup.then((identity) => ({ ok: true as const, identity })),
         new Promise<{ ok: false }>((resolve) => {
-          window.setTimeout(() => resolve({ ok: false }), 8_000);
+          window.setTimeout(() => resolve({ ok: false }), 3_000);
         }),
       ]);
       if (timed.ok) return timed.identity;
