@@ -28,9 +28,14 @@ export function SettingsPage() {
   const staff = isStaffRole(me?.role);
   const name = [profile?.user.firstName, profile?.user.lastName].filter(Boolean).join(' ') || me?.displayName || me?.email || '';
   const phone = profile?.user.phone || '';
-  const wallet = profile?.accounts[0] ?? (account?.accountNumber
-    ? { accountNumber: account.accountNumber, accountName: account.accountName, bankName: account.bankName, status: 'ACTIVE', id: 'primary' }
-    : null);
+  const wallet =
+    account?.accountNumber && account.accountNumber !== '—'
+      ? {
+          accountNumber: account.accountNumber,
+          accountName: account.accountName,
+          bankName: account.bankName,
+        }
+      : null;
   const kyc = profile?.applicant?.kycStatus?.replaceAll('_', ' ');
 
   const copy = async (value: string, label: string) => {

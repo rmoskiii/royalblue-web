@@ -7,7 +7,16 @@ import { Button, TextField } from '@/components/ui';
 export function BvnForm({ onDone }: { onDone: () => void }) {
   const [bvn, setBvn] = useState('');
   const submit = useMutation({
-    mutationFn: () => verificationService.submitBvn(bvn),
+    mutationFn: async () => {
+      const run = verificationService.submitBvn(bvn);
+      const timed = await Promise.race([
+        run.then(() => true),
+        new Promise<false>((resolve) => {
+          window.setTimeout(() => resolve(false), 3_000);
+        }),
+      ]);
+      return timed;
+    },
     onSuccess: onDone,
   });
 
