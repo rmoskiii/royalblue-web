@@ -36,7 +36,8 @@ export function TransactionRow({
     <button
       type="button"
       onClick={() => onSelect(t)}
-      className="grid w-full grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-3 rounded-xl px-2 py-2.5 text-left hover:bg-surface-2 @xl:grid-cols-[40px_minmax(0,1.5fr)_minmax(0,0.8fr)_96px_minmax(96px,auto)]"
+      aria-label={`View receipt: ${t.title}`}
+      className="grid w-full cursor-pointer grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-3 rounded-xl px-2 py-2.5 text-left hover:bg-surface-2 @xl:grid-cols-[40px_minmax(0,1.5fr)_minmax(0,0.8fr)_96px_minmax(96px,auto)]"
     >
       <TransactionIcon credit={credit} />
       <span className="min-w-0">

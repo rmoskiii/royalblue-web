@@ -69,16 +69,18 @@ export function TopBar() {
             )}
           </Link>
         )}
-        <Link
-          to={paths.notifications}
-          aria-label={unreadCount ? `${unreadCount} unread notifications` : 'Notifications'}
-          className="relative grid size-9.5 place-items-center rounded-field text-ink-2 hover:bg-surface-2"
-        >
-          <Bell className="size-5" strokeWidth={1.8} />
-          {unreadCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-primary-text" />
-          )}
-        </Link>
+        {!staff && (
+          <Link
+            to={paths.notifications}
+            aria-label={unreadCount ? `${unreadCount} unread notifications` : 'Notifications'}
+            className="relative grid size-9.5 place-items-center rounded-field text-ink-2 hover:bg-surface-2"
+          >
+            <Bell className="size-5" strokeWidth={1.8} />
+            {unreadCount > 0 && (
+              <span className="absolute top-1.5 right-1.5 size-2 rounded-full bg-primary-text" />
+            )}
+          </Link>
+        )}
         <ThemeToggle />
       </div>
     </header>

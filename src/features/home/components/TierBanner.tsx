@@ -1,13 +1,16 @@
 import { ShieldAlert, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router';
-import { useAccount, useVerificationStatus } from '@/api/hooks';
+import { useAccount, useMe, useVerificationStatus } from '@/api/hooks';
+import { isStaffRole } from '@/api/types';
 import { paths } from '@/components/layout/navigation';
 import { buttonClass } from '@/components/ui';
 import { formatNaira } from '@/lib/format';
 
 export function TierBanner() {
+  const { data: me } = useMe();
   const { data: status } = useVerificationStatus();
   const { data: account } = useAccount();
+  if (isStaffRole(me?.role)) return null;
   if (!status) return null;
 
   const restricted = Boolean(status.restrictedNoBvn || account?.restrictedNoBvn);

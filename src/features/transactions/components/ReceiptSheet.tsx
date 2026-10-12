@@ -1,3 +1,4 @@
+import { Share2 } from 'lucide-react';
 import type { Transaction } from '@/api/types';
 import { useToast } from '@/app/providers/ToastProvider';
 import { Button, Chip, Modal, Money } from '@/components/ui';
@@ -5,6 +6,39 @@ import { cn } from '@/lib/cn';
 import { formatDate, formatNaira, formatTime } from '@/lib/format';
 import { shareOrCopy } from '@/lib/clipboard';
 import { TransactionIcon } from './TransactionRow';
+
+export function formatReceiptShare(t: {
+  title: string;
+  amount: number;
+  status?: string;
+  counterparty?: string;
+  reference: string;
+  createdAt?: string;
+  fee?: number;
+}) {
+  const when = t.createdAt ? `${formatDate(t.createdAt)}, ${formatTime(t.createdAt)}` : undefined;
+  return [
+    t.title,
+    formatNaira(t.amount, 2),
+    t.status ? t.status[0].toUpperCase() + t.status.slice(1) : undefined,
+    t.counterparty,
+    when,
+    t.fee ? `Fee ${formatNaira(t.fee, 2)}` : undefined,
+    `Reference ${t.reference}`,
+    'RoyalBlue MFB',
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+
+export async function shareReceipt(
+  t: Parameters<typeof formatReceiptShare>[0],
+  showToast: (message: string) => void,
+) {
+  const outcome = await shareOrCopy('RoyalBlue receipt', formatReceiptShare(t));
+  if (outcome === 'copied') showToast('Receipt copied');
+  if (outcome === 'shared') showToast('Receipt shared');
+}
 
 export function ReceiptSheet({
   transaction: t,
@@ -25,7 +59,7 @@ export function ReceiptSheet({
   ];
 
   return (
-    <Modal open onClose={onClose} title="Transaction details">
+    <Modal open onClose={onClose} title="Receipt" placement="sheet">
       <div className="px-4 pt-2 pb-4 text-center">
         <div className="mx-auto mt-1.5 mb-2.5 w-fit">
           <TransactionIcon credit={credit} large />
@@ -58,16 +92,8 @@ export function ReceiptSheet({
         </dl>
 
         <div className="grid grid-cols-2 gap-2">
-          <Button
-            variant="secondary"
-            onClick={async () => {
-              const outcome = await shareOrCopy(
-                'RoyalBlue receipt',
-                `${t.title}\n${formatNaira(t.amount, 2)} · ${t.status}\n${t.counterparty}\nReference ${t.reference}`,
-              );
-              if (outcome === 'copied') showToast('Receipt copied');
-            }}
-          >
+          <Button variant="secondary" onClick={() => void shareReceipt(t, showToast)}>
+            <Share2 className="size-4" />
             Share receipt
           </Button>
           <Button
