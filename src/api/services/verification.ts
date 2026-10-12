@@ -20,6 +20,11 @@ export const verificationService = {
     return http.post('/kyc/validate-bvn', { bvn });
   },
 
+  submitNin(nin: string) {
+    if (env.useMocks) return mockResponse(undefined, 700);
+    return http.post('/kyc/validate-id', { type: 'nin', idNumber: nin });
+  },
+
   submitIdDocument({ type, number, documentImage, selfie }: IdDocumentSubmission) {
     if (env.useMocks) return mockResponse(undefined, 900);
     const form = new FormData();

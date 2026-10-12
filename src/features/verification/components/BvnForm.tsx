@@ -2,13 +2,15 @@ import { useMutation } from '@tanstack/react-query';
 import { CircleHelp } from 'lucide-react';
 import { useState } from 'react';
 import { verificationService } from '@/api/services/verification';
-import { Button, TextField } from '@/components/ui';
+import { Button, SelectField, TextField } from '@/components/ui';
 
 export function BvnForm({ onDone }: { onDone: () => void }) {
-  const [bvn, setBvn] = useState('');
+  const [kind, setKind] = useState<'bvn' | 'nin'>('bvn');
+  const [number, setNumber] = useState('');
   const submit = useMutation({
     mutationFn: async () => {
-      const run = verificationService.submitBvn(bvn);
+      const run =
+        kind === 'nin' ? verificationService.submitNin(number) : verificationService.submitBvn(number);
       const timed = await Promise.race([
         run.then(() => true),
         new Promise<false>((resolve) => {
@@ -28,28 +30,43 @@ export function BvnForm({ onDone }: { onDone: () => void }) {
         submit.mutate();
       }}
     >
-      <TextField
-        label="BVN"
-        inputMode="numeric"
-        autoComplete="off"
-        maxLength={11}
-        placeholder="11-digit BVN"
-        value={bvn}
-        onChange={(e) => setBvn(e.target.value.replace(/\D/g, ''))}
-        inputClassName="tabular"
-        error={submit.isError ? submit.error.message : undefined}
-      />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <SelectField
+          label="ID type"
+          value={kind}
+          onChange={(e) => {
+            setKind(e.target.value as 'bvn' | 'nin');
+            setNumber('');
+          }}
+          options={[
+            { value: 'bvn', label: 'BVN' },
+            { value: 'nin', label: 'NIN' },
+          ]}
+        />
+        <TextField
+          label={kind === 'nin' ? 'NIN' : 'BVN'}
+          inputMode="numeric"
+          autoComplete="off"
+          maxLength={11}
+          placeholder={`11-digit ${kind === 'nin' ? 'NIN' : 'BVN'}`}
+          value={number}
+          onChange={(e) => setNumber(e.target.value.replace(/\D/g, ''))}
+          inputClassName="tabular"
+          error={submit.isError ? submit.error.message : undefined}
+        />
+      </div>
       <p className="flex gap-2.5 rounded-xl bg-surface-2 p-3 text-[13px] text-ink-2">
         <CircleHelp className="size-4 shrink-0" />
-        Don’t know your BVN? Dial *565*0# from the phone number linked to your bank account. We only
-        confirm your name — this does not freeze accounts or pull salary history.
+        {kind === 'nin'
+          ? 'Your NIN confirms who you are with NIMC. We only confirm your name.'
+          : 'Don’t know your BVN? Dial *565*0# from the phone number linked to your bank account. We only confirm your name — this does not freeze accounts or pull salary history.'}
       </p>
       <Button
         type="submit"
         className="justify-self-start"
-        disabled={bvn.length !== 11 || submit.isPending}
+        disabled={number.length !== 11 || submit.isPending}
       >
-        {submit.isPending ? 'Checking…' : 'Validate BVN'}
+        {submit.isPending ? 'Checking…' : kind === 'nin' ? 'Validate NIN' : 'Validate BVN'}
       </Button>
       <button type="button" className="justify-self-start text-sm font-medium text-ink-2" onClick={onDone}>
         Continue without waiting
