@@ -69,7 +69,9 @@ export function BalanceCard({
       ) : (
         !isLoading && (
           <p className="mt-1 text-[13px] text-white/70">
-            We’re setting up your account number. This page will update when it’s ready.
+            {account?.provisionError
+              ? `BudPay has not issued a NUBAN yet: ${account.provisionError}`
+              : 'We’re setting up your account number. This page will update when it’s ready.'}
           </p>
         )
       )}

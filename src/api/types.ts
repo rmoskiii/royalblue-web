@@ -128,6 +128,8 @@ export interface Account {
   sandbox?: boolean;
   /** Dedicated VA is still being issued by BudPay. */
   provisionPending?: boolean;
+  /** Last BudPay error while minting the dedicated VA, if any. */
+  provisionError?: string;
 }
 
 export interface CustomerProfile {
