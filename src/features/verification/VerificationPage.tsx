@@ -14,8 +14,8 @@ import { verificationSteps } from './stepList';
 
 const stepCopy: Record<VerificationStepId, { title: string; lead: string }> = {
   bvn: {
-    title: 'Validate your BVN',
-    lead: 'Your Bank Verification Number confirms who you are. We can’t see or move money in your other accounts.',
+    title: 'Validate your BVN or NIN',
+    lead: 'Your BVN or NIN confirms who you are. We can’t see or move money in your other accounts.',
   },
   'id-document': {
     title: 'Upload your ID',
@@ -77,7 +77,7 @@ export function VerificationPage() {
             )}
             {status.identityVerified === false && (status.hasBvn || status.hasNin) && (
               <p className="mt-1 text-[13px] text-amber-800 dark:text-amber-200">
-                Identity not confirmed yet. You can retry BVN below.
+                Identity not confirmed yet. You can retry BVN or NIN below.
               </p>
             )}
           </div>
