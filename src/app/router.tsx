@@ -14,7 +14,13 @@ import { LegalPage } from '@/features/landing/LegalPage';
 import { ComingSoonPage } from '@/features/misc/ComingSoonPage';
 import { NotFoundPage } from '@/features/misc/NotFoundPage';
 import { TransferRoute } from '@/features/transfer/TransferRoute';
-import { RedirectIfAuthenticated, RequireAuth, RequireStaff, RequireStaffRole } from './guards';
+import {
+  CustomerOnly,
+  RedirectIfAuthenticated,
+  RequireAuth,
+  RequireStaff,
+  RequireStaffRole,
+} from './guards';
 
 /**
  * Code-split a page: its feature bundle downloads the first time the route is visited.
@@ -121,11 +127,16 @@ export const router = createBrowserRouter([
             ),
           },
           {
-            path: paths.verification,
-            ...page(
-              () => import('@/features/verification/VerificationPage'),
-              (m) => m.VerificationPage,
-            ),
+            element: <CustomerOnly />,
+            children: [
+              {
+                path: paths.verification,
+                ...page(
+                  () => import('@/features/verification/VerificationPage'),
+                  (m) => m.VerificationPage,
+                ),
+              },
+            ],
           },
           {
             path: paths.payBills,
@@ -168,11 +179,16 @@ export const router = createBrowserRouter([
             ],
           },
           {
-            path: paths.notifications,
-            ...page(
-              () => import('@/features/inbox/NotificationsPage'),
-              (m) => m.NotificationsPage,
-            ),
+            element: <CustomerOnly />,
+            children: [
+              {
+                path: paths.notifications,
+                ...page(
+                  () => import('@/features/inbox/NotificationsPage'),
+                  (m) => m.NotificationsPage,
+                ),
+              },
+            ],
           },
           {
             path: paths.rewards,
@@ -241,11 +257,16 @@ export const router = createBrowserRouter([
                 ),
               },
               {
-                path: 'notifications',
-                ...page(
-                  () => import('@/features/settings/NotificationsSettingsPage'),
-                  (m) => m.NotificationsSettingsPage,
-                ),
+                element: <CustomerOnly />,
+                children: [
+                  {
+                    path: 'notifications',
+                    ...page(
+                      () => import('@/features/settings/NotificationsSettingsPage'),
+                      (m) => m.NotificationsSettingsPage,
+                    ),
+                  },
+                ],
               },
               {
                 path: 'payments',

@@ -7,6 +7,7 @@ import type { BillPaymentResult, TransactionAuthorisation } from '@/api/types';
 import { useToast } from '@/app/providers/ToastProvider';
 import { Button, Modal, Money, PinApproval } from '@/components/ui';
 import { copyText } from '@/lib/clipboard';
+import { shareReceipt } from '@/features/transactions/components/ReceiptSheet';
 import type { BillDraft } from '../types';
 
 /** PIN approval, then the receipt (with the meter token for prepaid electricity). */
@@ -90,9 +91,26 @@ export function BillApproveModal({ draft, onClose }: { draft: BillDraft; onClose
             )}
 
             <p className="mt-1 text-xs text-ink-3 tabular">Reference {result.reference}</p>
-            <Button className="mt-4 w-full" onClick={onClose}>
-              Done
-            </Button>
+            <div className="mt-4 grid w-full grid-cols-2 gap-2">
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  void shareReceipt(
+                    {
+                      title: draft.title,
+                      amount: draft.payment.amount,
+                      status: 'successful',
+                      counterparty: draft.details.map(([, v]) => v).filter(Boolean).join(' · '),
+                      reference: result.reference,
+                    },
+                    showToast,
+                  )
+                }
+              >
+                Share receipt
+              </Button>
+              <Button onClick={onClose}>Done</Button>
+            </div>
           </div>
         )}
       </div>

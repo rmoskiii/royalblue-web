@@ -109,7 +109,9 @@ export function SettingsPage() {
           {!staff && (
             <SettingsRow to={paths.settingsPayments} icon={CreditCard} label="Payment methods" />
           )}
-          <SettingsRow to={paths.settingsNotifications} icon={Bell} label="Notifications" />
+          {!staff && (
+            <SettingsRow to={paths.settingsNotifications} icon={Bell} label="Notifications" />
+          )}
         </Card>
 
         <Card className="overflow-hidden p-0">

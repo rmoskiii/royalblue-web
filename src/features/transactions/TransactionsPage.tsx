@@ -1,5 +1,6 @@
 import { Search } from 'lucide-react';
-import { useDeferredValue, useState } from 'react';
+import { useDeferredValue, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { useInsights, useTransactions } from '@/api/hooks';
 import type { Transaction, TransactionFilters } from '@/api/types';
 import { useToast } from '@/app/providers/ToastProvider';
@@ -29,10 +30,18 @@ export function TransactionsPage() {
   const [search, setSearch] = useState('');
   const deferredSearch = useDeferredValue(search);
   const [selected, setSelected] = useState<Transaction | null>(null);
+  const [params, setParams] = useSearchParams();
   const { showToast } = useToast();
 
   const { data, isLoading } = useTransactions(toApiFilters(filter, deferredSearch));
   const { data: insights } = useInsights();
+  const receiptKey = params.get('receipt');
+
+  useEffect(() => {
+    if (!receiptKey || !data?.length) return;
+    const match = data.find((t) => t.id === receiptKey || t.reference === receiptKey);
+    if (match) setSelected(match);
+  }, [receiptKey, data]);
 
   return (
     <>
@@ -95,7 +104,17 @@ export function TransactionsPage() {
       <Card className="px-2.5 py-2">
         <TransactionList transactions={data} isLoading={isLoading} onSelect={setSelected} />
       </Card>
-      <ReceiptSheet transaction={selected} onClose={() => setSelected(null)} />
+      <ReceiptSheet
+        transaction={selected}
+        onClose={() => {
+          setSelected(null);
+          if (receiptKey) {
+            const next = new URLSearchParams(params);
+            next.delete('receipt');
+            setParams(next, { replace: true });
+          }
+        }}
+      />
     </>
   );
 }

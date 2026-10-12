@@ -39,6 +39,15 @@ export function RequireStaff() {
   return <Outlet />;
 }
 
+/** Customer-only pages (inbox, limits). Staff stay on the operations desk. */
+export function CustomerOnly() {
+  const { session } = useAuth();
+  if (isStaffRole(session?.user.role)) {
+    return <Navigate to={paths.admin} replace />;
+  }
+  return <Outlet />;
+}
+
 export function RequireStaffRole({ roles }: { roles: StaffRole[] }) {
   const { session } = useAuth();
   if (!isStaffRole(session?.user.role) || !roles.includes(session.user.role)) {

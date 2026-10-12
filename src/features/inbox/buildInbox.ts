@@ -78,7 +78,7 @@ function fromTransaction(txn: Transaction): InboxItem {
       title: txn.direction === 'debit' ? `${amount} is still processing` : `${amount} inbound is pending`,
       body: txn.counterparty || txn.title,
       createdAt: txn.createdAt,
-      href: paths.transactions,
+      href: `${paths.transactions}?receipt=${encodeURIComponent(txn.id)}`,
     };
   }
   if (txn.status === 'failed') {
@@ -88,7 +88,7 @@ function fromTransaction(txn: Transaction): InboxItem {
       title: `${amount} didn’t go through`,
       body: txn.counterparty || txn.title,
       createdAt: txn.createdAt,
-      href: paths.transactions,
+      href: `${paths.transactions}?receipt=${encodeURIComponent(txn.id)}`,
     };
   }
   return {
@@ -97,6 +97,6 @@ function fromTransaction(txn: Transaction): InboxItem {
     title: txn.direction === 'credit' ? `${amount} received` : `${amount} sent`,
     body: txn.counterparty || txn.title,
     createdAt: txn.createdAt,
-    href: paths.transactions,
+    href: `${paths.transactions}?receipt=${encodeURIComponent(txn.id)}`,
   };
 }

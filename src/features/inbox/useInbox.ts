@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAccount, useMe, useTransactions, useVerificationStatus } from '@/api/hooks';
+import { isStaffRole } from '@/api/types';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { storage } from '@/lib/storage';
 import { buildInbox, type InboxItem } from './buildInbox';
@@ -35,9 +36,10 @@ export function useInbox() {
   const { data: verification } = useVerificationStatus();
   const userId = me?.id ?? session?.user.id ?? '';
 
+  const staff = isStaffRole(session?.user.role ?? me?.role);
   const items = useMemo(
-    () => buildInbox({ account, transactions, verification }),
-    [account, transactions, verification],
+    () => (staff ? [] : buildInbox({ account, transactions, verification })),
+    [staff, account, transactions, verification],
   );
 
   const [readIds, setReadIds] = useState<Set<string>>(new Set());

@@ -20,16 +20,19 @@ export async function shareOrCopy(
   title: string,
   text: string,
 ): Promise<'shared' | 'copied' | 'cancelled'> {
+  const payload: ShareData = { title, text };
   try {
     if (typeof navigator.share === 'function') {
-      await navigator.share({ title, text });
-      return 'shared';
+      if (typeof navigator.canShare !== 'function' || navigator.canShare(payload)) {
+        await navigator.share(payload);
+        return 'shared';
+      }
     }
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       return 'cancelled';
     }
   }
-  await copyText(text);
+  await copyText(`${title}\n${text}`);
   return 'copied';
 }
