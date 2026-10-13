@@ -25,7 +25,9 @@ export function buildInbox(input: {
       id: 'account-provision',
       kind: 'account',
       title: 'Your account number is still being set up',
-      body: 'You can keep using the app. We’ll show the NUBAN on Home as soon as it’s ready.',
+      body: input.account.provisionError
+        ? `BudPay has not issued a NUBAN yet: ${input.account.provisionError}`
+        : 'You can keep using the app. We’ll show the NUBAN on Home as soon as it’s ready.',
       createdAt: '2020-01-01T00:00:00.000Z',
       href: paths.home,
     });
