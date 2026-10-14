@@ -209,13 +209,15 @@ export type TransactionCategory =
 export interface Transaction {
   id: string;
   title: string;
-  /** Bank, biller or channel, e.g. "Access Bank", "EKEDC prepaid" */
+  /** Recipient name, sender name, or airtime/data phone number */
   counterparty: string;
   /** Always positive; use `direction` for the sign */
   amount: number;
   direction: TransactionDirection;
   status: TransactionStatus;
   category: TransactionCategory;
+  /** Display label: Airtime, Data, Transfer, Received, … */
+  type?: string;
   fee: number;
   reference: string;
   createdAt: ISODateString;

@@ -3,6 +3,7 @@ import type { Transaction } from '@/api/types';
 import { Chip, Money } from '@/components/ui';
 import { cn } from '@/lib/cn';
 import { formatTime } from '@/lib/format';
+import { transactionDisplay } from '../transactionDisplay';
 
 export function TransactionIcon({ credit, large }: { credit: boolean; large?: boolean }) {
   const Icon = credit ? ArrowDownLeft : ArrowUpRight;
@@ -32,25 +33,27 @@ export function TransactionRow({
 }) {
   const credit = t.direction === 'credit';
   const status = statusChip[t.status];
+  const { name, description, type } = transactionDisplay(t);
   return (
     <button
       type="button"
       onClick={() => onSelect(t)}
-      aria-label={`View receipt: ${t.title}`}
+      aria-label={`View receipt: ${name}`}
       className="grid w-full cursor-pointer grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-3 rounded-xl px-2 py-2.5 text-left hover:bg-surface-2 @xl:grid-cols-[40px_minmax(0,1.5fr)_minmax(0,0.8fr)_96px_minmax(96px,auto)]"
     >
       <TransactionIcon credit={credit} />
       <span className="min-w-0">
-        <span className="flex min-w-0 items-center gap-2 font-medium">
-          <span className="truncate">{t.title}</span>
+        <span className="flex min-w-0 items-center gap-2">
+          <span className="truncate text-[15px] font-semibold tracking-tight">{name}</span>
           {t.status !== 'successful' && (
             <Chip tone={status.tone} className="@xl:hidden">
               {status.label}
             </Chip>
           )}
         </span>
-        <span className="block truncate text-xs text-ink-3">
-          {t.counterparty}
+        <span className="mt-0.5 block truncate text-xs text-ink-3">
+          {type}
+          {description ? ` · ${description}` : ''}
           <span className="@xl:hidden"> · {formatTime(t.createdAt)}</span>
         </span>
       </span>
