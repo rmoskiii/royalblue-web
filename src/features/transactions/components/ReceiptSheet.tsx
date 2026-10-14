@@ -5,6 +5,7 @@ import { Button, Chip, Modal, Money } from '@/components/ui';
 import { cn } from '@/lib/cn';
 import { formatDate, formatNaira, formatTime } from '@/lib/format';
 import { shareOrCopy } from '@/lib/clipboard';
+import { transactionDisplay } from '../transactionDisplay';
 import { TransactionIcon } from './TransactionRow';
 
 export function formatReceiptShare(t: {
@@ -18,10 +19,10 @@ export function formatReceiptShare(t: {
 }) {
   const when = t.createdAt ? `${formatDate(t.createdAt)}, ${formatTime(t.createdAt)}` : undefined;
   return [
-    t.title,
+    t.counterparty || t.title,
+    t.title && t.title !== t.counterparty ? t.title : undefined,
     formatNaira(t.amount, 2),
     t.status ? t.status[0].toUpperCase() + t.status.slice(1) : undefined,
-    t.counterparty,
     when,
     t.fee ? `Fee ${formatNaira(t.fee, 2)}` : undefined,
     `Reference ${t.reference}`,
@@ -50,13 +51,18 @@ export function ReceiptSheet({
   const { showToast } = useToast();
   if (!t) return null;
   const credit = t.direction === 'credit';
+  const { name, description, type } = transactionDisplay(t);
 
-  const rows = [
-    [credit ? 'From' : 'To', t.counterparty],
+  const rows: Array<[string, string]> = [
+    [credit ? 'From' : 'To', name],
+    ['Type', type],
+  ];
+  if (description) rows.push(['Description', description]);
+  rows.push(
     ['Date', `${formatDate(t.createdAt)}, ${formatTime(t.createdAt)}`],
     ['Reference', t.reference],
     ['Fee', t.fee ? formatNaira(t.fee, 2) : 'Free'],
-  ];
+  );
 
   return (
     <Modal open onClose={onClose} title="Receipt" placement="sheet">
@@ -64,7 +70,11 @@ export function ReceiptSheet({
         <div className="mx-auto mt-1.5 mb-2.5 w-fit">
           <TransactionIcon credit={credit} large />
         </div>
-        <p className="text-ink-3">{t.title}</p>
+        <p className="text-[17px] font-semibold tracking-tight text-ink">{name}</p>
+        <p className="mt-0.5 text-xs text-ink-3">
+          {type}
+          {description ? ` · ${description}` : ''}
+        </p>
         <Money
           amount={credit ? t.amount : -t.amount}
           decimals={2}

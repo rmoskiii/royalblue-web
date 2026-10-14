@@ -9,7 +9,7 @@ function applyFilters(list: Transaction[], f: TransactionFilters) {
     (t) =>
       (!f.direction || t.direction === f.direction) &&
       (!f.status || t.status === f.status) &&
-      (!q || `${t.title} ${t.counterparty} ${t.amount}`.toLowerCase().includes(q)),
+      (!q || `${t.title} ${t.counterparty} ${t.type ?? ''} ${t.amount}`.toLowerCase().includes(q)),
   );
 }
 
