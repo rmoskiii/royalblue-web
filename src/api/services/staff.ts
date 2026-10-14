@@ -1,6 +1,5 @@
 import { env } from '@/config/env';
 import { http, mockResponse } from '../client';
-import { storage } from '@/lib/storage';
 import type {
   ApplicationStatus,
   CreditFile,
@@ -82,13 +81,7 @@ export const staffService = {
   },
 
   async documentBlob(applicationId: string, documentId: string) {
-    const url = `${window.location.origin}/api/v1/staff/applications/${applicationId}/documents/${documentId}`;
-    const raw = storage.get('rb.session');
-    const token = raw ? (JSON.parse(raw) as { accessToken?: string }) : {};
-    const res = await fetch(url, {
-      headers: token.accessToken ? { Authorization: `Bearer ${token.accessToken}` } : undefined,
-    });
-    if (!res.ok) throw new Error('Could not open document');
-    return URL.createObjectURL(await res.blob());
+    const blob = await http.blob(`/staff/applications/${applicationId}/documents/${documentId}`);
+    return URL.createObjectURL(blob);
   },
 };

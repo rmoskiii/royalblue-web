@@ -123,6 +123,19 @@ export const http = {
   put: <T>(path: string, json?: unknown) => request<T>('PUT', path, { json }),
   delete: <T>(path: string) => request<T>('DELETE', path),
   upload: <T>(path: string, form: FormData) => request<T>('POST', path, { form }),
+  async blob(path: string) {
+    const url = new URL(`${env.apiBaseUrl}${path}`, window.location.origin);
+    const res = await fetch(url, {
+      headers: {
+        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+        ...(activeProfileId && { 'X-Profile-Id': activeProfileId }),
+      },
+    });
+    if (!res.ok) {
+      throw new ApiError(res.status, friendlyApiMessage(`Request failed (${res.status})`, res.status, path));
+    }
+    return res.blob();
+  },
 };
 
 /** Resolve mock data after a short delay so loading states are visible in dev. */

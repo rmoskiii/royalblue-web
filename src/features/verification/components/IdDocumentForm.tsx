@@ -12,7 +12,7 @@ const idTypes: { value: IdDocumentType; label: string; placeholder: string }[] =
   { value: 'nin-slip', label: 'NIN slip', placeholder: '11-digit NIN' },
 ];
 
-/** ID number, a photo of the document, and a selfie to match it (PRD View 6). */
+/** ID number, a photo of the document, and a live webcam selfie (Dojah liveness). */
 export function IdDocumentForm({ onDone }: { onDone: () => void }) {
   const [type, setType] = useState<IdDocumentType>('voters-card');
   const [number, setNumber] = useState('');
@@ -67,8 +67,8 @@ export function IdDocumentForm({ onDone }: { onDone: () => void }) {
           onChange={setDocumentImage}
         />
         <CameraCapture
-          label="Selfie"
-          hint="Face the camera with nothing covering your face."
+          label="Live selfie"
+          hint="Use the webcam (or phone camera) and look at the lens. We check you are a real person before matching the ID."
           facing="user"
           value={selfie}
           onChange={setSelfie}

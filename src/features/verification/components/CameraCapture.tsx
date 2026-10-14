@@ -46,7 +46,11 @@ export function CameraCapture({
     setError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: facing },
+        video: {
+          facingMode: { ideal: facing },
+          width: { ideal: 720 },
+          height: { ideal: 720 },
+        },
         audio: false,
       });
       streamRef.current = stream;

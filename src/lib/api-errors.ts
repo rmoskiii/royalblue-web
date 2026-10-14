@@ -32,6 +32,9 @@ export function friendlyApiMessage(raw: string, status = 0, path = ''): string {
   if (/insufficient funds/i.test(message)) {
     return 'There isn’t enough money in this account.';
   }
+  if (/bvn is already (linked|registered)/i.test(message)) {
+    return 'This BVN is already linked to another RoyalBlue account. Sign in to that account to raise limits.';
+  }
   if (/merchant wallet/i.test(message)) {
     return 'We can’t complete payments just now. Please try again shortly.';
   }
