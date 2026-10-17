@@ -27,7 +27,9 @@ export function BvnForm({ onDone }: { onDone: () => void }) {
   const [identity, setIdentity] = useState<IdentityLookup | null>(null);
   const submit = useMutation({
     mutationFn: ({ kind, number }: { kind: IdentityKind; number: string }) =>
-      kind === 'nin' ? verificationService.submitNin(number) : verificationService.submitBvn(number),
+      kind === 'nin'
+        ? verificationService.submitNin(number)
+        : verificationService.submitBvn(number),
     onSuccess: (result) => setIdentity(toLookup(result ?? {})),
   });
 

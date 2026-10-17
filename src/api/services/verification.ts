@@ -3,6 +3,14 @@ import { http, mockResponse } from '../client';
 import { mockTierLimits, mockVerification } from '../mocks/data';
 import type { IdDocumentSubmission, TierLimit, VerificationStatus } from '../types';
 
+export type IdentitySubmitResult = {
+  firstName?: string;
+  lastName?: string;
+  dateOfBirth?: string | null;
+  photoUrl?: string | null;
+  pending?: boolean;
+};
+
 // TODO(api): confirm verification endpoints and upload format (multipart vs pre-signed URL).
 export const verificationService = {
   getStatus(): Promise<VerificationStatus> {
@@ -15,31 +23,19 @@ export const verificationService = {
     return http.get<TierLimit[]>('/verification/tiers');
   },
 
-  submitBvn(bvn: string) {
+  submitBvn(bvn: string): Promise<IdentitySubmitResult> {
     if (env.useMocks) {
       return mockResponse({ firstName: 'Ada', lastName: 'Okeke', pending: false }, 700);
     }
     // Same lookup as signup; this route also persists BVN on the applicant.
-    return http.post<{
-      firstName?: string;
-      lastName?: string;
-      pending?: boolean;
-      dateOfBirth?: string | null;
-      photoUrl?: string | null;
-    }>('/kyc/validate-bvn', { bvn });
+    return http.post<IdentitySubmitResult>('/kyc/validate-bvn', { bvn });
   },
 
-  submitNin(nin: string) {
+  submitNin(nin: string): Promise<IdentitySubmitResult> {
     if (env.useMocks) {
       return mockResponse({ firstName: 'Ada', lastName: 'Okeke', pending: false }, 700);
     }
-    return http.post<{
-      firstName?: string;
-      lastName?: string;
-      pending?: boolean;
-      dateOfBirth?: string | null;
-      photoUrl?: string | null;
-    }>('/kyc/validate-id', { type: 'nin', idNumber: nin });
+    return http.post<IdentitySubmitResult>('/kyc/validate-id', { type: 'nin', idNumber: nin });
   },
 
   submitIdDocument({ type, number, documentImage, selfie }: IdDocumentSubmission) {
