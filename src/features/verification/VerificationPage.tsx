@@ -18,8 +18,8 @@ const stepCopy: Record<VerificationStepId, { title: string; lead: string }> = {
     lead: 'Same check as signup. Your BVN or NIN confirms who you are. We can’t see or move money in your other accounts.',
   },
   'id-document': {
-    title: 'Upload your ID',
-    lead: 'Photograph your ID, then take a live selfie with the webcam or phone camera. We confirm you are present before matching the ID.',
+    title: 'Live selfie',
+    lead: 'Look at the camera. We confirm you are present, then match this selfie to your BVN or NIN photo. You only photograph an ID if that match fails.',
   },
   'proof-of-address': {
     title: 'Proof of address',
@@ -119,7 +119,8 @@ export function VerificationPage() {
                 <div>
                   <p className="font-semibold">You’re on Tier 3</p>
                   <p className="text-[13px] text-ink-2">
-                    BVN, ID and proof of address are on file. Daily and balance caps are off.
+                    BVN or NIN, a live selfie match, and proof of address are on file. Daily and
+                    balance caps are off.
                   </p>
                 </div>
               </div>
@@ -140,7 +141,10 @@ export function VerificationPage() {
                 ) : active === 'bvn' ? (
                   <BvnForm onDone={() => finish('bvn')} />
                 ) : active === 'id-document' ? (
-                  <IdDocumentForm onDone={() => finish('id-document')} />
+                  <IdDocumentForm
+                    canMatchOnFile={Boolean(status.hasBvn || status.hasNin)}
+                    onDone={() => finish('id-document')}
+                  />
                 ) : (
                   <ProofOfAddressForm onDone={() => finish('proof-of-address')} />
                 )}

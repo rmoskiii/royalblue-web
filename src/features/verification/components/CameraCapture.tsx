@@ -1,7 +1,14 @@
 import { Camera, ImageUp, RefreshCw } from 'lucide-react';
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui';
+import { compressKycImage } from '@/lib/compressImage';
 import { cn } from '@/lib/cn';
+
+let stopActiveCamera: (() => void) | null = null;
+
+function isMobile() {
+  return typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+}
 
 /**
  * Take a photo with the webcam (HTML5 getUserMedia), or upload one instead
@@ -26,6 +33,7 @@ export function CameraCapture({
   const streamRef = useRef<MediaStream | null>(null);
   const [live, setLive] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const kind = facing === 'user' ? 'selfie' : 'document';
 
   const preview = useMemo(() => (value ? URL.createObjectURL(value) : null), [value]);
   useEffect(
@@ -35,29 +43,47 @@ export function CameraCapture({
     [preview],
   );
 
-  const stop = () => {
+  const stop = useCallback(() => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
+    stopActiveCamera = null;
     setLive(false);
+  }, []);
+  useEffect(() => () => stop(), [stop]);
+
+  useEffect(() => {
+    if (live && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+    }
+  }, [live]);
+
+  const setFile = async (file: File | null) => {
+    if (!file) {
+      onChange(null);
+      return;
+    }
+    try {
+      onChange(await compressKycImage(file, kind));
+    } catch {
+      onChange(file);
+    }
   };
-  useEffect(() => stop, []);
 
   const start = async () => {
     setError(null);
+    stopActiveCamera?.();
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: { ideal: facing },
-          width: { ideal: 720 },
-          height: { ideal: 720 },
+          width: { ideal: 640 },
+          height: { ideal: 480 },
         },
         audio: false,
       });
       streamRef.current = stream;
+      stopActiveCamera = stop;
       setLive(true);
-      requestAnimationFrame(() => {
-        if (videoRef.current) videoRef.current.srcObject = stream;
-      });
     } catch {
       setError('We couldn’t open your camera. Allow camera access, or upload a photo instead.');
     }
@@ -67,8 +93,8 @@ export function CameraCapture({
     const video = videoRef.current;
     if (!video) return;
     const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     if (facing === 'user') {
@@ -78,16 +104,17 @@ export function CameraCapture({
     ctx.drawImage(video, 0, 0);
     canvas.toBlob(
       (blob) => {
-        if (blob)
-          onChange(
-            new File([blob], `${facing === 'user' ? 'selfie' : 'document'}.jpg`, {
+        if (blob) {
+          void setFile(
+            new File([blob], `${kind}.jpg`, {
               type: 'image/jpeg',
             }),
           );
+        }
         stop();
       },
       'image/jpeg',
-      0.9,
+      0.82,
     );
   };
 
@@ -130,7 +157,7 @@ export function CameraCapture({
           </>
         ) : (
           <>
-            <Button variant="secondary" className="max-sm:w-full" onClick={start}>
+            <Button variant="secondary" className="max-sm:w-full" onClick={() => void start()}>
               {value ? <RefreshCw className="size-4" /> : <Camera className="size-4" />}
               {value ? 'Retake' : 'Use camera'}
             </Button>
@@ -143,9 +170,13 @@ export function CameraCapture({
               id={inputId}
               type="file"
               accept="image/*"
-              capture={facing}
+              capture={isMobile() ? facing : undefined}
               className="sr-only"
-              onChange={(e) => onChange(e.target.files?.[0] ?? null)}
+              onChange={(e) => {
+                const file = e.target.files?.[0] ?? null;
+                e.target.value = '';
+                void setFile(file);
+              }}
             />
           </>
         )}

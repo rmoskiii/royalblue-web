@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { verificationService } from '@/api/services/verification';
-import type { IdDocumentType } from '@/api/types';
+import type { IdDocumentSubmission, IdDocumentType } from '@/api/types';
 import { Button, SelectField, TextField } from '@/components/ui';
 import { CameraCapture } from './CameraCapture';
 
@@ -12,36 +12,46 @@ const idTypes: { value: IdDocumentType; label: string; placeholder: string }[] =
   { value: 'nin-slip', label: 'NIN slip', placeholder: '11-digit NIN' },
 ];
 
-/** ID number, a photo of the document, and a live webcam selfie. */
+function needsIdFallback(message: string) {
+  return /photograph your original id/i.test(message);
+}
+
+/** Live selfie first (match BVN/NIN photo). Physical ID only if that match fails. */
 export function IdDocumentForm({
   onDone,
   onSkip,
   persist = true,
+  canMatchOnFile = true,
 }: {
-  onDone: (payload: { type: IdDocumentType; number: string; documentImage: File; selfie: File }) => void;
+  onDone: (payload: IdDocumentSubmission) => void;
   onSkip?: () => void;
   persist?: boolean;
+  canMatchOnFile?: boolean;
 }) {
-  const [type, setType] = useState<IdDocumentType>('voters-card');
+  const [type, setType] = useState<IdDocumentType>('nin-slip');
   const [number, setNumber] = useState('');
   const [documentImage, setDocumentImage] = useState<File | null>(null);
   const [selfie, setSelfie] = useState<File | null>(null);
+  const [requireId, setRequireId] = useState(!canMatchOnFile);
   const current = idTypes.find((t) => t.value === type) ?? idTypes[0];
 
   const submit = useMutation({
     mutationFn: async () => {
-      const payload = {
+      const payload: IdDocumentSubmission = {
         type,
         number,
-        documentImage: documentImage as File,
         selfie: selfie as File,
+        documentImage: documentImage ?? undefined,
       };
       if (persist) await verificationService.submitIdDocument(payload);
       return payload;
     },
     onSuccess: onDone,
+    onError: (error: Error) => {
+      if (needsIdFallback(error.message)) setRequireId(true);
+    },
   });
-  const ready = number.trim().length >= 6 && documentImage && selfie;
+  const ready = Boolean(selfie) && (!requireId || (number.trim().length >= 6 && documentImage));
 
   return (
     <form
@@ -51,43 +61,45 @@ export function IdDocumentForm({
         if (ready) submit.mutate();
       }}
     >
-      <div className="grid gap-4 sm:grid-cols-2">
-        <SelectField
-          label="ID type"
-          value={type}
-          onChange={(e) => {
-            setType(e.target.value as IdDocumentType);
-            setNumber('');
-          }}
-          options={idTypes}
-        />
-        <TextField
-          label="ID number"
-          autoComplete="off"
-          placeholder={current.placeholder}
-          value={number}
-          onChange={(e) => setNumber(e.target.value)}
-        />
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <CameraCapture
-          label="Photo of your ID"
-          hint="Place the front of your ID flat, in good light."
-          facing="environment"
-          value={documentImage}
-          onChange={setDocumentImage}
-        />
-        <CameraCapture
-          label="Live selfie"
-          hint="Use the webcam (or phone camera) and look at the lens. We check you are a real person before matching the ID."
-          facing="user"
-          value={selfie}
-          onChange={setSelfie}
-        />
-      </div>
+      <CameraCapture
+        label="Live selfie"
+        hint="Use the webcam, look at the lens, and stay in the frame. We confirm you are present, then match this to your BVN or NIN photo."
+        facing="user"
+        value={selfie}
+        onChange={setSelfie}
+      />
+      {requireId && (
+        <>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <SelectField
+              label="ID type"
+              value={type}
+              onChange={(e) => {
+                setType(e.target.value as IdDocumentType);
+                setNumber('');
+              }}
+              options={idTypes}
+            />
+            <TextField
+              label="ID number"
+              autoComplete="off"
+              placeholder={current.placeholder}
+              value={number}
+              onChange={(e) => setNumber(e.target.value)}
+            />
+          </div>
+          <CameraCapture
+            label="Photo of your ID"
+            hint="Place the front of your original ID flat, in good light. Do not use a screenshot."
+            facing="environment"
+            value={documentImage}
+            onChange={setDocumentImage}
+          />
+        </>
+      )}
       {submit.isError && <p className="text-[13px] text-primary-text">{submit.error.message}</p>}
       <Button type="submit" className="justify-self-start" disabled={!ready || submit.isPending}>
-        {submit.isPending ? 'Uploading…' : persist ? 'Submit ID' : 'Continue'}
+        {submit.isPending ? 'Checking with identity provider…' : persist ? 'Submit selfie' : 'Continue'}
       </Button>
       {onSkip && (
         <button type="button" className="justify-self-start text-sm font-medium text-ink-2" onClick={onSkip}>

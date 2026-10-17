@@ -1,5 +1,6 @@
 import { Upload } from 'lucide-react';
 import { useId, useState } from 'react';
+import { compressKycImage } from '@/lib/compressImage';
 import { cn } from '@/lib/cn';
 
 const MAX_BYTES = 5 * 1024 * 1024;
@@ -25,6 +26,12 @@ export function FileDrop({
     if (file.size > MAX_BYTES)
       return setError('That file is over 5 MB. Try a smaller scan or photo.');
     setError(null);
+    if (file.type.startsWith('image/')) {
+      void compressKycImage(file, 'document')
+        .then(onChange)
+        .catch(() => onChange(file));
+      return;
+    }
     onChange(file);
   };
 

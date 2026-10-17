@@ -307,7 +307,7 @@ export interface Loan {
 }
 
 // ---------- Verification (KYC) ----------
-/** PRD View 6: BVN validation → ID upload (+ selfie) → proof of address */
+/** PRD View 6: BVN validation → live selfie (ID fallback) → proof of address */
 export type VerificationStepId = 'bvn' | 'id-document' | 'proof-of-address';
 export type IdDocumentType = 'voters-card' | 'passport' | 'drivers-licence' | 'nin-slip';
 
@@ -340,7 +340,7 @@ export interface TierLimit {
 export interface IdDocumentSubmission {
   type: IdDocumentType;
   number: string;
-  documentImage: File;
+  documentImage?: File;
   selfie: File;
 }
 
