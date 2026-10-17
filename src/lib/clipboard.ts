@@ -36,3 +36,41 @@ export async function shareOrCopy(
   await copyText(`${title}\n${text}`);
   return 'copied';
 }
+
+export async function copyImage(blob: Blob) {
+  if (typeof ClipboardItem === 'undefined' || !navigator.clipboard?.write) {
+    throw new Error('Image clipboard is not available');
+  }
+  await navigator.clipboard.write([new ClipboardItem({ [blob.type || 'image/png']: blob })]);
+}
+
+/** Share a file (Mail on iOS/Android), else copy the image, else open a mailto draft. */
+export async function shareFileOrCopyImage(input: {
+  title: string;
+  text: string;
+  file: File;
+}): Promise<'shared' | 'copied' | 'emailed' | 'cancelled'> {
+  const { title, text, file } = input;
+  try {
+    if (typeof navigator.share === 'function') {
+      const payload: ShareData = { title, text, files: [file] };
+      if (typeof navigator.canShare !== 'function' || navigator.canShare(payload)) {
+        await navigator.share(payload);
+        return 'shared';
+      }
+    }
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      return 'cancelled';
+    }
+  }
+  try {
+    await copyImage(file);
+    return 'copied';
+  } catch {
+    const subject = encodeURIComponent(title);
+    const body = encodeURIComponent(text);
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    return 'emailed';
+  }
+}

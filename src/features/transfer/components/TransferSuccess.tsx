@@ -37,6 +37,7 @@ export function TransferSuccess({
             void shareReceipt(
               {
                 title: 'Transfer',
+                type: 'Transfer',
                 amount: draft.amount,
                 status: 'successful',
                 counterparty: `${draft.accountName} · ${draft.bankName} ${draft.accountNumber}`,
