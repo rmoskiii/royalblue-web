@@ -318,6 +318,11 @@ export interface VerificationStatus {
   hasBvn?: boolean;
   hasNin?: boolean;
   identityVerified?: boolean;
+  idDocumentVerified?: boolean;
+  addressVerified?: boolean;
+  addressReviewPending?: boolean;
+  failedAddressUploads?: number;
+  registryAddress?: string | null;
   completedSteps: VerificationStepId[];
   missing?: string[];
   limits?: {
@@ -635,12 +640,32 @@ export interface CreditFile {
   assignedOfficer?: { id: string; email: string } | null;
 }
 
+export interface KycAddressReview {
+  applicantId: string;
+  email: string;
+  name: string;
+  note?: string;
+  originalName?: string;
+  requestedAt?: ISODateString;
+  dojah: {
+    error?: string;
+    reason?: string;
+    resultStatus?: string;
+    overallStatus?: unknown;
+    statusReason?: string;
+    isRecent?: unknown;
+    extractedName?: string;
+    extractedAddress?: string;
+  };
+}
+
 export interface StaffSummary {
   role: StaffRole | string;
   assignedToMe: number;
   frozenAccounts: number;
   activeAccounts: number;
   staffHeadcount: number;
+  kycReviews?: number;
   pipeline: {
     intake: number;
     creditReview: number;

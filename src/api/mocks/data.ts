@@ -305,7 +305,7 @@ export const mockVerification: VerificationStatus = {
   hasBvn: true,
   identityVerified: true,
   completedSteps: ['bvn', 'id-document'],
-  missing: ['Add proof of address to unlock Tier 3 limits.'],
+  missing: ['Confirm your residential address to unlock Tier 3 limits.'],
 };
 
 /** From the PRD (§3B) plus CBN starter KYC without BVN. */
@@ -334,7 +334,7 @@ export const mockTierLimits: TierLimit[] = [
   },
   {
     tier: 3,
-    requirements: 'Tier 2 plus proof of address',
+    requirements: 'Tier 2 plus a confirmed residential address',
     singleTransactionLimit: 5_000_000,
     dailyLimit: null,
     maxBalance: null,

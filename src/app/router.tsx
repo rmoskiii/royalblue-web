@@ -87,6 +87,13 @@ export const router = createBrowserRouter([
                 ),
               },
               {
+                path: paths.adminKyc,
+                ...page(
+                  () => import('@/features/admin/AdminKycQueuePage'),
+                  (m) => m.AdminKycQueuePage,
+                ),
+              },
+              {
                 path: '/admin/applications/:id',
                 ...page(
                   () => import('@/features/admin/AdminCreditFilePage'),

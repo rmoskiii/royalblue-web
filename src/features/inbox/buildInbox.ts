@@ -42,6 +42,15 @@ export function buildInbox(input: {
       createdAt: '2020-01-01T00:00:00.000Z',
       href: paths.verification,
     });
+  } else if (input.verification?.addressReviewPending) {
+    items.push({
+      id: 'limits-address-review',
+      kind: 'limits',
+      title: 'Proof of address is with staff',
+      body: 'We could not auto-read the bill. A reviewer will check it — close names are decided by staff, not by a fuzzy match.',
+      createdAt: '2020-01-01T00:00:00.000Z',
+      href: paths.verification,
+    });
   } else if (input.verification && input.verification.tier < 3) {
     items.push({
       id: `limits-tier-${input.verification.tier}`,

@@ -49,9 +49,19 @@ export const verificationService = {
   },
 
   uploadProofOfAddress(file: File) {
-    if (env.useMocks) return mockResponse(undefined, 900);
+    if (env.useMocks) return mockResponse({ addressVerified: true } as VerificationStatus, 900);
     const form = new FormData();
     form.append('file', file);
-    return http.upload<void>('/verification/proof-of-address', form);
+    return http.upload<VerificationStatus>('/verification/proof-of-address', form);
+  },
+
+  requestAddressReview(note?: string) {
+    if (env.useMocks) return mockResponse(undefined, 400);
+    return http.post<void>('/verification/proof-of-address/request-review', { note });
+  },
+
+  confirmAddress(address: string) {
+    if (env.useMocks) return mockResponse(undefined, 400);
+    return http.post<void>('/verification/proof-of-address/confirm', { address });
   },
 };

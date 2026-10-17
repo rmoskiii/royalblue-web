@@ -49,6 +49,7 @@ export const paths = {
   adminQueue: '/admin/queue',
   adminAccounts: '/admin/accounts',
   adminTeam: '/admin/team',
+  adminKyc: '/admin/kyc',
   savings: '/savings',
   cards: '/cards',
   invest: '/invest',
@@ -87,6 +88,7 @@ const item = {
   review: { label: 'Review', to: paths.adminQueue, icon: ClipboardList },
   accounts: { label: 'Accounts', to: paths.adminAccounts, icon: Snowflake },
   team: { label: 'Team', to: paths.adminTeam, icon: Users },
+  kyc: { label: 'KYC reviews', to: paths.adminKyc, icon: ShieldCheck },
   savings: { label: 'Savings', to: paths.savings, icon: Wallet },
   cards: { label: 'Cards', to: paths.cards, icon: CreditCard },
   transactions: { label: 'Transactions', to: paths.transactions, icon: History },
@@ -171,7 +173,7 @@ export function navigationForStaff(role: StaffRole): NavigationSet {
       primary: [desk, queue],
       learnAndEarn: [],
       mobileTabs: [desk, queue],
-      more: [item.help, item.settings],
+      more: [item.kyc, item.help, item.settings],
     };
   }
   if (role === 'CREDIT_MANAGER') {
@@ -179,14 +181,14 @@ export function navigationForStaff(role: StaffRole): NavigationSet {
       primary: [desk, queue, item.accounts],
       learnAndEarn: [],
       mobileTabs: [desk, queue, item.accounts],
-      more: [item.help, item.settings],
+      more: [item.kyc, item.help, item.settings],
     };
   }
   return {
     primary: [desk, queue, item.accounts, item.team],
     learnAndEarn: [],
     mobileTabs: [desk, queue, item.accounts, item.team],
-    more: [item.help, item.settings],
+    more: [item.kyc, item.help, item.settings],
   };
 }
 

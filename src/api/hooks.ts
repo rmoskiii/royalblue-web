@@ -29,6 +29,7 @@ export const queryKeys = {
     application: (id: string) => ['staff', 'application', id] as const,
     accounts: ['staff', 'accounts'] as const,
     team: ['staff', 'team'] as const,
+    kycReviews: ['staff', 'kyc-reviews'] as const,
   },
   verification: ['verification'] as const,
   tierLimits: ['tier-limits'] as const,

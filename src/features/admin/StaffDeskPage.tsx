@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { ClipboardList, Landmark, Snowflake, Users } from 'lucide-react';
+import { ClipboardList, Landmark, ShieldCheck, Snowflake, Users } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Link } from 'react-router';
 import { queryKeys } from '@/api/hooks';
@@ -77,6 +77,15 @@ export function StaffDeskPage() {
     <>
       <PageHeader title={copy.title} subtitle={copy.subtitle} />
       <div className="grid gap-3 md:grid-cols-3">
+        {isStaffRole(role) && (
+          <StatCard
+            icon={ShieldCheck}
+            label="KYC reviews"
+            value={summary?.kycReviews ?? '—'}
+            note="Address checks waiting on staff"
+            to={paths.adminKyc}
+          />
+        )}
         {role === 'LOAN_OFFICER' && (
           <>
             <StatCard

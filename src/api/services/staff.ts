@@ -6,6 +6,7 @@ import type {
   StaffBankAccount,
   CreditTeamMember,
   StaffSummary,
+  KycAddressReview,
 } from '../types';
 
 export const staffService = {
@@ -17,6 +18,7 @@ export const staffService = {
         frozenAccounts: 0,
         activeAccounts: 0,
         staffHeadcount: 3,
+        kycReviews: 0,
         pipeline: { intake: 0, creditReview: 0, approved: 0, declined: 0, disbursed: 0 },
       });
     }
@@ -78,6 +80,15 @@ export const staffService = {
 
   unfreeze(id: string) {
     return http.post(`/staff/accounts/${id}/unfreeze`);
+  },
+
+  kycReviews(): Promise<KycAddressReview[]> {
+    if (env.useMocks) return mockResponse([]);
+    return http.get('/staff/kyc-reviews');
+  },
+
+  decideKycReview(applicantId: string, body: { approve: boolean; notes?: string }) {
+    return http.post(`/staff/kyc-reviews/${applicantId}/decide`, body);
   },
 
   async documentBlob(applicationId: string, documentId: string) {
