@@ -3,12 +3,17 @@ import { ChevronLeft } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { authService } from '@/api/services/auth';
-import type { AccountKind, EntityType, IdentityLookup } from '@/api/types';
+import { verificationService } from '@/api/services/verification';
+import type { AccountKind, EntityType, IdentityLookup, IdDocumentSubmission, VerificationStepId } from '@/api/types';
 import { useAuth } from '@/app/providers/AuthProvider';
+import { useToast } from '@/app/providers/ToastProvider';
 import { AuthCard } from '@/components/layout/AuthCard';
 import { paths } from '@/components/layout/navigation';
 import { Button, TextField } from '@/components/ui';
 import { demo } from '@/config/demo';
+import { IdDocumentForm } from '@/features/verification/components/IdDocumentForm';
+import { ProofOfAddressForm } from '@/features/verification/components/ProofOfAddressForm';
+import { Stepper } from '@/features/verification/components/Stepper';
 import { CodeInput } from './components/CodeInput';
 import { PasswordField } from './components/PasswordField';
 import { submitOnEnter } from './lib/submitOnEnter';
@@ -71,6 +76,36 @@ type State =
       nin?: string;
     }
   | {
+      step: 'id-document';
+      email: string;
+      otp: string;
+      password: string;
+      totpCode: string;
+      kind: AccountKind;
+      entityType: EntityType;
+      firstName: string;
+      lastName: string;
+      phone: string;
+      identity: IdentityLookup;
+      bvn?: string;
+      nin?: string;
+    }
+  | {
+      step: 'proof-of-address';
+      email: string;
+      otp: string;
+      password: string;
+      totpCode: string;
+      kind: AccountKind;
+      entityType: EntityType;
+      firstName: string;
+      lastName: string;
+      phone: string;
+      identity: IdentityLookup;
+      bvn?: string;
+      nin?: string;
+    }
+  | {
       step: 'business';
       email: string;
       otp: string;
@@ -106,6 +141,19 @@ type State =
       };
     };
 
+function kycCompleted(
+  active: VerificationStepId,
+  hasIdentityNumber: boolean,
+  hasId: boolean,
+): Set<VerificationStepId> {
+  const completed = new Set<VerificationStepId>();
+  if (hasIdentityNumber && (active === 'id-document' || active === 'proof-of-address')) {
+    completed.add('bvn');
+  }
+  if (hasId && active === 'proof-of-address') completed.add('id-document');
+  return completed;
+}
+
 function BackButton({ onClick }: { onClick: () => void }) {
   return (
     <button
@@ -122,7 +170,10 @@ function BackButton({ onClick }: { onClick: () => void }) {
 export function SignUpPage() {
   const [state, setState] = useState<State>({ step: 'email' });
   const [email, setEmail] = useState(demo?.signUp.email ?? '');
+  const [pendingIdDoc, setPendingIdDoc] = useState<IdDocumentSubmission | null>(null);
+  const [pendingAddress, setPendingAddress] = useState<File | null>(null);
   const { establishSession } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const finish = useMutation({
@@ -151,6 +202,16 @@ export function SignUpPage() {
         entityType: payload.entityType,
         business: payload.business,
       });
+      try {
+        if (pendingIdDoc) await verificationService.submitIdDocument(pendingIdDoc);
+        if (pendingAddress) await verificationService.uploadProofOfAddress(pendingAddress);
+      } catch (error) {
+        showToast(
+          error instanceof Error
+            ? error.message
+            : 'Account opened. Finish verification in Account limits.',
+        );
+      }
       establishSession(session);
     },
     onSuccess: () => navigate(paths.home, { replace: true }),
@@ -360,7 +421,7 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Identity verification"
-        subtitle="Enter your BVN or NIN. If we can’t confirm it right now, you can still open the account and finish later in Settings."
+        subtitle="Same checks as Account limits: BVN or NIN, then ID + live selfie, then proof of address. Skip any step and finish later when you’re ready."
         back={
           <BackButton
             onClick={() =>
@@ -377,6 +438,9 @@ export function SignUpPage() {
           />
         }
       >
+        <div className="mb-4">
+          <Stepper completed={kycCompleted('bvn', false, false)} active="bvn" onSelect={() => undefined} />
+        </div>
         <IdentityStep
           firstName={state.firstName}
           lastName={state.lastName}
@@ -402,7 +466,7 @@ export function SignUpPage() {
         subtitle={
           state.identity.verified && !state.identity.pending
             ? undefined
-            : 'Your account can still be created. We’ll remind you in Settings to finish verification.'
+            : 'Your account can still be created. ID, selfie and proof of address are next — or skip them and finish in Account limits.'
         }
         back={
           <BackButton
@@ -423,39 +487,31 @@ export function SignUpPage() {
           />
         }
       >
+        <div className="mb-4">
+          <Stepper
+            completed={kycCompleted('bvn', Boolean(state.bvn || state.nin), false)}
+            active="bvn"
+            onSelect={() => undefined}
+          />
+        </div>
         <ConfirmStep
           identity={state.identity}
           onConfirm={() =>
-            state.kind === 'business'
-              ? setState({
-                  step: 'business',
-                  email: state.email,
-                  otp: state.otp,
-                  password: state.password,
-                  totpCode: state.totpCode,
-                  kind: state.kind,
-                  entityType: state.entityType,
-                  firstName: state.identity.firstName || state.firstName,
-                  lastName: state.identity.lastName || state.lastName,
-                  phone: state.phone,
-                  bvn: state.bvn,
-                  nin: state.nin,
-                })
-              : setState({
-                  step: 'pin',
-                  email: state.email,
-                  otp: state.otp,
-                  password: state.password,
-                  totpCode: state.totpCode,
-                  kind: 'personal',
-                  entityType: 'INDIVIDUAL',
-                  firstName: state.identity.firstName || state.firstName,
-                  lastName: state.identity.lastName || state.lastName,
-                  phone: state.phone,
-                  bvn: state.bvn,
-                  nin: state.nin,
-                  identity: state.identity,
-                })
+            setState({
+              step: 'id-document',
+              email: state.email,
+              otp: state.otp,
+              password: state.password,
+              totpCode: state.totpCode,
+              kind: state.kind,
+              entityType: state.entityType,
+              firstName: state.identity.firstName || state.firstName,
+              lastName: state.identity.lastName || state.lastName,
+              phone: state.phone,
+              identity: state.identity,
+              bvn: state.bvn,
+              nin: state.nin,
+            })
           }
           onReject={() =>
             setState({
@@ -476,6 +532,122 @@ export function SignUpPage() {
     );
   }
 
+  if (state.step === 'id-document') {
+    return (
+      <AuthCard
+        title="Upload your ID"
+        subtitle="Photograph your ID, then take a live selfie. Same step as Account limits — skip if you’re not ready."
+        back={
+          <BackButton
+            onClick={() =>
+              setState({
+                step: 'confirm',
+                email: state.email,
+                otp: state.otp,
+                password: state.password,
+                totpCode: state.totpCode,
+                kind: state.kind,
+                entityType: state.entityType,
+                firstName: state.firstName,
+                lastName: state.lastName,
+                phone: state.phone,
+                identity: state.identity,
+                bvn: state.bvn,
+                nin: state.nin,
+              })
+            }
+          />
+        }
+      >
+        <div className="mb-4">
+          <Stepper
+            completed={kycCompleted('id-document', Boolean(state.bvn || state.nin), Boolean(pendingIdDoc))}
+            active="id-document"
+            onSelect={() => undefined}
+          />
+        </div>
+        <IdDocumentForm
+          persist={false}
+          onSkip={() => {
+            setPendingIdDoc(null);
+            setState({ ...state, step: 'proof-of-address' });
+          }}
+          onDone={(payload) => {
+            setPendingIdDoc(payload);
+            setState({ ...state, step: 'proof-of-address' });
+          }}
+        />
+      </AuthCard>
+    );
+  }
+
+  if (state.step === 'proof-of-address') {
+    const afterAddress = () =>
+      state.kind === 'business'
+        ? setState({
+            step: 'business',
+            email: state.email,
+            otp: state.otp,
+            password: state.password,
+            totpCode: state.totpCode,
+            kind: state.kind,
+            entityType: state.entityType,
+            firstName: state.firstName,
+            lastName: state.lastName,
+            phone: state.phone,
+            bvn: state.bvn,
+            nin: state.nin,
+          })
+        : setState({
+            step: 'pin',
+            email: state.email,
+            otp: state.otp,
+            password: state.password,
+            totpCode: state.totpCode,
+            kind: 'personal',
+            entityType: 'INDIVIDUAL',
+            firstName: state.firstName,
+            lastName: state.lastName,
+            phone: state.phone,
+            bvn: state.bvn,
+            nin: state.nin,
+            identity: state.identity,
+          });
+
+    return (
+      <AuthCard
+        title="Proof of address"
+        subtitle="Utility bill or bank statement from the last 3 months. Skip and finish later in Account limits if you prefer."
+        back={
+          <BackButton onClick={() => setState({ ...state, step: 'id-document' })} />
+        }
+      >
+        <div className="mb-4">
+          <Stepper
+            completed={kycCompleted(
+              'proof-of-address',
+              Boolean(state.bvn || state.nin),
+              Boolean(pendingIdDoc),
+            )}
+            active="proof-of-address"
+            onSelect={() => undefined}
+          />
+        </div>
+        <ProofOfAddressForm
+          persist={false}
+          onSkip={() => {
+            setPendingAddress(null);
+            afterAddress();
+          }}
+          onDone={(file) => {
+            setPendingAddress(file);
+            afterAddress();
+          }}
+        />
+      </AuthCard>
+    );
+  }
+
   if (state.step === 'business') {
     return (
     <AuthCard
@@ -485,7 +657,7 @@ export function SignUpPage() {
         <BackButton
           onClick={() =>
             setState({
-              step: 'identity',
+              step: 'proof-of-address',
               email: state.email,
               otp: state.otp,
               password: state.password,
@@ -495,6 +667,14 @@ export function SignUpPage() {
               firstName: state.firstName,
               lastName: state.lastName,
               phone: state.phone,
+              identity: {
+                firstName: state.firstName,
+                lastName: state.lastName,
+                dateOfBirth: null,
+                photoUrl: null,
+              },
+              bvn: state.bvn,
+              nin: state.nin,
             })
           }
         />
@@ -547,7 +727,7 @@ export function SignUpPage() {
                   nin: state.nin,
                 })
               : setState({
-                  step: 'confirm',
+                  step: 'proof-of-address',
                   email: state.email,
                   otp: state.otp,
                   password: state.password,
@@ -560,7 +740,7 @@ export function SignUpPage() {
                   identity: state.identity ?? {
                     firstName: state.firstName,
                     lastName: state.lastName,
-                    dateOfBirth: '',
+                    dateOfBirth: null,
                     photoUrl: null,
                   },
                   bvn: state.bvn,

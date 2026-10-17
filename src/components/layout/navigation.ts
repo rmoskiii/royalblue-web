@@ -113,26 +113,26 @@ export interface NavigationSet {
   more: NavItem[];
 }
 
-/** Personal profile (PRD View 1). Phone tabs per PRD: Home, Transfers, Savings, Cards. */
+/** Personal profile (PRD View 1). Phone tabs: Home, Transfers, Savings, Loans. */
 const personalNav: NavigationSet = {
   primary: [
     item.home,
     item.transfers,
-    item.payBills,
+    // item.payBills, // parked until BudPay airtime/data/electricity is reliable
     item.loans,
     item.savings,
-    item.cards,
+    // item.cards,
     item.transactions,
-    item.invest,
+    // item.invest,
     item.insights,
   ],
   learnAndEarn: [item.rewards, item.refer, item.learn, item.help],
-  mobileTabs: [item.home, item.transfers, item.savings, item.cards],
+  mobileTabs: [item.home, item.transfers, item.savings, item.loans],
   more: [
     item.loans,
-    item.payBills,
+    // item.payBills,
     item.transactions,
-    item.invest,
+    // item.invest,
     item.insights,
     item.verification,
     item.rewards,
@@ -151,13 +151,13 @@ const businessNav: NavigationSet = {
     item.transfers,
     item.staff,
     item.loans,
-    item.cards,
-    item.payBills,
+    // item.cards,
+    // item.payBills,
     item.transactions,
   ],
   learnAndEarn: [],
   mobileTabs: [{ ...item.home, label: 'Dashboard' }, item.payments, item.transfers, item.staff],
-  more: [item.loans, item.cards, item.payBills, item.transactions, item.help, item.settings],
+  more: [item.loans, /* item.cards, item.payBills, */ item.transactions, item.help, item.settings],
 };
 
 export const navigationFor = (profile: 'personal' | 'business') =>
@@ -198,5 +198,5 @@ export function homePathForRole(role?: string | null) {
 export const settingsNav = item.settings;
 export const adminNav = item.admin;
 
-/** Destinations in the nav that aren't built yet. */
-export const comingSoon: (NavItem & { to: string })[] = [item.invest];
+/** Destinations parked or not built yet. Bills/cards hidden until BudPay payments are reliable. */
+export const comingSoon: (NavItem & { to: string })[] = [item.invest, item.payBills, item.cards];

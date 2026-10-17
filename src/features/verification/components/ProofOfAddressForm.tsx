@@ -4,10 +4,22 @@ import { verificationService } from '@/api/services/verification';
 import { Button } from '@/components/ui';
 import { FileDrop } from './FileDrop';
 
-export function ProofOfAddressForm({ onDone }: { onDone: () => void }) {
+export function ProofOfAddressForm({
+  onDone,
+  onSkip,
+  persist = true,
+}: {
+  onDone: (file: File) => void;
+  onSkip?: () => void;
+  persist?: boolean;
+}) {
   const [file, setFile] = useState<File | null>(null);
   const submit = useMutation({
-    mutationFn: () => verificationService.uploadProofOfAddress(file as File),
+    mutationFn: async () => {
+      const next = file as File;
+      if (persist) await verificationService.uploadProofOfAddress(next);
+      return next;
+    },
     onSuccess: onDone,
   });
 
@@ -26,8 +38,13 @@ export function ProofOfAddressForm({ onDone }: { onDone: () => void }) {
       <FileDrop value={file} onChange={setFile} />
       {submit.isError && <p className="text-[13px] text-primary-text">{submit.error.message}</p>}
       <Button type="submit" className="justify-self-start" disabled={!file || submit.isPending}>
-        {submit.isPending ? 'Uploading…' : 'Submit document'}
+        {submit.isPending ? 'Uploading…' : persist ? 'Submit document' : 'Continue'}
       </Button>
+      {onSkip && (
+        <button type="button" className="justify-self-start text-sm font-medium text-ink-2" onClick={onSkip}>
+          Skip for now — finish later in Account limits
+        </button>
+      )}
     </form>
   );
 }

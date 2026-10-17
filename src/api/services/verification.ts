@@ -16,14 +16,30 @@ export const verificationService = {
   },
 
   submitBvn(bvn: string) {
-    if (env.useMocks) return mockResponse(undefined, 700);
-    // Onboarding names use public POST /auth/identity-lookup. Settings persists via this authed route.
-    return http.post('/kyc/validate-bvn', { bvn });
+    if (env.useMocks) {
+      return mockResponse({ firstName: 'Ada', lastName: 'Okeke', pending: false }, 700);
+    }
+    // Same lookup as signup; this route also persists BVN on the applicant.
+    return http.post<{
+      firstName?: string;
+      lastName?: string;
+      pending?: boolean;
+      dateOfBirth?: string | null;
+      photoUrl?: string | null;
+    }>('/kyc/validate-bvn', { bvn });
   },
 
   submitNin(nin: string) {
-    if (env.useMocks) return mockResponse(undefined, 700);
-    return http.post('/kyc/validate-id', { type: 'nin', idNumber: nin });
+    if (env.useMocks) {
+      return mockResponse({ firstName: 'Ada', lastName: 'Okeke', pending: false }, 700);
+    }
+    return http.post<{
+      firstName?: string;
+      lastName?: string;
+      pending?: boolean;
+      dateOfBirth?: string | null;
+      photoUrl?: string | null;
+    }>('/kyc/validate-id', { type: 'nin', idNumber: nin });
   },
 
   submitIdDocument({ type, number, documentImage, selfie }: IdDocumentSubmission) {

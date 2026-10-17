@@ -12,7 +12,7 @@ export function ComingSoonPage({ item }: { item: NavItem }) {
       </span>
       <h1 className="text-[28px] font-semibold tracking-tight text-brand">{item.label}</h1>
       <p className="text-ink-2">
-        {item.label} isn’t in this web app yet. We’ll open it here when it’s ready.
+        {item.label} isn’t available right now. We’ll open it here when it’s ready.
       </p>
       <Link to={paths.home} className={buttonClass({ variant: 'secondary' })}>
         Back to home

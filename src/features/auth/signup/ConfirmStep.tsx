@@ -8,10 +8,12 @@ export function ConfirmStep({
   identity,
   onConfirm,
   onReject,
+  unverifiedHint = 'Verification not completed. You can still create your account. We’ll remind you in Account limits to finish ID and address checks.',
 }: {
   identity: IdentityLookup;
   onConfirm: () => void;
   onReject: () => void;
+  unverifiedHint?: string;
 }) {
   const verified = identity.verified === true && !identity.pending;
   const name = [identity.firstName, identity.lastName].filter(Boolean).join(' ');
@@ -40,11 +42,8 @@ export function ConfirmStep({
               <dt className="sr-only">Date of birth</dt>
               <dd className="text-[13px] text-ink-2">Born {formatDate(identity.dateOfBirth)}</dd>
             </>
-          ) : (
-            <dd className="text-[13px] text-ink-2">
-              Verification not completed. You can still create your account. We’ll remind you in
-              Settings to finish verification.
-            </dd>
+          ) : verified ? null : (
+            <dd className="text-[13px] text-ink-2">{unverifiedHint}</dd>
           )}
         </dl>
       </div>

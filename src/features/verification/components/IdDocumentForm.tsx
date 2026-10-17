@@ -13,7 +13,15 @@ const idTypes: { value: IdDocumentType; label: string; placeholder: string }[] =
 ];
 
 /** ID number, a photo of the document, and a live webcam selfie. */
-export function IdDocumentForm({ onDone }: { onDone: () => void }) {
+export function IdDocumentForm({
+  onDone,
+  onSkip,
+  persist = true,
+}: {
+  onDone: (payload: { type: IdDocumentType; number: string; documentImage: File; selfie: File }) => void;
+  onSkip?: () => void;
+  persist?: boolean;
+}) {
   const [type, setType] = useState<IdDocumentType>('voters-card');
   const [number, setNumber] = useState('');
   const [documentImage, setDocumentImage] = useState<File | null>(null);
@@ -21,13 +29,16 @@ export function IdDocumentForm({ onDone }: { onDone: () => void }) {
   const current = idTypes.find((t) => t.value === type) ?? idTypes[0];
 
   const submit = useMutation({
-    mutationFn: () =>
-      verificationService.submitIdDocument({
+    mutationFn: async () => {
+      const payload = {
         type,
         number,
         documentImage: documentImage as File,
         selfie: selfie as File,
-      }),
+      };
+      if (persist) await verificationService.submitIdDocument(payload);
+      return payload;
+    },
     onSuccess: onDone,
   });
   const ready = number.trim().length >= 6 && documentImage && selfie;
@@ -76,8 +87,13 @@ export function IdDocumentForm({ onDone }: { onDone: () => void }) {
       </div>
       {submit.isError && <p className="text-[13px] text-primary-text">{submit.error.message}</p>}
       <Button type="submit" className="justify-self-start" disabled={!ready || submit.isPending}>
-        {submit.isPending ? 'Uploading…' : 'Submit ID'}
+        {submit.isPending ? 'Uploading…' : persist ? 'Submit ID' : 'Continue'}
       </Button>
+      {onSkip && (
+        <button type="button" className="justify-self-start text-sm font-medium text-ink-2" onClick={onSkip}>
+          Skip for now — finish later in Account limits
+        </button>
+      )}
     </form>
   );
 }
