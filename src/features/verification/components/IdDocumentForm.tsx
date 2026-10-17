@@ -12,7 +12,7 @@ const idTypes: { value: IdDocumentType; label: string; placeholder: string }[] =
   { value: 'nin-slip', label: 'NIN slip', placeholder: '11-digit NIN' },
 ];
 
-/** ID number, a photo of the document, and a live webcam selfie (Dojah liveness). */
+/** ID number, a photo of the document, and a live webcam selfie. */
 export function IdDocumentForm({ onDone }: { onDone: () => void }) {
   const [type, setType] = useState<IdDocumentType>('voters-card');
   const [number, setNumber] = useState('');

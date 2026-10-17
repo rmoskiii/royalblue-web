@@ -68,7 +68,7 @@ export function IdentityStep({
         inputClassName="tabular"
         hint={
           type === 'bvn'
-            ? 'We’ll confirm this with Dojah now. Use continue without waiting only if the lookup is slow — the number still saves on signup.'
+            ? 'We’ll confirm this now. Use continue without waiting only if the lookup is slow — the number still saves on signup.'
             : 'Dial *346# from your NIN-linked phone if you don’t know it.'
         }
         error={submit.isError ? submit.error.message : undefined}
