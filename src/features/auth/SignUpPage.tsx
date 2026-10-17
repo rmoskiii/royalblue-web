@@ -172,6 +172,7 @@ export function SignUpPage() {
   const [email, setEmail] = useState(demo?.signUp.email ?? '');
   const [pendingIdDoc, setPendingIdDoc] = useState<IdDocumentSubmission | null>(null);
   const [pendingAddress, setPendingAddress] = useState<File | null>(null);
+  const [pendingConfirmedAddress, setPendingConfirmedAddress] = useState<string | null>(null);
   const { establishSession } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -204,7 +205,8 @@ export function SignUpPage() {
       });
       try {
         if (pendingIdDoc) await verificationService.submitIdDocument(pendingIdDoc);
-        if (pendingAddress) await verificationService.uploadProofOfAddress(pendingAddress);
+        if (pendingConfirmedAddress) await verificationService.confirmAddress(pendingConfirmedAddress);
+        else if (pendingAddress) await verificationService.uploadProofOfAddress(pendingAddress);
       } catch (error) {
         showToast(
           error instanceof Error
@@ -421,7 +423,7 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Identity verification"
-        subtitle="Same checks as Account limits: BVN or NIN, then a live selfie, then proof of address. Skip any step and finish later when you’re ready."
+        subtitle="Same checks as Account limits: BVN or NIN, then a live selfie, then confirm your address. Skip any step and finish later when you’re ready."
         back={
           <BackButton
             onClick={() =>
@@ -617,8 +619,8 @@ export function SignUpPage() {
 
     return (
       <AuthCard
-        title="Proof of address"
-        subtitle="Utility bill or bank statement from the last 3 months. Skip and finish later in Account limits if you prefer."
+        title="Residential address"
+        subtitle="Confirm where you live, or skip and finish later in Account limits."
         back={
           <BackButton onClick={() => setState({ ...state, step: 'id-document' })} />
         }
@@ -638,10 +640,18 @@ export function SignUpPage() {
           persist={false}
           onSkip={() => {
             setPendingAddress(null);
+            setPendingConfirmedAddress(null);
             afterAddress();
           }}
+          onAddressConfirmed={(line) => {
+            setPendingConfirmedAddress(line);
+            setPendingAddress(null);
+          }}
           onDone={(file) => {
-            setPendingAddress(file);
+            if (file) {
+              setPendingAddress(file);
+              setPendingConfirmedAddress(null);
+            }
             afterAddress();
           }}
         />

@@ -22,8 +22,8 @@ const stepCopy: Record<VerificationStepId, { title: string; lead: string }> = {
     lead: 'Look at the camera. We confirm you are present, then match this selfie to your BVN or NIN photo. You only photograph an ID if that match fails.',
   },
   'proof-of-address': {
-    title: 'Proof of address',
-    lead: 'The last step to Tier 3, which removes your daily and balance limits.',
+    title: 'Residential address',
+    lead: 'Confirm where you live to reach Tier 3. We reuse any address already returned with BVN or NIN so we do not bill Dojah again.',
   },
 };
 
@@ -119,7 +119,7 @@ export function VerificationPage() {
                 <div>
                   <p className="font-semibold">You’re on Tier 3</p>
                   <p className="text-[13px] text-ink-2">
-                    BVN or NIN, a live selfie match, and proof of address are on file. Daily and
+                    BVN or NIN, a live selfie match, and a confirmed address are on file. Daily and
                     balance caps are off.
                   </p>
                 </div>
@@ -146,7 +146,12 @@ export function VerificationPage() {
                     onDone={() => finish('id-document')}
                   />
                 ) : (
-                  <ProofOfAddressForm onDone={() => finish('proof-of-address')} />
+                  <ProofOfAddressForm
+                    reviewPending={Boolean(status.addressReviewPending)}
+                    failedUploads={status.failedAddressUploads ?? 0}
+                    registryAddress={status.registryAddress}
+                    onDone={() => finish('proof-of-address')}
+                  />
                 )}
               </>
             ) : null}

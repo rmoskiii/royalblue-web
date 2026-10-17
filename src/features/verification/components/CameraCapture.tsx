@@ -123,7 +123,7 @@ export function CameraCapture({
       <p className="text-[13px] font-medium text-ink-2">{label}</p>
       <div
         className={cn(
-          'relative grid aspect-[4/3] max-w-full place-items-center overflow-hidden rounded-tile border-[1.5px] border-dashed border-surface-3 bg-surface-2',
+          'relative isolate aspect-[4/3] w-full max-w-md overflow-hidden rounded-tile border-[1.5px] border-dashed border-surface-3 bg-surface-2',
           (live || preview) && 'border-solid border-line',
         )}
       >
@@ -133,12 +133,15 @@ export function CameraCapture({
             autoPlay
             playsInline
             muted
-            className={cn('size-full object-cover', facing === 'user' && '-scale-x-100')}
+            className={cn(
+              'absolute inset-0 size-full object-cover',
+              facing === 'user' && '-scale-x-100',
+            )}
           />
         ) : preview ? (
-          <img src={preview} alt={label} className="size-full object-cover" />
+          <img src={preview} alt={label} className="absolute inset-0 size-full object-cover" />
         ) : (
-          <div className="grid justify-items-center gap-1 px-4 text-center text-[13px] break-words text-ink-3">
+          <div className="absolute inset-0 grid place-items-center justify-items-center gap-1 px-4 text-center text-[13px] break-words text-ink-3">
             <Camera className="size-6" />
             {hint}
           </div>
