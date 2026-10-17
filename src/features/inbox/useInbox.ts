@@ -1,18 +1,23 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAccount, useMe, useTransactions, useVerificationStatus } from '@/api/hooks';
-import { isStaffRole } from '@/api/types';
+import { isStaffRole, type Session, type User } from '@/api/types';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { storage } from '@/lib/storage';
 import { buildInbox, type InboxItem } from './buildInbox';
 
 const READ_EVENT = 'rb.inbox.read';
 
-function storageKey(userId: string) {
-  return `rb.inbox.read.${userId}`;
+function inboxOwnerId(session: Session | null, me?: User) {
+  return me?.id || session?.user.id || session?.user.email || '';
 }
 
-function loadRead(userId: string): Set<string> {
-  const raw = storage.get(storageKey(userId));
+function storageKey(ownerId: string) {
+  return `rb.inbox.read.${ownerId}`;
+}
+
+function loadRead(ownerId: string): Set<string> {
+  if (!ownerId) return new Set();
+  const raw = storage.get(storageKey(ownerId));
   if (!raw) return new Set();
   try {
     const parsed = JSON.parse(raw) as string[];
@@ -22,10 +27,22 @@ function loadRead(userId: string): Set<string> {
   }
 }
 
-function saveRead(userId: string, ids: Set<string>) {
-  const list = [...ids];
-  storage.set(storageKey(userId), JSON.stringify(list));
-  window.dispatchEvent(new CustomEvent(READ_EVENT, { detail: { userId, ids: list } }));
+function saveRead(ownerId: string, ids: Set<string>) {
+  storage.set(storageKey(ownerId), JSON.stringify([...ids]));
+  window.dispatchEvent(new CustomEvent(READ_EVENT, { detail: { userId: ownerId, ids: [...ids] } }));
+}
+
+function mergeSets(...groups: Set<string>[]) {
+  const next = new Set<string>();
+  for (const group of groups) {
+    for (const id of group) next.add(id);
+  }
+  return next;
+}
+
+/** Standing tier copy lives on Home/Me until Tier 3. Do not relight the bell for it. */
+function countsTowardBadge(item: InboxItem) {
+  return item.kind !== 'limits';
 }
 
 export function useInbox() {
@@ -34,7 +51,8 @@ export function useInbox() {
   const { data: account } = useAccount();
   const { data: transactions } = useTransactions({});
   const { data: verification } = useVerificationStatus();
-  const userId = me?.id ?? session?.user.id ?? '';
+  const userId = inboxOwnerId(session, me);
+  const email = session?.user.email ?? '';
 
   const staff = isStaffRole(session?.user.role ?? me?.role);
   const items = useMemo(
@@ -42,22 +60,38 @@ export function useInbox() {
     [staff, account, transactions, verification],
   );
 
-  const [readIds, setReadIds] = useState<Set<string>>(new Set());
+  const [readIds, setReadIds] = useState<Set<string>>(() =>
+    mergeSets(loadRead(inboxOwnerId(session, me)), loadRead(session?.user.email ?? '')),
+  );
+
+  const persist = useCallback(
+    (next: Set<string>) => {
+      setReadIds(next);
+      if (userId) saveRead(userId, next);
+      if (email && email !== userId) saveRead(email, next);
+    },
+    [email, userId],
+  );
 
   useEffect(() => {
-    if (!userId) return;
-    setReadIds(loadRead(userId));
-  }, [userId]);
+    if (!userId && !email) return;
+    const merged = mergeSets(loadRead(userId), loadRead(email));
+    setReadIds((current) => (merged.size === current.size && [...merged].every((id) => current.has(id)) ? current : merged));
+    if (userId && email && userId !== email && loadRead(email).size) {
+      saveRead(userId, merged);
+    }
+  }, [email, userId]);
 
   useEffect(() => {
     const onLocal = (event: Event) => {
       const detail = (event as CustomEvent<{ userId: string; ids: string[] }>).detail;
-      if (!detail || detail.userId !== userId) return;
-      setReadIds(new Set(detail.ids));
+      if (!detail) return;
+      if (detail.userId !== userId && detail.userId !== email) return;
+      setReadIds((current) => mergeSets(current, new Set(detail.ids)));
     };
     const onStorage = (event: StorageEvent) => {
-      if (!userId || event.key !== storageKey(userId)) return;
-      setReadIds(loadRead(userId));
+      if (event.key !== storageKey(userId) && event.key !== storageKey(email)) return;
+      setReadIds((current) => mergeSets(current, loadRead(userId), loadRead(email)));
     };
     window.addEventListener(READ_EVENT, onLocal);
     window.addEventListener('storage', onStorage);
@@ -65,34 +99,35 @@ export function useInbox() {
       window.removeEventListener(READ_EVENT, onLocal);
       window.removeEventListener('storage', onStorage);
     };
-  }, [userId]);
-
-  const persist = useCallback(
-    (next: Set<string>) => {
-      setReadIds(next);
-      if (userId) saveRead(userId, next);
-    },
-    [userId],
-  );
+  }, [email, userId]);
 
   const unread = useMemo(
-    () => items.filter((item) => !readIds.has(item.id)),
+    () => items.filter((item) => countsTowardBadge(item) && !readIds.has(item.id)),
     [items, readIds],
   );
 
   const markRead = useCallback(
     (item: InboxItem) => {
       if (readIds.has(item.id)) return;
-      persist(new Set(readIds).add(item.id));
+      persist(mergeSets(readIds, new Set([item.id])));
     },
     [persist, readIds],
   );
 
   const markAllRead = useCallback(() => {
-    persist(new Set(items.map((item) => item.id)));
-  }, [items, persist]);
+    const next = mergeSets(readIds, new Set(items.map((item) => item.id)));
+    if (next.size === readIds.size) return;
+    persist(next);
+  }, [items, persist, readIds]);
 
-  const isUnread = useCallback((id: string) => !readIds.has(id), [readIds]);
+  const isUnread = useCallback(
+    (id: string) => {
+      const item = items.find((row) => row.id === id);
+      if (item && !countsTowardBadge(item)) return false;
+      return !readIds.has(id);
+    },
+    [items, readIds],
+  );
 
   return { items, unread, unreadCount: unread.length, isUnread, markRead, markAllRead };
 }

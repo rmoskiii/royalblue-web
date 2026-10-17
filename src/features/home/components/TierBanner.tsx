@@ -16,8 +16,8 @@ export function TierBanner() {
   const restricted = Boolean(status.restrictedNoBvn || account?.restrictedNoBvn);
   const identityPending =
     Boolean(status.hasBvn || status.hasNin) && status.identityVerified === false;
-  const incomplete = status.completedSteps.length < 3 || restricted || identityPending;
-  if (!incomplete) return null;
+  // Stay on Home and Me until ID + address unlock Tier 3. The bell is only for new money events.
+  if (status.tier >= 3 && !restricted && !identityPending) return null;
 
   const cap = status.limits?.maxBalance ?? account?.maxBalance ?? 50_000;
   const title = identityPending
