@@ -17,6 +17,7 @@ export const verificationService = {
 
   submitBvn(bvn: string) {
     if (env.useMocks) return mockResponse(undefined, 700);
+    // Onboarding names use public POST /auth/identity-lookup. Settings persists via this authed route.
     return http.post('/kyc/validate-bvn', { bvn });
   },
 

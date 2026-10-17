@@ -32,11 +32,19 @@ export function friendlyApiMessage(raw: string, status = 0, path = ''): string {
   if (/insufficient funds/i.test(message)) {
     return 'There isn’t enough money in this account.';
   }
+  if (/bvn is already (linked|registered)/i.test(message)) {
+    return 'This BVN is already linked to another RoyalBlue account. Sign in to that account to raise limits.';
+  }
   if (/merchant wallet/i.test(message)) {
     return 'We can’t complete payments just now. Please try again shortly.';
   }
   if (/budpay is unreachable|payment network is unavailable/i.test(message)) {
     return 'The payment network is unavailable. Try again in a moment.';
+  }
+  if (/dojah|smile id/i.test(message)) {
+    return status >= 500
+      ? 'We couldn’t confirm your identity just now. Try again in a moment.'
+      : 'We couldn’t confirm that identity number. Check the digits and try again.';
   }
   if (/could not send the verification email/i.test(message)) {
     return 'We couldn’t send the verification email. Try again shortly.';

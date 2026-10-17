@@ -70,6 +70,8 @@ export const useTransactions = (filters: TransactionFilters = {}) =>
     queryKey: queryKeys.transactions(filters),
     queryFn: () => transactionService.list(filters),
     placeholderData: (previous) => previous,
+    refetchInterval: 12_000,
+    refetchOnWindowFocus: true,
   });
 
 export const useInsights = () =>

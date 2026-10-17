@@ -8,17 +8,8 @@ export function BvnForm({ onDone }: { onDone: () => void }) {
   const [kind, setKind] = useState<'bvn' | 'nin'>('bvn');
   const [number, setNumber] = useState('');
   const submit = useMutation({
-    mutationFn: async () => {
-      const run =
-        kind === 'nin' ? verificationService.submitNin(number) : verificationService.submitBvn(number);
-      const timed = await Promise.race([
-        run.then(() => true),
-        new Promise<false>((resolve) => {
-          window.setTimeout(() => resolve(false), 3_000);
-        }),
-      ]);
-      return timed;
-    },
+    mutationFn: () =>
+      kind === 'nin' ? verificationService.submitNin(number) : verificationService.submitBvn(number),
     onSuccess: onDone,
   });
 
@@ -68,9 +59,6 @@ export function BvnForm({ onDone }: { onDone: () => void }) {
       >
         {submit.isPending ? 'Checking…' : kind === 'nin' ? 'Validate NIN' : 'Validate BVN'}
       </Button>
-      <button type="button" className="justify-self-start text-sm font-medium text-ink-2" onClick={onDone}>
-        Continue without waiting
-      </button>
     </form>
   );
 }

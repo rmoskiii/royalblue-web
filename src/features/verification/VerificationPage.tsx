@@ -19,7 +19,7 @@ const stepCopy: Record<VerificationStepId, { title: string; lead: string }> = {
   },
   'id-document': {
     title: 'Upload your ID',
-    lead: 'Take a photo of a government-issued ID and a selfie so we can match them. You can use your webcam.',
+    lead: 'Photograph your ID, then take a live selfie with the webcam or phone camera. We confirm you are present before matching the ID.',
   },
   'proof-of-address': {
     title: 'Proof of address',
@@ -44,7 +44,9 @@ export function VerificationPage() {
   const firstIncomplete = verificationSteps.find((s) => !completed.has(s.id))?.id ?? null;
   const active = selected ?? firstIncomplete;
   const allDone = completed.size === verificationSteps.length;
-  const currentTier = tiers.find((t) => t.tier === status.tier);
+  const currentTier = tiers.find(
+    (t) => t.tier === status.tier && Boolean(t.restrictedNoBvn) === Boolean(status.restrictedNoBvn),
+  );
 
   const finish = (id: VerificationStepId) => {
     setJustCompleted((c) => [...c, id]);
