@@ -43,8 +43,8 @@ export const verificationService = {
     const form = new FormData();
     form.append('type', type);
     form.append('number', number);
-    form.append('document', documentImage);
     form.append('selfie', selfie);
+    if (documentImage) form.append('document', documentImage);
     return http.upload<void>('/verification/id-document', form);
   },
 

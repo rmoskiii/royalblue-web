@@ -19,7 +19,7 @@ export function Stepper({
         const done = completed.has(s.id);
         const isActive = s.id === active;
         const short =
-          s.id === 'bvn' ? 'BVN' : s.id === 'id-document' ? 'ID' : 'Address';
+          s.id === 'bvn' ? 'BVN' : s.id === 'id-document' ? 'Selfie' : 'Address';
         return (
           <li key={s.id} className="min-w-0">
             <button

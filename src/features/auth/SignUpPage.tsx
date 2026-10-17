@@ -421,7 +421,7 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Identity verification"
-        subtitle="Same checks as Account limits: BVN or NIN, then ID + live selfie, then proof of address. Skip any step and finish later when you’re ready."
+        subtitle="Same checks as Account limits: BVN or NIN, then a live selfie, then proof of address. Skip any step and finish later when you’re ready."
         back={
           <BackButton
             onClick={() =>
@@ -535,8 +535,8 @@ export function SignUpPage() {
   if (state.step === 'id-document') {
     return (
       <AuthCard
-        title="Upload your ID"
-        subtitle="Photograph your ID, then take a live selfie. Same step as Account limits — skip if you’re not ready."
+        title="Live selfie"
+        subtitle="Look at the camera. We match this to your BVN or NIN photo. Skip if you’re not ready — same step later in Account limits."
         back={
           <BackButton
             onClick={() =>
@@ -568,6 +568,7 @@ export function SignUpPage() {
         </div>
         <IdDocumentForm
           persist={false}
+          canMatchOnFile={Boolean(state.bvn || state.nin)}
           onSkip={() => {
             setPendingIdDoc(null);
             setState({ ...state, step: 'proof-of-address' });
