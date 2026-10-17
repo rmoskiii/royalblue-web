@@ -28,17 +28,7 @@ export function IdentityStep({
     verified: false,
   });
   const submit = useMutation({
-    mutationFn: async () => {
-      const lookup = authService.lookupIdentity(type, number, { phone, firstName, lastName });
-      const timed = await Promise.race([
-        lookup.then((identity) => ({ ok: true as const, identity })),
-        new Promise<{ ok: false }>((resolve) => {
-          window.setTimeout(() => resolve({ ok: false }), 3_000);
-        }),
-      ]);
-      if (timed.ok) return timed.identity;
-      return unverified();
-    },
+    mutationFn: () => authService.lookupIdentity(type, number, { phone, firstName, lastName }),
     onSuccess: (identity) => onDone(identity, { type, number }),
   });
 
@@ -78,7 +68,7 @@ export function IdentityStep({
         inputClassName="tabular"
         hint={
           type === 'bvn'
-            ? 'We’ll try to confirm this now. If we can’t, you can still create the account and finish later in Settings.'
+            ? 'We’ll confirm this with Dojah now. Use continue without waiting only if the lookup is slow — the number still saves on signup.'
             : 'Dial *346# from your NIN-linked phone if you don’t know it.'
         }
         error={submit.isError ? submit.error.message : undefined}

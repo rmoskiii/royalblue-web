@@ -44,7 +44,9 @@ export function VerificationPage() {
   const firstIncomplete = verificationSteps.find((s) => !completed.has(s.id))?.id ?? null;
   const active = selected ?? firstIncomplete;
   const allDone = completed.size === verificationSteps.length;
-  const currentTier = tiers.find((t) => t.tier === status.tier);
+  const currentTier = tiers.find(
+    (t) => t.tier === status.tier && Boolean(t.restrictedNoBvn) === Boolean(status.restrictedNoBvn),
+  );
 
   const finish = (id: VerificationStepId) => {
     setJustCompleted((c) => [...c, id]);
