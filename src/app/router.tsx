@@ -138,13 +138,14 @@ export const router = createBrowserRouter([
               },
             ],
           },
-          {
-            path: paths.payBills,
-            ...page(
-              () => import('@/features/bills/BillsPage'),
-              (m) => m.BillsPage,
-            ),
-          },
+          // Parked until BudPay airtime/data/electricity is reliable.
+          // {
+          //   path: paths.payBills,
+          //   ...page(
+          //     () => import('@/features/bills/BillsPage'),
+          //     (m) => m.BillsPage,
+          //   ),
+          // },
           {
             path: paths.savings,
             ...page(
@@ -152,13 +153,13 @@ export const router = createBrowserRouter([
               (m) => m.SavingsPage,
             ),
           },
-          {
-            path: paths.cards,
-            ...page(
-              () => import('@/features/cards/CardsPage'),
-              (m) => m.CardsPage,
-            ),
-          },
+          // {
+          //   path: paths.cards,
+          //   ...page(
+          //     () => import('@/features/cards/CardsPage'),
+          //     (m) => m.CardsPage,
+          //   ),
+          // },
           {
             element: <BusinessOnly />,
             children: [

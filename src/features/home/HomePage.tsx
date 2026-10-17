@@ -9,7 +9,7 @@ import { ActiveLoanCard } from './components/ActiveLoanCard';
 import { AddMoneySheet } from './components/AddMoneySheet';
 import { BalanceCard } from './components/BalanceCard';
 import { InsightsCard } from './components/InsightsCard';
-import { ReferCard, VirtualCardPromo } from './components/PromoCards';
+import { ReferCard } from './components/PromoCards';
 import { QuickServices } from './components/QuickServices';
 import { ReceiveSheet } from './components/ReceiveSheet';
 import { RecentTransactions } from './components/RecentTransactions';
@@ -76,9 +76,9 @@ export function HomePage() {
           <div className="order-5 xl:order-none">
             <ReferCard />
           </div>
-          <div className="order-6 xl:order-none">
+          {/* <div className="order-6 xl:order-none">
             <VirtualCardPromo />
-          </div>
+          </div> */}
         </div>
       </div>
 

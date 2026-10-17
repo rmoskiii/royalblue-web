@@ -40,6 +40,7 @@ export function PaymentsSettingsPage() {
             </Button>
           </Link>
         </Card>
+        {/* Parked until cards is back in the product.
         <Card>
           <p className="font-semibold">Cards</p>
           <p className="mt-1 text-[13px] text-ink-3">Virtual and physical cards live on the Cards tab.</p>
@@ -49,6 +50,7 @@ export function PaymentsSettingsPage() {
             </Button>
           </Link>
         </Card>
+        */}
       </div>
     </>
   );

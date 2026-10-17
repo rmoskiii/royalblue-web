@@ -98,6 +98,7 @@ export function BillApproveModal({ draft, onClose }: { draft: BillDraft; onClose
                   void shareReceipt(
                     {
                       title: draft.title,
+                      type: draft.title,
                       amount: draft.payment.amount,
                       status: 'successful',
                       counterparty: draft.details.map(([, v]) => v).filter(Boolean).join(' · '),

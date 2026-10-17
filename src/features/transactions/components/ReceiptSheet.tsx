@@ -4,7 +4,8 @@ import { useToast } from '@/app/providers/ToastProvider';
 import { Button, Chip, Modal, Money } from '@/components/ui';
 import { cn } from '@/lib/cn';
 import { formatDate, formatNaira, formatTime } from '@/lib/format';
-import { shareOrCopy } from '@/lib/clipboard';
+import { shareFileOrCopyImage } from '@/lib/clipboard';
+import { renderReceiptPng, type ReceiptShareInput } from '../receiptImage';
 import { transactionDisplay } from '../transactionDisplay';
 import { TransactionIcon } from './TransactionRow';
 
@@ -32,13 +33,18 @@ export function formatReceiptShare(t: {
     .join('\n');
 }
 
-export async function shareReceipt(
-  t: Parameters<typeof formatReceiptShare>[0],
-  showToast: (message: string) => void,
-) {
-  const outcome = await shareOrCopy('RoyalBlue receipt', formatReceiptShare(t));
-  if (outcome === 'copied') showToast('Receipt copied');
+export async function shareReceipt(t: ReceiptShareInput, showToast: (message: string) => void) {
+  const text = formatReceiptShare(t);
+  const blob = await renderReceiptPng(t);
+  const file = new File([blob], `royalblue-receipt-${t.reference}.png`, { type: 'image/png' });
+  const outcome = await shareFileOrCopyImage({
+    title: 'RoyalBlue receipt',
+    text,
+    file,
+  });
+  if (outcome === 'copied') showToast('Receipt image copied');
   if (outcome === 'shared') showToast('Receipt shared');
+  if (outcome === 'emailed') showToast('Opening email');
 }
 
 export function ReceiptSheet({
@@ -102,7 +108,20 @@ export function ReceiptSheet({
         </dl>
 
         <div className="grid grid-cols-2 gap-2">
-          <Button variant="secondary" onClick={() => void shareReceipt(t, showToast)}>
+          <Button
+            variant="secondary"
+            onClick={() =>
+              void shareReceipt(
+                {
+                  ...t,
+                  type,
+                  counterparty: name,
+                  title: description || type,
+                },
+                showToast,
+              )
+            }
+          >
             <Share2 className="size-4" />
             Share receipt
           </Button>

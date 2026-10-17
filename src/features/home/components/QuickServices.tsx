@@ -1,25 +1,28 @@
-import { CreditCard, Landmark, Smartphone, Wifi, Zap, type LucideIcon } from 'lucide-react';
+import { History, Landmark, Send, ShieldCheck, type LucideIcon } from 'lucide-react';
 import { Link } from 'react-router';
 import { paths } from '@/components/layout/navigation';
 import { IconTile } from '@/components/ui';
 
 // Tints come from the Figma colour variables.
 const services: { label: string; to: string; icon: LucideIcon; tint: string }[] = [
-  {
-    label: 'Airtime',
-    to: `${paths.payBills}?type=airtime`,
-    icon: Smartphone,
-    tint: 'text-tint-airtime',
-  },
-  { label: 'Data', to: `${paths.payBills}?type=data`, icon: Wifi, tint: 'text-tint-data' },
-  { label: 'Bills', to: `${paths.payBills}?type=electricity`, icon: Zap, tint: 'text-tint-bills' },
-  { label: 'Card', to: paths.cards, icon: CreditCard, tint: 'text-tint-card' },
+  // {
+  //   label: 'Airtime',
+  //   to: `${paths.payBills}?type=airtime`,
+  //   icon: Smartphone,
+  //   tint: 'text-tint-airtime',
+  // },
+  // { label: 'Data', to: `${paths.payBills}?type=data`, icon: Wifi, tint: 'text-tint-data' },
+  // { label: 'Bills', to: `${paths.payBills}?type=electricity`, icon: Zap, tint: 'text-tint-bills' },
+  // { label: 'Card', to: paths.cards, icon: CreditCard, tint: 'text-tint-card' },
+  { label: 'Send', to: paths.transfer, icon: Send, tint: 'text-brand' },
   { label: 'Loans', to: paths.loans, icon: Landmark, tint: 'text-tint-loans' },
+  { label: 'Activity', to: paths.transactions, icon: History, tint: 'text-ink-2' },
+  { label: 'Limits', to: paths.verification, icon: ShieldCheck, tint: 'text-primary-text' },
 ];
 
 export function QuickServices() {
   return (
-    <nav aria-label="Quick services" className="grid grid-cols-5 gap-1 sm:gap-2">
+    <nav aria-label="Quick services" className="grid grid-cols-4 gap-1 sm:gap-2">
       {services.map(({ label, to, icon, tint }) => (
         <Link
           key={label}

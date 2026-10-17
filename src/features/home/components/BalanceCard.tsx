@@ -1,10 +1,8 @@
-import { ArrowDownLeft, Copy, Eye, EyeOff, Plus, Send, Zap } from 'lucide-react';
+import { ArrowDownLeft, Copy, Eye, EyeOff, Plus, Send } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router';
 import { useAccount } from '@/api/hooks';
 import { useToast } from '@/app/providers/ToastProvider';
-import { paths } from '@/components/layout/navigation';
-import { Button, Money, buttonClass } from '@/components/ui';
+import { Button, Money } from '@/components/ui';
 import { useTransfer } from '@/features/transfer/TransferProvider';
 import { copyText } from '@/lib/clipboard';
 import { formatAccountNumber } from '@/lib/format';
@@ -83,9 +81,9 @@ export function BalanceCard({
         <Button variant="glass" onClick={onReceive}>
           <ArrowDownLeft className="size-4" /> Receive
         </Button>
-        <Link to={paths.payBills} className={buttonClass({ variant: 'glass' })}>
+        {/* <Link to={paths.payBills} className={buttonClass({ variant: 'glass' })}>
           <Zap className="size-4" /> Pay bills
-        </Link>
+        </Link> */}
         <Button variant="glass" onClick={onAddMoney}>
           <Plus className="size-4" /> Add money
         </Button>

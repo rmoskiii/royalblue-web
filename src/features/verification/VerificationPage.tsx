@@ -15,7 +15,7 @@ import { verificationSteps } from './stepList';
 const stepCopy: Record<VerificationStepId, { title: string; lead: string }> = {
   bvn: {
     title: 'Validate your BVN or NIN',
-    lead: 'Your BVN or NIN confirms who you are. We can’t see or move money in your other accounts.',
+    lead: 'Same check as signup. Your BVN or NIN confirms who you are. We can’t see or move money in your other accounts.',
   },
   'id-document': {
     title: 'Upload your ID',
