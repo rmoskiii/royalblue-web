@@ -125,7 +125,7 @@ export const authService = {
       });
     }
     return http.post('/auth/otp/send', { email, purpose: 'reset' });
-  }
+  },
 
   verifyEmailOtp(
     email: string,
