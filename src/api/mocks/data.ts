@@ -176,16 +176,34 @@ export const mockTransactions: Transaction[] = [
 ];
 
 export const mockInsights: InsightsSummary = {
-  periodLabel: 'This month so far',
+  periodLabel: 'October 2026',
   moneyIn: 585_000,
   moneyOut: 412_300,
+  net: 172_700,
+  debitCount: 11,
+  creditCount: 3,
+  averageDebit: 37_482,
+  lastMonth: { moneyIn: 400_000, moneyOut: 350_000 },
   breakdown: [
-    { category: 'Loan repayment', share: 0.34 },
-    { category: 'Transfers', share: 0.26 },
-    { category: 'Bills', share: 0.22 },
-    { category: 'Shopping', share: 0.12 },
-    { category: 'Airtime and data', share: 0.06 },
+    { id: 'shopping', category: 'Shopping', amount: 49_476, count: 2, share: 0.12 },
+    { id: 'food', category: 'Food', amount: 0, count: 0, share: 0 },
+    { id: 'bills', category: 'Bills', amount: 90_706, count: 3, share: 0.22 },
+    { id: 'airtime', category: 'Airtime and data', amount: 24_738, count: 2, share: 0.06 },
+    { id: 'transport', category: 'Transport', amount: 0, count: 0, share: 0 },
+    { id: 'transfers', category: 'Transfers', amount: 107_198, count: 3, share: 0.26 },
+    { id: 'loans', category: 'Loans', amount: 140_182, count: 1, share: 0.34 },
+    { id: 'other', category: 'Other', amount: 0, count: 0, share: 0 },
   ],
+  topPayees: [
+    { name: 'RoyalBlue Loans', amount: 140_182, count: 1 },
+    { name: 'Chiamaka Okafor', amount: 80_000, count: 2 },
+  ],
+  largestOut: {
+    amount: 140_182,
+    counterparty: 'RoyalBlue Loans',
+    title: 'Loan repayment',
+    createdAt: new Date().toISOString(),
+  },
 };
 
 export const mockBanks: Bank[] = [

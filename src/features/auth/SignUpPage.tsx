@@ -620,7 +620,7 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Residential address"
-        subtitle="Tell us where you live. Staff review it before Tier 3. Skip and finish later in Account limits if you prefer."
+        subtitle="Where you live now. Skip and finish later in Account limits if you prefer."
         back={
           <BackButton onClick={() => setState({ ...state, step: 'id-document' })} />
         }

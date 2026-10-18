@@ -10,6 +10,7 @@ import { IdDocumentForm } from './components/IdDocumentForm';
 import { ProofOfAddressForm } from './components/ProofOfAddressForm';
 import { Stepper } from './components/Stepper';
 import { TierLimitsTable } from './components/TierLimitsTable';
+import { ADDRESS_LEAD, addressStepLead } from './addressCopy';
 import { verificationSteps } from './stepList';
 
 const stepCopy: Record<VerificationStepId, { title: string; lead: string }> = {
@@ -23,7 +24,7 @@ const stepCopy: Record<VerificationStepId, { title: string; lead: string }> = {
   },
   'proof-of-address': {
     title: 'Residential address',
-    lead: 'Tell us where you live. Staff confirm it against NIN/BVN and any bill before Tier 3 unlocks.',
+    lead: ADDRESS_LEAD,
   },
 };
 
@@ -129,7 +130,11 @@ export function VerificationPage() {
                 <h3 className="text-xl font-semibold tracking-tight text-brand">
                   {stepCopy[active].title}
                 </h3>
-                <p className="mt-1 mb-4 text-sm text-ink-2">{stepCopy[active].lead}</p>
+                <p className="mt-1 mb-4 text-sm text-ink-2">
+                  {active === 'proof-of-address'
+                    ? addressStepLead(Boolean(status.addressReviewPending))
+                    : stepCopy[active].lead}
+                </p>
                 {!showForm ? (
                   <div className="flex min-w-0 flex-wrap items-center gap-3 rounded-tile bg-success-soft px-4 py-3">
                     <CircleCheck className="size-5 shrink-0 text-success" />
@@ -149,7 +154,9 @@ export function VerificationPage() {
                   <ProofOfAddressForm
                     reviewPending={Boolean(status.addressReviewPending)}
                     failedUploads={status.failedAddressUploads ?? 0}
-                    registryAddress={status.registryAddress}
+                    currentAddress={status.claimedAddress}
+                    lastRegistryAddress={status.registryAddress}
+                    billName={status.latestBillName}
                     onDone={() => finish('proof-of-address')}
                   />
                 )}

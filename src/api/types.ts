@@ -229,12 +229,37 @@ export interface TransactionFilters {
   search?: string;
 }
 
+export interface InsightsBreakdown {
+  id?: string;
+  category: string;
+  amount?: number;
+  count?: number;
+  share: number;
+}
+
+export interface InsightsPayee {
+  name: string;
+  amount: number;
+  count: number;
+}
+
 export interface InsightsSummary {
   periodLabel: string;
   moneyIn: number;
   moneyOut: number;
-  /** Spending split; shares add up to 1 */
-  breakdown: { category: string; share: number }[];
+  net?: number;
+  debitCount?: number;
+  creditCount?: number;
+  averageDebit?: number;
+  lastMonth?: { moneyIn: number; moneyOut: number };
+  breakdown: InsightsBreakdown[];
+  topPayees?: InsightsPayee[];
+  largestOut?: {
+    amount: number;
+    counterparty: string;
+    title: string;
+    createdAt: string;
+  } | null;
 }
 
 // ---------- Transfers ----------
@@ -322,7 +347,9 @@ export interface VerificationStatus {
   addressVerified?: boolean;
   addressReviewPending?: boolean;
   failedAddressUploads?: number;
+  claimedAddress?: string | null;
   registryAddress?: string | null;
+  latestBillName?: string | null;
   completedSteps: VerificationStepId[];
   missing?: string[];
   limits?: {
