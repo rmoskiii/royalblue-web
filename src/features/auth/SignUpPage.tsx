@@ -170,6 +170,7 @@ function BackButton({ onClick }: { onClick: () => void }) {
 export function SignUpPage() {
   const [state, setState] = useState<State>({ step: 'email' });
   const [email, setEmail] = useState(demo?.signUp.email ?? '');
+  const [totpRequired, setTotpRequired] = useState(false);
   const [pendingIdDoc, setPendingIdDoc] = useState<IdDocumentSubmission | null>(null);
   const [pendingAddress, setPendingAddress] = useState<File | null>(null);
   const [pendingConfirmedAddress, setPendingConfirmedAddress] = useState<string | null>(null);
@@ -225,6 +226,7 @@ export function SignUpPage() {
         email={email}
         onEmail={setEmail}
         onDone={(next) => {
+          setTotpRequired(Boolean(next.totpRequired));
           if (!next.mfaRequired) {
             setState({
               step: 'password',
@@ -255,13 +257,20 @@ export function SignUpPage() {
       <PasswordStep
         onBack={() => setState({ step: 'email' })}
         onDone={(password) =>
-          setState({
-            step: 'kind',
-            email: state.email,
-            otp: state.otp,
-            password,
-            totpCode: '',
-          })
+          totpRequired
+            ? setState({
+                step: 'totp',
+                email: state.email,
+                otp: state.otp,
+                password,
+              })
+            : setState({
+                step: 'kind',
+                email: state.email,
+                otp: state.otp,
+                password,
+                totpCode: '',
+              })
         }
       />
     );
@@ -793,7 +802,12 @@ function EmailStep({
 }: {
   email: string;
   onEmail: (value: string) => void;
-  onDone: (next: { email: string; otpHint?: string; mfaRequired?: boolean }) => void;
+  onDone: (next: {
+    email: string;
+    otpHint?: string;
+    mfaRequired?: boolean;
+    totpRequired?: boolean;
+  }) => void;
 }) {
   const start = useMutation({
     mutationFn: () => authService.startEmail(email.trim()),
@@ -802,6 +816,7 @@ function EmailStep({
         email: email.trim(),
         otpHint: result.otp,
         mfaRequired: result.mfaRequired,
+        totpRequired: result.totpRequired,
       }),
   });
 
@@ -852,6 +867,10 @@ function VerifyEmailStep({
   onDone: (otp: string) => void;
 }) {
   const [code, setCode] = useState(otpHint ?? demo?.signUp.code ?? '');
+  const submit = useMutation({
+    mutationFn: () => authService.verifyEmailOtp(email, code, 'signup'),
+    onSuccess: () => onDone(code),
+  });
   const resend = useMutation({
     mutationFn: () => authService.startEmail(email),
     onSuccess: (result) => {
@@ -870,15 +889,16 @@ function VerifyEmailStep({
         onKeyDown={submitOnEnter}
         onSubmit={(e) => {
           e.preventDefault();
-          if (code.length === 6) onDone(code);
+          if (code.length === 6) submit.mutate();
         }}
       >
         <CodeInput label="Email code" value={code} onChange={setCode} />
+        {submit.isError && <p className="text-[13px] text-primary-text">{submit.error.message}</p>}
         <button type="button" className="justify-self-start text-sm font-medium text-brand" onClick={() => resend.mutate()}>
           {resend.isPending ? 'Sending…' : 'Resend code'}
         </button>
-        <Button type="submit" size="lg" block disabled={code.length !== 6}>
-          Continue
+        <Button type="submit" size="lg" block disabled={code.length !== 6 || submit.isPending}>
+          {submit.isPending ? 'Checking…' : 'Continue'}
         </Button>
       </form>
     </AuthCard>

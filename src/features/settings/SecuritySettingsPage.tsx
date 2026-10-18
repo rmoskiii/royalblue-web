@@ -159,8 +159,8 @@ export function SecuritySettingsPage() {
               <h2 className="font-semibold">Google Authenticator</h2>
               <p className="text-[13px] text-ink-3">
                 {security.totpEnabled
-                  ? 'Required after your password on web, and as 2FA on mobile.'
-                  : 'Add a second factor so a stolen password is not enough.'}
+                  ? 'Required after your password on this browser. Turn it off here if you want.'
+                  : 'Optional. Add an authenticator so a stolen password is not enough to sign in.'}
               </p>
             </div>
           </div>
