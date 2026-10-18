@@ -644,6 +644,8 @@ export interface KycAddressReview {
   applicantId: string;
   email: string;
   name: string;
+  claimedAddress?: string;
+  registryAddress?: string | null;
   note?: string;
   originalName?: string;
   requestedAt?: ISODateString;

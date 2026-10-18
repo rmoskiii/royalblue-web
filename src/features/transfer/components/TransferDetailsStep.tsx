@@ -41,8 +41,13 @@ export function TransferDetailsStep({
   const canContinue = Boolean(enquiry.data) && amount > 0 && !insufficient;
 
   const fillFrom = (b: Beneficiary) => {
-    setDestination('other');
-    setBankCode(b.bankCode);
+    if (b.bankCode === 'royalblue') {
+      setDestination('royalblue');
+      setBankCode('');
+    } else {
+      setDestination('other');
+      setBankCode(b.bankCode);
+    }
     setAccountNumber(b.accountNumber);
   };
 
@@ -68,7 +73,7 @@ export function TransferDetailsStep({
     <form className="grid grid-cols-[minmax(0,1fr)] gap-4" onSubmit={handleSubmit} noValidate>
       {beneficiaries && beneficiaries.length > 0 && (
         <div>
-          <p className="mb-1.5 text-[13px] font-medium text-ink-2">Saved beneficiaries</p>
+          <p className="mb-1.5 text-[13px] font-medium text-ink-2">Recent transfers</p>
           <ul className="-mx-1 scrollbar-none flex gap-1 overflow-x-auto">
             {beneficiaries.map((b, i) => (
               <li key={b.id} className="shrink-0">

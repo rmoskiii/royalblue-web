@@ -47,12 +47,19 @@ export function ProofOfAddressForm({
   const confirm = useMutation({
     mutationFn: async () => {
       const line = address.trim();
-      if (persist) await verificationService.confirmAddress(line);
-      else onAddressConfirmed?.(line);
-      return line;
+      if (!persist) {
+        onAddressConfirmed?.(line);
+        return { queued: false };
+      }
+      const status = await verificationService.confirmAddress(line);
+      return { queued: Boolean(status.addressReviewPending) && !status.addressVerified };
     },
-    onSuccess: () => {
+    onSuccess: ({ queued }) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.verification });
+      if (queued) {
+        setAskedReview(true);
+        return;
+      }
       onDone();
     },
   });
@@ -74,9 +81,15 @@ export function ProofOfAddressForm({
       }}
     >
       <p className="text-[13px] text-ink-2">
-        Confirm where you live. If BVN or NIN already returned an address we prefill it — this does
-        not call Dojah again. A bill is optional if the document path is easier for you.
+        Confirm where you live. Staff check it against NIN/BVN and any bill you attach before Tier 3
+        unlocks. If NIMC already returned an address we prefill it.
       </p>
+      {askedReview && (
+        <p className="text-[13px] text-ink-2">
+          Staff have this address in the review queue. Tier 3 stays locked until they approve it. You
+          can still attach a bill.
+        </p>
+      )}
       <TextField
         label="Residential address"
         value={address}
@@ -87,9 +100,9 @@ export function ProofOfAddressForm({
       <Button
         type="submit"
         className="justify-self-start"
-        disabled={address.trim().length < 8 || confirm.isPending}
+        disabled={askedReview || address.trim().length < 8 || confirm.isPending}
       >
-        {confirm.isPending ? 'Saving…' : 'Confirm address'}
+        {confirm.isPending ? 'Sending…' : askedReview ? 'Sent for review' : 'Send for review'}
       </Button>
       <button
         type="button"
