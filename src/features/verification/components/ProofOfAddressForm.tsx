@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { queryKeys } from '@/api/hooks';
 import { verificationService } from '@/api/services/verification';
 import { Button, TextField } from '@/components/ui';
@@ -11,7 +11,9 @@ export function ProofOfAddressForm({
   persist = true,
   reviewPending = false,
   failedUploads = 0,
-  registryAddress = '',
+  currentAddress = '',
+  lastRegistryAddress,
+  billName,
   onAddressConfirmed,
 }: {
   onDone: (file?: File) => void;
@@ -19,12 +21,22 @@ export function ProofOfAddressForm({
   persist?: boolean;
   reviewPending?: boolean;
   failedUploads?: number;
-  registryAddress?: string | null;
+  currentAddress?: string | null;
+  lastRegistryAddress?: string | null;
+  billName?: string | null;
   onAddressConfirmed?: (address: string) => void;
 }) {
   const queryClient = useQueryClient();
   const [file, setFile] = useState<File | null>(null);
-  const [address, setAddress] = useState(registryAddress ?? '');
+  const [address, setAddress] = useState(currentAddress ?? '');
+  useEffect(() => {
+    if (currentAddress) setAddress(currentAddress);
+  }, [currentAddress]);
+  const ninHint =
+    lastRegistryAddress &&
+    lastRegistryAddress.trim().toLowerCase() !== address.trim().toLowerCase()
+      ? lastRegistryAddress
+      : null;
   const [note, setNote] = useState('');
   const [askedReview, setAskedReview] = useState(reviewPending);
   const [showBill, setShowBill] = useState(false);
@@ -80,22 +92,17 @@ export function ProofOfAddressForm({
         if (address.trim().length >= 8) confirm.mutate();
       }}
     >
-      <p className="text-[13px] text-ink-2">
-        Confirm where you live. Staff check it against NIN/BVN and any bill you attach before Tier 3
-        unlocks. If NIMC already returned an address we prefill it.
-      </p>
-      {askedReview && (
-        <p className="text-[13px] text-ink-2">
-          Staff have this address in the review queue. Tier 3 stays locked until they approve it. You
-          can still attach a bill.
-        </p>
-      )}
       <TextField
-        label="Residential address"
+        label="Where you live now"
         value={address}
         onChange={(e) => setAddress(e.target.value)}
         placeholder="Street, area, city, state"
       />
+      {ninHint && (
+        <p className="text-[13px] text-ink-3">
+          Last address on NIN/BVN: {ninHint}. Change the field if you have moved.
+        </p>
+      )}
       {confirm.isError && <p className="text-[13px] text-primary-text">{confirm.error.message}</p>}
       <Button
         type="submit"
@@ -104,25 +111,21 @@ export function ProofOfAddressForm({
       >
         {confirm.isPending ? 'Sending…' : askedReview ? 'Sent for review' : 'Send for review'}
       </Button>
+      {billName && (
+        <p className="text-[13px] text-ink-2">Bill on file: {billName}</p>
+      )}
       <button
         type="button"
         className="justify-self-start text-sm font-medium text-ink-2"
         onClick={() => setShowBill((open) => !open)}
       >
-        {showBill ? 'Hide bill upload' : 'Upload a utility bill instead'}
+        {showBill ? 'Hide bill upload' : billName ? 'Replace bill' : 'Upload a utility bill'}
       </button>
       {showBill && (
         <>
           <p className="text-[13px] text-ink-2">
-            Utility bill or bank statement from the last 3 months, in your name. A native PDF from
-            the provider reads better than a photo of a receipt.
+            Utility bill or bank statement from the last 3 months, in your name.
           </p>
-          {askedReview && (
-            <p className="text-[13px] text-ink-2">
-              Staff have your document in the review queue. You can still confirm an address or
-              upload a clearer bill.
-            </p>
-          )}
           <FileDrop value={file} onChange={setFile} />
           {submit.isError && <p className="text-[13px] text-primary-text">{submit.error.message}</p>}
           <Button

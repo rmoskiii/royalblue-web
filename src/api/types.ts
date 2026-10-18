@@ -322,7 +322,9 @@ export interface VerificationStatus {
   addressVerified?: boolean;
   addressReviewPending?: boolean;
   failedAddressUploads?: number;
+  claimedAddress?: string | null;
   registryAddress?: string | null;
+  latestBillName?: string | null;
   completedSteps: VerificationStepId[];
   missing?: string[];
   limits?: {

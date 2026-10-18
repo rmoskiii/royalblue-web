@@ -27,7 +27,7 @@ export function AdminKycQueuePage() {
     <>
       <PageHeader
         title="KYC reviews"
-        subtitle="Compare the address they typed with NIN/BVN and any bill. Close names and house numbers are a judgment call — do not treat them as an automatic pass."
+        subtitle="They live at the address they typed. NIN/BVN is last registered and often stale — do not send back only because it differs. A recent bill at the current address is the evidence. Close names and house numbers on the bill are a judgment call."
       />
       <div className="grid gap-3">
         {(rows ?? []).length === 0 && (
@@ -56,10 +56,12 @@ export function AdminKycQueuePage() {
                 <Chip tone="warning">Needs review</Chip>
               </div>
               {row.claimedAddress && (
-                <p className="text-[13px] text-ink">Customer address: {row.claimedAddress}</p>
+                <p className="text-[13px] text-ink">Lives at: {row.claimedAddress}</p>
               )}
               {row.registryAddress && (
-                <p className="text-[13px] text-ink-3">NIN/BVN address: {row.registryAddress}</p>
+                <p className="text-[13px] text-ink-3">
+                  Last on NIN/BVN (may be old): {row.registryAddress}
+                </p>
               )}
               {row.note && <p className="text-[13px] text-ink">Customer note: {row.note}</p>}
               {dojahBits.length > 0 && (
