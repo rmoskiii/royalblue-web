@@ -65,7 +65,7 @@ export function AdminKycQueuePage() {
               )}
               {row.note && <p className="text-[13px] text-ink">Customer note: {row.note}</p>}
               {dojahBits.length > 0 && (
-                <p className="text-[13px] text-ink-3">Dojah: {dojahBits.join(' · ')}</p>
+                <p className="text-[13px] text-ink-3">Bill read: {dojahBits.join(' · ')}</p>
               )}
               {target === row.applicantId ? (
                 <div className="grid gap-2">

@@ -25,9 +25,7 @@ export function buildInbox(input: {
       id: 'account-provision',
       kind: 'account',
       title: 'Your account number is still being set up',
-      body: input.account.provisionError
-        ? `We have not issued an account number yet: ${input.account.provisionError}`
-        : 'You can keep using the app. We’ll show the NUBAN on Home as soon as it’s ready.',
+      body: 'You can keep using the app. We’ll show your account number on Home as soon as it’s ready.',
       createdAt: '2020-01-01T00:00:00.000Z',
       href: paths.home,
     });
