@@ -15,5 +15,7 @@ export async function receiptPdfFile(input: ReceiptShareInput): Promise<File> {
   const jpeg = await renderReceiptJpeg(input);
   const bytes = new Uint8Array(await jpeg.blob.arrayBuffer());
   const pdf = jpegToPdf(bytes, jpeg.width, jpeg.height);
-  return new File([pdf], `${fileBase(input.reference)}.pdf`, { type: 'application/pdf' });
+  const copy = new ArrayBuffer(pdf.byteLength);
+  new Uint8Array(copy).set(pdf);
+  return new File([copy], `${fileBase(input.reference)}.pdf`, { type: 'application/pdf' });
 }
