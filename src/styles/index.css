@@ -45,6 +45,9 @@
   --rb-series-3: #1baf7a;
   --rb-series-4: #eda100;
   --rb-series-5: #e87ba4;
+  --rb-series-6: #6b5bd4;
+  --rb-series-7: #c47b2b;
+  --rb-series-8: #6b7280;
   --rb-shadow: 0 1px 2px rgb(27 25 77 / 0.05), 0 12px 32px -18px rgb(27 25 77 / 0.22);
 }
 
@@ -83,6 +86,9 @@
   --rb-series-3: #199e70;
   --rb-series-4: #c98500;
   --rb-series-5: #d55181;
+  --rb-series-6: #8b7ce8;
+  --rb-series-7: #e09a4a;
+  --rb-series-8: #9ca3af;
   --rb-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 16px 40px -20px rgb(0 0 0 / 0.6);
 }
 
@@ -117,6 +123,9 @@
   --color-series-3: var(--rb-series-3);
   --color-series-4: var(--rb-series-4);
   --color-series-5: var(--rb-series-5);
+  --color-series-6: var(--rb-series-6);
+  --color-series-7: var(--rb-series-7);
+  --color-series-8: var(--rb-series-8);
 
   --shadow-card: var(--rb-shadow);
 }

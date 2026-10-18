@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { queryKeys } from '@/api/hooks';
 import { verificationService } from '@/api/services/verification';
 import { Button, TextField } from '@/components/ui';
+import { billToggleLabel, lastRegistryHint } from '../addressCopy';
 import { FileDrop } from './FileDrop';
 
 export function ProofOfAddressForm({
@@ -32,11 +33,7 @@ export function ProofOfAddressForm({
   useEffect(() => {
     if (currentAddress) setAddress(currentAddress);
   }, [currentAddress]);
-  const ninHint =
-    lastRegistryAddress &&
-    lastRegistryAddress.trim().toLowerCase() !== address.trim().toLowerCase()
-      ? lastRegistryAddress
-      : null;
+  const ninHint = lastRegistryHint(address, lastRegistryAddress);
   const [note, setNote] = useState('');
   const [askedReview, setAskedReview] = useState(reviewPending);
   const [showBill, setShowBill] = useState(false);
@@ -119,7 +116,7 @@ export function ProofOfAddressForm({
         className="justify-self-start text-sm font-medium text-ink-2"
         onClick={() => setShowBill((open) => !open)}
       >
-        {showBill ? 'Hide bill upload' : billName ? 'Replace bill' : 'Upload a utility bill'}
+        {billToggleLabel(showBill, billName)}
       </button>
       {showBill && (
         <>

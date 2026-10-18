@@ -2,12 +2,12 @@ import { Link } from 'react-router';
 import { useInsights } from '@/api/hooks';
 import { paths } from '@/components/layout/navigation';
 import { Card, CardHeader, Money } from '@/components/ui';
-
-/** Chart slots in fixed order (see --rb-series-* in styles/index.css). */
-const categoryColours = [1, 2, 3, 4, 5].map((n) => `var(--rb-series-${n})`);
+import { padBreakdown, spendColour } from '@/features/insights/spendCategories';
 
 export function InsightsCard() {
   const { data } = useInsights();
+  const rows = padBreakdown(data?.breakdown, data?.moneyOut ?? 0);
+  const spent = rows.filter((row) => (row.amount ?? 0) > 0);
 
   return (
     <Card>
@@ -35,27 +35,41 @@ export function InsightsCard() {
             </div>
           </div>
 
-          <div className="flex h-2.5 gap-0.5 overflow-hidden rounded-full" aria-hidden>
-            {data.breakdown.map((b, i) => (
-              <span
-                key={b.category}
-                title={`${b.category}: ${Math.round(b.share * 100)}%`}
-                style={{ width: `${b.share * 100}%`, backgroundColor: categoryColours[i] }}
-              />
-            ))}
-          </div>
-          <ul className="mt-3 grid gap-1.75 text-[13px]">
-            {data.breakdown.map((b, i) => (
-              <li key={b.category} className="grid grid-cols-[10px_1fr_auto] items-center gap-2">
-                <i
-                  className="size-2.5 rounded-[3px]"
-                  style={{ backgroundColor: categoryColours[i] }}
-                />
-                <span>{b.category}</span>
-                <Money amount={Math.round(data.moneyOut * b.share)} className="font-medium" />
-              </li>
-            ))}
-          </ul>
+          {spent.length > 0 ? (
+            <>
+              <div className="flex h-2.5 gap-0.5 overflow-hidden rounded-full" aria-hidden>
+                {spent.map((b, i) => (
+                  <span
+                    key={b.id ?? b.category}
+                    title={`${b.category}: ${Math.round(b.share * 100)}%`}
+                    style={{
+                      width: `${Math.max(b.share * 100, 2)}%`,
+                      backgroundColor: spendColour(b.id, i),
+                    }}
+                  />
+                ))}
+              </div>
+              <ul className="mt-3 grid gap-1.75 text-[13px]">
+                {spent.map((b, i) => (
+                  <li
+                    key={b.id ?? b.category}
+                    className="grid grid-cols-[10px_1fr_auto] items-center gap-2"
+                  >
+                    <i
+                      className="size-2.5 rounded-[3px]"
+                      style={{ backgroundColor: spendColour(b.id, i) }}
+                    />
+                    <span>{b.category}</span>
+                    <Money amount={b.amount ?? 0} className="font-medium" />
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p className="text-[13px] text-ink-2">
+              Shopping, food, bills, airtime and transfers show up here as you spend.
+            </p>
+          )}
         </>
       )}
     </Card>

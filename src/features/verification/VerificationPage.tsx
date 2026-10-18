@@ -10,6 +10,7 @@ import { IdDocumentForm } from './components/IdDocumentForm';
 import { ProofOfAddressForm } from './components/ProofOfAddressForm';
 import { Stepper } from './components/Stepper';
 import { TierLimitsTable } from './components/TierLimitsTable';
+import { ADDRESS_LEAD, addressStepLead } from './addressCopy';
 import { verificationSteps } from './stepList';
 
 const stepCopy: Record<VerificationStepId, { title: string; lead: string }> = {
@@ -23,7 +24,7 @@ const stepCopy: Record<VerificationStepId, { title: string; lead: string }> = {
   },
   'proof-of-address': {
     title: 'Residential address',
-    lead: 'Where you live now. NIN or BVN often still shows an old street — that is fine. Staff confirm, and a recent bill helps.',
+    lead: ADDRESS_LEAD,
   },
 };
 
@@ -130,8 +131,8 @@ export function VerificationPage() {
                   {stepCopy[active].title}
                 </h3>
                 <p className="mt-1 mb-4 text-sm text-ink-2">
-                  {active === 'proof-of-address' && status.addressReviewPending
-                    ? 'Staff are reviewing this. Tier 3 stays locked until they approve.'
+                  {active === 'proof-of-address'
+                    ? addressStepLead(Boolean(status.addressReviewPending))
                     : stepCopy[active].lead}
                 </p>
                 {!showForm ? (
