@@ -620,7 +620,7 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Residential address"
-        subtitle="Where you live now. Skip and finish later in Account limits if you prefer."
+        subtitle="Confirm the NIMC line to unlock Tier 3 now, or type a new one for staff. Skip and finish in Account limits if you prefer."
         back={
           <BackButton onClick={() => setState({ ...state, step: 'id-document' })} />
         }
