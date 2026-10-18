@@ -30,8 +30,13 @@ export function TransferPage() {
   const fee = transferFee(amount, destination, account?.freeTransfersRemaining ?? 0);
 
   const fillFrom = (b: Beneficiary) => {
-    setDestination('other');
-    setBankCode(b.bankCode);
+    if (b.bankCode === 'royalblue') {
+      setDestination('royalblue');
+      setBankCode('');
+    } else {
+      setDestination('other');
+      setBankCode(b.bankCode);
+    }
     setAccountNumber(b.accountNumber);
   };
 
@@ -123,9 +128,9 @@ export function TransferPage() {
           </form>
 
           <div className="min-w-0">
-            <p className="mb-4 text-lg font-semibold">Beneficiaries</p>
+            <p className="mb-4 text-lg font-semibold">Recent transfers</p>
             {beneficiaries.length === 0 ? (
-              <p className="text-sm text-ink-3">Saved recipients will show here after your first transfer.</p>
+              <p className="text-sm text-ink-3">People you send to will show up here as suggestions.</p>
             ) : (
               <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
                 {beneficiaries.map((b, i) => (

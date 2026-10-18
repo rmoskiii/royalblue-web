@@ -12,7 +12,7 @@ export function QuickTransferCard() {
   return (
     <Card>
       <CardHeader
-        title="Quick transfer"
+        title="Recent transfers"
         action={
           <button
             type="button"

@@ -27,7 +27,7 @@ export function AdminKycQueuePage() {
     <>
       <PageHeader
         title="KYC reviews"
-        subtitle="Customers asked staff to check a proof of address Dojah could not auto-accept. Close names are a judgment call — do not treat them as an automatic pass."
+        subtitle="Compare the address they typed with NIN/BVN and any bill. Close names and house numbers are a judgment call — do not treat them as an automatic pass."
       />
       <div className="grid gap-3">
         {(rows ?? []).length === 0 && (
@@ -55,6 +55,12 @@ export function AdminKycQueuePage() {
                 </div>
                 <Chip tone="warning">Needs review</Chip>
               </div>
+              {row.claimedAddress && (
+                <p className="text-[13px] text-ink">Customer address: {row.claimedAddress}</p>
+              )}
+              {row.registryAddress && (
+                <p className="text-[13px] text-ink-3">NIN/BVN address: {row.registryAddress}</p>
+              )}
               {row.note && <p className="text-[13px] text-ink">Customer note: {row.note}</p>}
               {dojahBits.length > 0 && (
                 <p className="text-[13px] text-ink-3">Dojah: {dojahBits.join(' · ')}</p>

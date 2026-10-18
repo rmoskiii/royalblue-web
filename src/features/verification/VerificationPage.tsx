@@ -23,7 +23,7 @@ const stepCopy: Record<VerificationStepId, { title: string; lead: string }> = {
   },
   'proof-of-address': {
     title: 'Residential address',
-    lead: 'Confirm where you live to reach Tier 3. We reuse any address already returned with BVN or NIN so we do not bill Dojah again.',
+    lead: 'Tell us where you live. Staff confirm it against NIN/BVN and any bill before Tier 3 unlocks.',
   },
 };
 

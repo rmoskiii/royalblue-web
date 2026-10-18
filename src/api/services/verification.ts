@@ -61,7 +61,9 @@ export const verificationService = {
   },
 
   confirmAddress(address: string) {
-    if (env.useMocks) return mockResponse(undefined, 400);
-    return http.post<void>('/verification/proof-of-address/confirm', { address });
+    if (env.useMocks) {
+      return mockResponse({ addressReviewPending: true, addressVerified: false } as VerificationStatus, 400);
+    }
+    return http.post<VerificationStatus>('/verification/proof-of-address/confirm', { address });
   },
 };

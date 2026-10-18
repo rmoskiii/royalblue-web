@@ -32,6 +32,7 @@ export function ApproveStep({
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.account });
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.beneficiaries });
       onSent(result);
     },
   });
