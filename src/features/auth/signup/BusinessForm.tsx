@@ -70,7 +70,10 @@ export function BusinessForm({
           </button>
           {lookup.isError && <p className="text-[13px] text-primary-text">{lookup.error.message}</p>}
           {lookup.isSuccess && lookup.data.sandbox && (
-            <p className="text-[13px] text-ink-3">Sandbox CAC match — live lookup is not enabled on this key.</p>
+            <p className="text-[13px] text-ink-3">
+              We couldn’t confirm this CAC number live. You can still continue with the details you
+              entered.
+            </p>
           )}
         </div>
       )}

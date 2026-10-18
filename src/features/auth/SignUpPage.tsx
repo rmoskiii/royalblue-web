@@ -629,7 +629,7 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Residential address"
-        subtitle="Confirm the NIMC line to unlock Tier 3 now, or type a new one for staff. Skip and finish in Account limits if you prefer."
+        subtitle="Upload a recent bill for Tier 3. It unlocks only if that bill address matches NIMC. Skip and finish in Account limits if you prefer."
         back={
           <BackButton onClick={() => setState({ ...state, step: 'id-document' })} />
         }

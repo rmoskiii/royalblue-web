@@ -1,4 +1,4 @@
-/** Map Nest/BudPay messages into copy a customer can act on. */
+/** Map API messages into copy a customer can act on. */
 export function friendlyApiMessage(raw: string, status = 0, path = ''): string {
   const message = raw.trim();
   const bills = /\/bills\//i.test(path);
@@ -44,7 +44,7 @@ export function friendlyApiMessage(raw: string, status = 0, path = ''): string {
   if (/identity checks are unavailable/i.test(message) || /live selfie/i.test(message)) {
     return message;
   }
-  if (/dojah|smile id/i.test(message)) {
+  if (/dojah|smile id|budpay/i.test(message)) {
     return status >= 500
       ? 'We couldn’t confirm your identity just now. Try again in a moment.'
       : 'We couldn’t confirm that identity number. Check the digits and try again.';

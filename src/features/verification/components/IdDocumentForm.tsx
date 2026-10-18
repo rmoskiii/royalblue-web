@@ -99,7 +99,7 @@ export function IdDocumentForm({
       )}
       {submit.isError && <p className="text-[13px] text-primary-text">{submit.error.message}</p>}
       <Button type="submit" className="justify-self-start" disabled={!ready || submit.isPending}>
-        {submit.isPending ? 'Checking with identity provider…' : persist ? 'Submit selfie' : 'Continue'}
+        {submit.isPending ? 'Checking your selfie…' : persist ? 'Submit selfie' : 'Continue'}
       </Button>
       {onSkip && (
         <button type="button" className="justify-self-start text-sm font-medium text-ink-2" onClick={onSkip}>

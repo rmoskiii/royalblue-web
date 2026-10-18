@@ -27,7 +27,7 @@ export const learnArticles: LearnArticle[] = [
     href: paths.home,
     body: [
       'Your RoyalBlue NUBAN is on Home. Transfer the amount from your other bank. A ₦50 collection fee is taken from inbound bank transfers.',
-      'Card top-up opens BudPay checkout in the browser. We credit you after the payment is verified.',
+      'Card top-up opens a card payment page in the browser. We credit you after the payment is verified.',
       'If the NUBAN still says pending, wait — we reuse one dedicated account per customer.',
     ],
   },
