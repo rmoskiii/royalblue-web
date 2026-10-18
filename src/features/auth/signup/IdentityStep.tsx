@@ -14,14 +14,6 @@ export function IdentityStep({
   phone?: string;
   onDone: (identity: IdentityLookup, submitted: { type: IdentityType; number: string }) => void;
 }) {
-  const unverified = (): IdentityLookup => ({
-    firstName: firstName || '',
-    lastName: lastName || '',
-    dateOfBirth: null,
-    photoUrl: null,
-    pending: true,
-    verified: false,
-  });
   const submit = useMutation({
     mutationFn: ({ type, number }: { type: IdentityType; number: string }) =>
       authService.lookupIdentity(type, number, { phone, firstName, lastName }),
@@ -33,8 +25,19 @@ export function IdentityStep({
       onSubmit={(type, number) => submit.mutate({ type, number })}
       isPending={submit.isPending}
       error={submit.isError ? submit.error.message : undefined}
-      onContinueUnverified={(type, number) => onDone(unverified(), { type, number })}
-      onSkip={() => onDone(unverified(), { type: 'bvn', number: '' })}
+      onSkip={() =>
+        onDone(
+          {
+            firstName: firstName || '',
+            lastName: lastName || '',
+            dateOfBirth: null,
+            photoUrl: null,
+            pending: true,
+            verified: false,
+          },
+          { type: 'bvn', number: '' },
+        )
+      }
       skipLabel="Skip for now — ₦50k starter limits"
     />
   );

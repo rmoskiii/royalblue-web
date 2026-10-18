@@ -37,7 +37,7 @@ export function BvnForm({ onDone }: { onDone: () => void }) {
     return (
       <ConfirmStep
         identity={identity}
-        unverifiedHint="This number is saved. You can retry the lookup any time, then continue with ID and address."
+        unverifiedHint="We couldn’t confirm this number. Check the digits and try again — it is not saved until it matches."
         onConfirm={onDone}
         onReject={() => {
           setIdentity(null);

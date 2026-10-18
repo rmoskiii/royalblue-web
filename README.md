@@ -70,7 +70,7 @@ Until Resend is configured, **email OTP and Google Authenticator are skipped**. 
 1. Email
 2. Password
 3. Personal or business → name and phone
-4. **BVN or NIN** — enter the 11 digits, then Continue. If BudPay is slow, **Continue without waiting** still saves the number. **Skip for now** is starter ₦50k only.
+4. **BVN or NIN** — enter the 11 digits, then Continue. The number is saved only after it matches. **Skip for now** is starter ₦50k only.
 5. Confirm name → **6-digit transaction PIN**
 
 Then you land on Home. Login is password-only (no authenticator) for these sandbox accounts. OTP + TOTP come back when `RESEND_API_KEY` is set on Nest.
