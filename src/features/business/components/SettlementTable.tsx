@@ -19,7 +19,7 @@ export function SettlementTable({
 }) {
   if (isLoading)
     return <div className="h-40 animate-pulse rounded-tile bg-surface-2" aria-busy="true" />;
-  if (!settlements?.length) return <EmptyState title="No payments yet today" />;
+  if (!settlements?.length) return <EmptyState title="No inbound transfers yet" />;
 
   const rowTone = (id: string) => freshIds.includes(id) && 'bg-success-soft';
 

@@ -39,8 +39,6 @@ export const queryKeys = {
   business: {
     summary: ['business', 'summary'] as const,
     settlements: ['business', 'settlements'] as const,
-    terminals: ['business', 'terminals'] as const,
-    staff: ['business', 'staff'] as const,
   },
   savings: {
     summary: ['savings', 'summary'] as const,
@@ -122,12 +120,6 @@ export const useBusinessSummary = () =>
 
 export const useSettlements = () =>
   useQuery({ queryKey: queryKeys.business.settlements, queryFn: businessService.listSettlements });
-
-export const useTerminals = () =>
-  useQuery({ queryKey: queryKeys.business.terminals, queryFn: businessService.listTerminals });
-
-export const useStaff = () =>
-  useQuery({ queryKey: queryKeys.business.staff, queryFn: businessService.listStaff });
 
 // ---------- Savings ----------
 

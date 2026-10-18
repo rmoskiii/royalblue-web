@@ -30,7 +30,7 @@ export function PhysicalCardSection() {
         <div className="min-w-0 flex-[1_1_220px]">
           <p className="font-semibold">Get a physical debit card</p>
           <p className="text-[13px] text-ink-2">
-            Use it at POS terminals and ATMs. We deliver to your door in 3 to 5 working days.
+            Use it in shops and at ATMs. We deliver to your door in 3 to 5 working days.
           </p>
         </div>
         <Button onClick={() => setOpen(true)} className="w-full sm:w-auto">Order card</Button>

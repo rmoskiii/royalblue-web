@@ -1,4 +1,4 @@
-import { Clock3, MonitorSmartphone, TrendingUp, type LucideIcon } from 'lucide-react';
+import { Clock3, TrendingUp, type LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useBusinessSummary } from '@/api/hooks';
 import { Card, Money } from '@/components/ui';
@@ -26,30 +26,23 @@ function SummaryCard({
   );
 }
 
-/** PRD View 2: three columns on desktop, a single stack on phones. */
 export function SummaryCards() {
   const { data } = useBusinessSummary();
   if (!data) return <div className="h-28 animate-pulse rounded-card bg-surface-2" />;
 
   return (
-    <div className="grid gap-3 md:grid-cols-3">
+    <div className="grid gap-3 md:grid-cols-2">
       <SummaryCard
         icon={TrendingUp}
-        label="Today’s volume"
+        label="Today’s inflow"
         value={<Money amount={data.todayVolume} decimals={2} />}
-        note="All channels, since midnight"
+        note="Paid into this account since midnight"
       />
       <SummaryCard
         icon={Clock3}
-        label="Pending payout"
+        label="Pending inbound"
         value={<Money amount={data.pendingPayout} decimals={2} />}
-        note="Settles to your account by the next business day"
-      />
-      <SummaryCard
-        icon={MonitorSmartphone}
-        label="POS terminals"
-        value={`${data.terminalsActive} active`}
-        note={`${data.terminalsOnline} online now`}
+        note="Credits that have not posted yet"
       />
     </div>
   );

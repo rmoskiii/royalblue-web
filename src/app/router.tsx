@@ -177,13 +177,7 @@ export const router = createBrowserRouter([
                   (m) => m.PaymentsPage,
                 ),
               },
-              {
-                path: paths.staff,
-                ...page(
-                  () => import('@/features/business/StaffPage'),
-                  (m) => m.StaffPage,
-                ),
-              },
+              { path: paths.staff, element: <Navigate to={paths.home} replace /> },
             ],
           },
           {

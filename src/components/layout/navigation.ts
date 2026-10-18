@@ -15,7 +15,6 @@ import {
   ShieldCheck,
   Snowflake,
   TrendingUp,
-  UserCog,
   Users,
   Wallet,
   Zap,
@@ -67,7 +66,7 @@ export const paths = {
   settingsNotifications: '/settings/notifications',
   settingsPayments: '/settings/payments',
   payments: '/payments',
-  staff: '/staff',
+  staff: '/staff', // bank operations desk uses /admin; merchant cashiers removed
   login: '/login',
   forgot: '/forgot',
   /** Public website; where "/" (the bare Vercel link) lands */
@@ -100,8 +99,7 @@ const item = {
   learn: { label: 'Learn', to: paths.learn, icon: BookOpen },
   help: { label: 'Help centre', to: paths.help, icon: CircleHelp },
   settings: { label: 'Settings', to: paths.settings, icon: Settings },
-  payments: { label: 'Payments', to: paths.payments, icon: Receipt },
-  staff: { label: 'Staff access', to: paths.staff, icon: UserCog },
+  payments: { label: 'Money in', to: paths.payments, icon: Receipt },
 } satisfies Record<string, NavItem>;
 
 export interface NavigationSet {
@@ -145,21 +143,24 @@ const personalNav: NavigationSet = {
   ],
 };
 
-/** Business profile (PRD View 2 merchant portal). */
+/** Business profile: same wallet rails as personal, plus inbound credits. */
 const businessNav: NavigationSet = {
   primary: [
     { ...item.home, label: 'Dashboard' },
     item.payments,
     item.transfers,
-    item.staff,
-    item.loans,
-    // item.cards,
-    // item.payBills,
     item.transactions,
+    item.loans,
+    item.savings,
   ],
   learnAndEarn: [],
-  mobileTabs: [{ ...item.home, label: 'Dashboard' }, item.payments, item.transfers, item.staff],
-  more: [item.loans, /* item.cards, item.payBills, */ item.transactions, item.help, item.settings],
+  mobileTabs: [
+    { ...item.home, label: 'Dashboard' },
+    item.payments,
+    item.transfers,
+    item.transactions,
+  ],
+  more: [item.loans, item.savings, item.verification, item.help, item.settings],
 };
 
 export const navigationFor = (profile: 'personal' | 'business') =>

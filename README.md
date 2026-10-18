@@ -87,7 +87,7 @@ Then you land on Home. Login is password-only (no authenticator) for these sandb
 | Sign-up         | `/sign-up`                                              | Password → details → BVN/NIN (continue if slow) → PIN. OTP/TOTP only when Nest has Resend |
 | Account limits  | `/verification`                                         | BVN via KYC `validate-bvn`. No freeze. Starter ₦50k until BVN/NIN. Tiers 1–3 after.            |
 | Home            | `/dashboard` (personal)                                 | Staff never land here. Balance, Send / Receive / Pay / Add money                                 |
-| Merchant portal | `/dashboard` (business), `/payments`, `/staff`          | Volume / payout / terminals, live payments, cashier access                                       |
+| Business        | `/dashboard` (business), `/payments`                    | Same wallet as personal: receive, send, money-in list from the dedicated account                 |
 | Profile switch  | Top bar                                                 | Personal ↔ Business. Staff skip this                                                             |
 | Transfers       | Modal or `/transfer`                                    | Banks from Nest. Approve with the **6-digit transaction PIN** from sign-up                       |
 | Pay bills       | `/pay-bills?type=airtime\|data\|electricity`            | Same PIN on airtime / data / electricity                                                         |
@@ -99,7 +99,7 @@ Then you land on Home. Login is password-only (no authenticator) for these sandb
 | Transactions    | `/transactions`                                         | Search, filters, receipt                                                                         |
 | Coming soon     | Invest, Insights, Rewards, Refer, Learn, Help           | Placeholder pages from nav config                                                                |
 
-**Layout:** phones get a top bar and bottom tabs. Personal: Home, Transfers, Savings, Cards, More. Business: Dashboard, Payments, Transfers, Staff access, More. Staff: Desk plus role links (Pipeline / Review / Accounts / Team). At `lg` (1024px) and up, a royal blue sidebar replaces the tabs. Nav: `components/layout/navigation.ts`, `useWorkspaceNav.ts`.
+**Layout:** phones get a top bar and bottom tabs. Personal: Home, Transfers, Savings, Loans, More. Business: Dashboard, Money in, Send, Transactions, More. Bank staff: Desk plus role links (Pipeline / Review / Accounts / Team). At `lg` (1024px) and up, a royal blue sidebar replaces the tabs. Nav: `components/layout/navigation.ts`, `useWorkspaceNav.ts`.
 
 **Demo tips:** with **web** mocks on, switch to the business profile for the merchant portal; a new payment arrives every 8 seconds; the 6-digit transaction PIN from sign-up approves a transfer. With mocks **off**, **Add money → Bank transfer** shows the BudPay VA; **Debit card** opens BudPay checkout; **BudPay sandbox top-up** posts a test VA credit. Bank list and cellular plans come from Nest (live BudPay or Nest sandbox fallback) — empty lists usually mean Nest cannot reach `api.budpay.com` or Vite was started before `VITE_USE_MOCKS=false`.
 

@@ -9,7 +9,6 @@ import { Chip } from '@/components/ui';
 import { staffRoleLabel } from '@/features/admin/staffAccess';
 import { formatGreetingDate, greeting } from '@/lib/format';
 import { paths } from './navigation';
-import { PosStatusPill } from './PosStatusPill';
 import { ProfileSwitcher } from './ProfileSwitcher';
 import { ThemeToggle } from './ThemeToggle';
 
@@ -48,7 +47,6 @@ export function TopBar() {
         ) : (
           <ProfileSwitcher />
         )}
-        {profileType === 'business' && !staff && <PosStatusPill />}
       </div>
 
       <div className="ml-auto flex shrink-0 items-center gap-0.5 lg:gap-1.5">
