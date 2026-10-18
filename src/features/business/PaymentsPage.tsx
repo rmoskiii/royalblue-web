@@ -1,13 +1,11 @@
 import { useState } from 'react';
-import type { PaymentChannel, SettlementStatus } from '@/api/types';
+import type { SettlementStatus } from '@/api/types';
 import { Card, CardHeader, Money, PageHeader } from '@/components/ui';
 import { cn } from '@/lib/cn';
-import { channelLabel } from './lib/labels';
 import { LiveBadge } from './components/LiveBadge';
 import { SettlementTable } from './components/SettlementTable';
 import { useLiveSettlements } from './hooks/useLiveSettlements';
 
-type ChannelFilter = 'all' | PaymentChannel;
 type StatusFilter = 'all' | SettlementStatus;
 
 const pill =
@@ -15,36 +13,18 @@ const pill =
 
 export function PaymentsPage() {
   const { data, isLoading, freshIds } = useLiveSettlements();
-  const [channel, setChannel] = useState<ChannelFilter>('all');
   const [status, setStatus] = useState<StatusFilter>('all');
 
-  const rows = (data ?? []).filter(
-    (s) =>
-      (channel === 'all' || s.channel === channel) && (status === 'all' || s.status === status),
-  );
+  const rows = (data ?? []).filter((s) => status === 'all' || s.status === status);
   const total = rows.reduce((sum, s) => sum + s.amount, 0);
 
   return (
     <>
-      <PageHeader title="Payments" subtitle="Everything paid into your business account today." />
+      <PageHeader
+        title="Money in"
+        subtitle="Transfers paid into your dedicated account number."
+      />
       <div className="mb-3 flex flex-wrap gap-x-4 gap-y-2">
-        <div
-          role="group"
-          aria-label="Channel"
-          className="scrollbar-none flex gap-1.5 overflow-x-auto"
-        >
-          {(['all', 'pos', 'web', 'transfer'] as const).map((c) => (
-            <button
-              key={c}
-              type="button"
-              aria-pressed={channel === c}
-              onClick={() => setChannel(c)}
-              className={pill}
-            >
-              {c === 'all' ? 'All channels' : channelLabel[c]}
-            </button>
-          ))}
-        </div>
         <div role="group" aria-label="Status" className="flex gap-1.5">
           {(['all', 'success', 'pending'] as const).map((s) => (
             <button

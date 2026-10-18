@@ -12,8 +12,6 @@ export function IdentityNumberForm({
   submitLabel = 'Continue',
   onSkip,
   skipLabel = 'Skip for now — finish later in Account limits',
-  onContinueUnverified,
-  continueUnverifiedLabel = 'Continue without waiting',
   bvnHint,
   ninHint = 'Dial *346# from your NIN-linked phone if you don’t know it.',
 }: {
@@ -23,16 +21,12 @@ export function IdentityNumberForm({
   submitLabel?: string;
   onSkip?: () => void;
   skipLabel?: string;
-  onContinueUnverified?: (kind: IdentityKind, number: string) => void;
-  continueUnverifiedLabel?: string;
   bvnHint?: string;
   ninHint?: string;
 }) {
   const bvnHelp =
     bvnHint ??
-    (onContinueUnverified
-      ? 'We’ll confirm this now. Use continue without waiting only if the lookup is slow — the number still saves.'
-      : 'Don’t know your BVN? Dial *565*0# from the phone number linked to your bank account.');
+    'Don’t know your BVN? Dial *565*0# from the phone number linked to your bank account.';
   const [kind, setKind] = useState<IdentityKind>('bvn');
   const [number, setNumber] = useState('');
 
@@ -73,16 +67,6 @@ export function IdentityNumberForm({
       <Button type="submit" size="lg" block disabled={number.length !== 11 || isPending}>
         {isPending ? 'Checking identity…' : submitLabel}
       </Button>
-      {onContinueUnverified && (
-        <button
-          type="button"
-          className="text-sm font-medium text-brand"
-          disabled={number.length !== 11 || isPending}
-          onClick={() => onContinueUnverified(kind, number)}
-        >
-          {continueUnverifiedLabel}
-        </button>
-      )}
       {onSkip && (
         <button type="button" className="text-sm font-medium text-ink-2" onClick={onSkip}>
           {skipLabel}

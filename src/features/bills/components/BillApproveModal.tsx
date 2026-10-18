@@ -7,7 +7,7 @@ import type { BillPaymentResult, TransactionAuthorisation } from '@/api/types';
 import { useToast } from '@/app/providers/ToastProvider';
 import { Button, Modal, Money, PinApproval } from '@/components/ui';
 import { copyText } from '@/lib/clipboard';
-import { shareReceipt } from '@/features/transactions/components/ReceiptSheet';
+import { ShareReceiptActions } from '@/features/transactions/components/ShareReceiptActions';
 import type { BillDraft } from '../types';
 
 /** PIN approval, then the receipt (with the meter token for prepaid electricity). */
@@ -91,26 +91,22 @@ export function BillApproveModal({ draft, onClose }: { draft: BillDraft; onClose
             )}
 
             <p className="mt-1 text-xs text-ink-3 tabular">Reference {result.reference}</p>
-            <div className="mt-4 grid w-full grid-cols-2 gap-2">
-              <Button
-                variant="secondary"
-                onClick={() =>
-                  void shareReceipt(
-                    {
-                      title: draft.title,
-                      type: draft.title,
-                      amount: draft.payment.amount,
-                      status: 'successful',
-                      counterparty: draft.details.map(([, v]) => v).filter(Boolean).join(' · '),
-                      reference: result.reference,
-                    },
-                    showToast,
-                  )
+            <div className="mt-4 w-full">
+              <ShareReceiptActions
+                receipt={{
+                  title: draft.title,
+                  type: draft.title,
+                  amount: draft.payment.amount,
+                  status: 'successful',
+                  counterparty: draft.details.map(([, v]) => v).filter(Boolean).join(' · '),
+                  reference: result.reference,
+                }}
+                secondary={
+                  <Button block onClick={onClose}>
+                    Done
+                  </Button>
                 }
-              >
-                Share receipt
-              </Button>
-              <Button onClick={onClose}>Done</Button>
+              />
             </div>
           </div>
         )}

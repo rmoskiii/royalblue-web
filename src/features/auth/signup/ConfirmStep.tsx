@@ -3,12 +3,12 @@ import { Avatar, Button } from '@/components/ui';
 import { formatDate } from '@/lib/format';
 import { submitOnEnter, useEnterToSubmit } from '../lib/submitOnEnter';
 
-/** Live BudPay match, or fail-open so the customer can still open the account. */
+/** Confirmed NIMC match, or starter skip (empty number) with ₦50k caps. */
 export function ConfirmStep({
   identity,
   onConfirm,
   onReject,
-  unverifiedHint = 'Verification not completed. You can still create your account. We’ll remind you in Account limits to finish ID and address checks.',
+  unverifiedHint = 'No BVN or NIN yet. You can open with ₦50,000 starter limits and add identity later in Account limits.',
 }: {
   identity: IdentityLookup;
   onConfirm: () => void;
@@ -48,7 +48,7 @@ export function ConfirmStep({
         </dl>
       </div>
       <Button type="submit" size="lg" block>
-        {verified ? 'Yes, this is me' : 'Continue anyway'}
+        {verified ? 'Yes, this is me' : 'Continue with starter limits'}
       </Button>
       <Button type="button" variant="secondary" size="lg" block onClick={onReject}>
         {verified ? 'This isn’t me' : 'Try a different number'}

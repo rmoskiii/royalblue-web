@@ -1,47 +1,39 @@
-import { UserPlus } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { useStaff } from '@/api/hooks';
 import { useProfile } from '@/app/providers/ProfileProvider';
-import { PosStatusPill } from '@/components/layout/PosStatusPill';
 import { paths } from '@/components/layout/navigation';
-import { Button, Card, CardHeader, PageHeader } from '@/components/ui';
-import { AddStaffModal } from './components/AddStaffModal';
+import { Card, CardHeader, PageHeader } from '@/components/ui';
+import { AddMoneySheet } from '@/features/home/components/AddMoneySheet';
+import { BalanceCard } from '@/features/home/components/BalanceCard';
+import { QuickServices } from '@/features/home/components/QuickServices';
+import { ReceiveSheet } from '@/features/home/components/ReceiveSheet';
+import { TierBanner } from '@/features/home/components/TierBanner';
+import { QuickTransferCard } from '@/features/transfer/components/QuickTransferCard';
 import { LiveBadge } from './components/LiveBadge';
 import { SettlementTable } from './components/SettlementTable';
 import { SummaryCards } from './components/SummaryCards';
-import { TerminalsCard } from './components/TerminalsCard';
 import { useLiveSettlements } from './hooks/useLiveSettlements';
 
-/** PRD View 2: Business & merchant web portal. */
+/** Same wallet as personal: receive to the dedicated account, send out, see inbound credits. */
 export function BusinessDashboardPage() {
   const { profile } = useProfile();
   const { data: settlements, isLoading, freshIds } = useLiveSettlements();
-  const { data: staff } = useStaff();
-  const [addStaffOpen, setAddStaffOpen] = useState(false);
+  const [sheet, setSheet] = useState<'receive' | 'add-money' | null>(null);
 
   return (
     <>
-      <PageHeader
-        title="Dashboard"
-        subtitle={profile?.name}
-        action={
-          <div className="flex items-center gap-2">
-            <PosStatusPill className="lg:hidden" />
-            <Button variant="secondary" onClick={() => setAddStaffOpen(true)}>
-              <UserPlus className="size-4" /> Add cashier
-            </Button>
-          </div>
-        }
-      />
+      <PageHeader title="Dashboard" subtitle={profile?.name} />
       <div className="grid gap-4">
+        <BalanceCard onReceive={() => setSheet('receive')} onAddMoney={() => setSheet('add-money')} />
+        <QuickServices />
+        <TierBanner />
         <SummaryCards />
-        <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
           <Card className="min-w-0">
             <CardHeader
               title={
                 <span className="flex items-center gap-3">
-                  Incoming payments <LiveBadge />
+                  Money in <LiveBadge />
                 </span>
               }
               action={
@@ -56,34 +48,11 @@ export function BusinessDashboardPage() {
               isLoading={isLoading}
             />
           </Card>
-          <div className="grid gap-4">
-            <TerminalsCard />
-            <Card>
-              <CardHeader
-                title="Staff access"
-                action={
-                  <Link to={paths.staff} className="text-[13px] font-medium text-primary-text">
-                    Manage
-                  </Link>
-                }
-              />
-              <p className="text-[13px] text-ink-2">
-                {staff?.length ?? 0} cashier{staff?.length === 1 ? '' : 's'} with read-only access
-                to payment alerts.
-              </p>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="mt-3"
-                onClick={() => setAddStaffOpen(true)}
-              >
-                <UserPlus className="size-4" /> Add cashier
-              </Button>
-            </Card>
-          </div>
+          <QuickTransferCard />
         </div>
       </div>
-      <AddStaffModal open={addStaffOpen} onClose={() => setAddStaffOpen(false)} />
+      <ReceiveSheet open={sheet === 'receive'} onClose={() => setSheet(null)} />
+      <AddMoneySheet open={sheet === 'add-money'} onClose={() => setSheet(null)} />
     </>
   );
 }

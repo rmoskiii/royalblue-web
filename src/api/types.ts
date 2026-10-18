@@ -391,11 +391,9 @@ export interface Profile {
 export interface BusinessSummary {
   todayVolume: number;
   pendingPayout: number;
-  terminalsActive: number;
-  terminalsOnline: number;
 }
 
-export type PaymentChannel = 'pos' | 'web' | 'transfer';
+export type PaymentChannel = 'transfer';
 export type SettlementStatus = 'success' | 'pending';
 
 /** An incoming payment to the business account */
@@ -406,34 +404,6 @@ export interface Settlement {
   channel: PaymentChannel;
   amount: number;
   status: SettlementStatus;
-  terminalId?: string;
-}
-
-export interface PosTerminal {
-  id: string;
-  serial: string;
-  label: string;
-  status: 'online' | 'offline';
-  lastTransactionAt: ISODateString | null;
-}
-
-export type StaffStatus = 'active' | 'invited';
-
-/** Cashiers get read-only access to incoming credit alerts */
-export interface StaffMember {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  role: 'cashier';
-  status: StaffStatus;
-  addedAt: ISODateString;
-}
-
-export interface AddStaffRequest {
-  name: string;
-  email: string;
-  phone: string;
 }
 
 // ---------- Savings (PRD FR-05, View 4) ----------

@@ -432,7 +432,7 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Identity verification"
-        subtitle="Same checks as Account limits: BVN or NIN, then a live selfie, then confirm your address. Skip any step and finish later when you’re ready."
+        subtitle="We’ll confirm BVN or NIN now. Skip only if you’re opening a ₦50k starter account — the number is not saved until it matches."
         back={
           <BackButton
             onClick={() =>
