@@ -1,5 +1,5 @@
 export const ADDRESS_LEAD =
-  'Where you live now. NIN or BVN often still shows an old street — that is fine. Staff confirm, and a recent bill helps.';
+  'If this matches NIMC we unlock Tier 3 now. If you have moved, staff check a recent bill in your name.';
 
 export const ADDRESS_LEAD_PENDING =
   'Staff are reviewing this. Tier 3 stays locked until they approve.';
