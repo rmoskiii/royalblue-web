@@ -1,51 +1,10 @@
-import { Share2 } from 'lucide-react';
 import type { Transaction } from '@/api/types';
-import { useToast } from '@/app/providers/ToastProvider';
 import { Button, Chip, Modal, Money } from '@/components/ui';
 import { cn } from '@/lib/cn';
 import { formatDate, formatNaira, formatTime } from '@/lib/format';
-import { shareFileOrCopyImage } from '@/lib/clipboard';
-import { renderReceiptPng, type ReceiptShareInput } from '../receiptImage';
 import { transactionDisplay } from '../transactionDisplay';
+import { ShareReceiptActions } from './ShareReceiptActions';
 import { TransactionIcon } from './TransactionRow';
-
-export function formatReceiptShare(t: {
-  title: string;
-  amount: number;
-  status?: string;
-  counterparty?: string;
-  reference: string;
-  createdAt?: string;
-  fee?: number;
-}) {
-  const when = t.createdAt ? `${formatDate(t.createdAt)}, ${formatTime(t.createdAt)}` : undefined;
-  return [
-    t.counterparty || t.title,
-    t.title && t.title !== t.counterparty ? t.title : undefined,
-    formatNaira(t.amount, 2),
-    t.status ? t.status[0].toUpperCase() + t.status.slice(1) : undefined,
-    when,
-    t.fee ? `Fee ${formatNaira(t.fee, 2)}` : undefined,
-    `Reference ${t.reference}`,
-    'RoyalBlue MFB',
-  ]
-    .filter(Boolean)
-    .join('\n');
-}
-
-export async function shareReceipt(t: ReceiptShareInput, showToast: (message: string) => void) {
-  const text = formatReceiptShare(t);
-  const blob = await renderReceiptPng(t);
-  const file = new File([blob], `royalblue-receipt-${t.reference}.png`, { type: 'image/png' });
-  const outcome = await shareFileOrCopyImage({
-    title: 'RoyalBlue receipt',
-    text,
-    file,
-  });
-  if (outcome === 'copied') showToast('Receipt image copied');
-  if (outcome === 'shared') showToast('Receipt shared');
-  if (outcome === 'emailed') showToast('Opening email');
-}
 
 export function ReceiptSheet({
   transaction: t,
@@ -54,7 +13,6 @@ export function ReceiptSheet({
   transaction: Transaction | null;
   onClose: () => void;
 }) {
-  const { showToast } = useToast();
   if (!t) return null;
   const credit = t.direction === 'credit';
   const { name, description, type } = transactionDisplay(t);
@@ -107,37 +65,29 @@ export function ReceiptSheet({
           ))}
         </dl>
 
-        <div className="grid grid-cols-2 gap-2">
-          <Button
-            variant="secondary"
-            onClick={() =>
-              void shareReceipt(
-                {
-                  ...t,
-                  type,
-                  counterparty: name,
-                  title: description || type,
-                },
-                showToast,
-              )
-            }
-          >
-            <Share2 className="size-4" />
-            Share receipt
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              const subject = encodeURIComponent(`Transaction ${t.reference}`);
-              const body = encodeURIComponent(
-                `I need help with this RoyalBlue transaction.\n\nReference: ${t.reference}\nAmount: ${formatNaira(t.amount, 2)}\n`,
-              );
-              window.location.href = `mailto:support@royalblue.ng?subject=${subject}&body=${body}`;
-            }}
-          >
-            Report an issue
-          </Button>
-        </div>
+        <ShareReceiptActions
+          receipt={{
+            ...t,
+            type,
+            counterparty: name,
+            title: description || type,
+          }}
+          secondary={
+            <Button
+              variant="secondary"
+              block
+              onClick={() => {
+                const subject = encodeURIComponent(`Transaction ${t.reference}`);
+                const body = encodeURIComponent(
+                  `I need help with this RoyalBlue transaction.\n\nReference: ${t.reference}\nAmount: ${formatNaira(t.amount, 2)}\n`,
+                );
+                window.location.href = `mailto:support@royalblue.ng?subject=${subject}&body=${body}`;
+              }}
+            >
+              Report an issue
+            </Button>
+          }
+        />
       </div>
     </Modal>
   );

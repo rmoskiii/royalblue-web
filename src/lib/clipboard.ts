@@ -37,24 +37,40 @@ export async function shareOrCopy(
   return 'copied';
 }
 
-export async function copyImage(blob: Blob) {
-  if (typeof ClipboardItem === 'undefined' || !navigator.clipboard?.write) {
-    throw new Error('Image clipboard is not available');
-  }
-  await navigator.clipboard.write([new ClipboardItem({ [blob.type || 'image/png']: blob })]);
+export function saveFile(file: File) {
+  const url = URL.createObjectURL(file);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = file.name;
+  link.rel = 'noopener';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
 }
 
-/** Share a file (Mail on iOS/Android), else copy the image, else open a mailto draft. */
-export async function shareFileOrCopyImage(input: {
+/**
+ * Share a file through the system sheet (Mail, Files, Photos).
+ * File only — no caption text, so Mail/WhatsApp do not paste a hybrid body.
+ */
+export async function shareFile(input: {
   title: string;
-  text: string;
   file: File;
-}): Promise<'shared' | 'copied' | 'emailed' | 'cancelled'> {
-  const { title, text, file } = input;
+}): Promise<'shared' | 'saved' | 'cancelled'> {
+  const { title, file } = input;
+  const filesOnly: ShareData = { files: [file] };
+  const withTitle: ShareData = { title, files: [file] };
   try {
     if (typeof navigator.share === 'function') {
-      const payload: ShareData = { title, text, files: [file] };
-      if (typeof navigator.canShare !== 'function' || navigator.canShare(payload)) {
+      const payload =
+        typeof navigator.canShare === 'function'
+          ? navigator.canShare(withTitle)
+            ? withTitle
+            : navigator.canShare(filesOnly)
+              ? filesOnly
+              : undefined
+          : withTitle;
+      if (payload) {
         await navigator.share(payload);
         return 'shared';
       }
@@ -64,13 +80,6 @@ export async function shareFileOrCopyImage(input: {
       return 'cancelled';
     }
   }
-  try {
-    await copyImage(file);
-    return 'copied';
-  } catch {
-    const subject = encodeURIComponent(title);
-    const body = encodeURIComponent(text);
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
-    return 'emailed';
-  }
+  saveFile(file);
+  return 'saved';
 }

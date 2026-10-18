@@ -75,8 +75,7 @@ function statusInk(status?: string) {
   return NAVY;
 }
 
-/** Branded PNG of the receipt so share/copy works without html-to-image. */
-export function renderReceiptPng(input: ReceiptShareInput): Promise<Blob> {
+function drawReceipt(input: ReceiptShareInput): HTMLCanvasElement {
   const name = input.counterparty || input.title;
   const type = input.type || (input.title !== name ? input.title : 'Transaction');
   const when = input.createdAt ? `${formatDate(input.createdAt)}, ${formatTime(input.createdAt)}` : '—';
@@ -91,7 +90,7 @@ export function renderReceiptPng(input: ReceiptShareInput): Promise<Blob> {
   const scale = 2;
   const ctx = canvas.getContext('2d');
   if (!ctx) {
-    return Promise.reject(new Error('Could not draw receipt'));
+    throw new Error('Could not draw receipt');
   }
 
   ctx.font = '600 36px Inter, ui-sans-serif, system-ui, sans-serif';
@@ -176,11 +175,33 @@ export function renderReceiptPng(input: ReceiptShareInput): Promise<Blob> {
   ctx.fillStyle = MUTED;
   ctx.font = '500 13px Inter, ui-sans-serif, system-ui, sans-serif';
   ctx.fillText('royalblue.ng', WIDTH / 2, y);
+  return canvas;
+}
 
+function canvasBlob(canvas: HTMLCanvasElement, type: string, quality?: number): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (!blob) reject(new Error('Could not export receipt'));
-      else resolve(blob);
-    }, 'image/png');
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) reject(new Error('Could not export receipt'));
+        else resolve(blob);
+      },
+      type,
+      quality,
+    );
   });
+}
+
+export function renderReceiptPng(input: ReceiptShareInput): Promise<Blob> {
+  return canvasBlob(drawReceipt(input), 'image/png');
+}
+
+export async function renderReceiptJpeg(
+  input: ReceiptShareInput,
+): Promise<{ blob: Blob; width: number; height: number }> {
+  const canvas = drawReceipt(input);
+  return {
+    blob: await canvasBlob(canvas, 'image/jpeg', 0.92),
+    width: canvas.width,
+    height: canvas.height,
+  };
 }

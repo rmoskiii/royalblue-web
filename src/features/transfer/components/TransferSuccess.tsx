@@ -1,8 +1,7 @@
 import { CircleCheck } from 'lucide-react';
 import type { TransferResult } from '@/api/types';
-import { useToast } from '@/app/providers/ToastProvider';
 import { Button, Money } from '@/components/ui';
-import { shareReceipt } from '@/features/transactions/components/ReceiptSheet';
+import { ShareReceiptActions } from '@/features/transactions/components/ShareReceiptActions';
 import type { TransferDraft } from '../types';
 
 export function TransferSuccess({
@@ -14,7 +13,6 @@ export function TransferSuccess({
   result: TransferResult;
   onDone: () => void;
 }) {
-  const { showToast } = useToast();
   return (
     <div className="grid justify-items-center gap-2 pt-4 pb-2 text-center">
       <span className="grid size-16 place-items-center rounded-full bg-success-soft text-success">
@@ -30,26 +28,22 @@ export function TransferSuccess({
         sent to <b className="font-semibold">{draft.accountName}</b>
       </p>
       <p className="text-xs text-ink-3 tabular">Reference {result.reference}</p>
-      <div className="mt-5 grid w-full grid-cols-2 gap-2">
-        <Button
-          variant="secondary"
-          onClick={() =>
-            void shareReceipt(
-              {
-                title: 'Transfer',
-                type: 'Transfer',
-                amount: draft.amount,
-                status: 'successful',
-                counterparty: `${draft.accountName} · ${draft.bankName} ${draft.accountNumber}`,
-                reference: result.reference,
-              },
-              showToast,
-            )
+      <div className="mt-5 w-full">
+        <ShareReceiptActions
+          receipt={{
+            title: 'Transfer',
+            type: 'Transfer',
+            amount: draft.amount,
+            status: 'successful',
+            counterparty: `${draft.accountName} · ${draft.bankName} ${draft.accountNumber}`,
+            reference: result.reference,
+          }}
+          secondary={
+            <Button block onClick={onDone}>
+              Done
+            </Button>
           }
-        >
-          Share receipt
-        </Button>
-        <Button onClick={onDone}>Done</Button>
+        />
       </div>
     </div>
   );
