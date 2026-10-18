@@ -47,7 +47,7 @@ export function buildInbox(input: {
       id: 'limits-address-review',
       kind: 'limits',
       title: 'Proof of address is with staff',
-      body: 'We could not auto-read the bill. A reviewer will check it — close names are decided by staff, not by a fuzzy match.',
+      body: 'Staff will compare the bill to NIMC and approve or send it back.',
       createdAt: '2020-01-01T00:00:00.000Z',
       href: paths.verification,
     });

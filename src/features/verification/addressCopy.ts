@@ -1,5 +1,5 @@
 export const ADDRESS_LEAD =
-  'If this matches NIMC we unlock Tier 3 now. If you have moved, staff check a recent bill in your name.';
+  'Tier 3 unlocks only if the address Dojah reads on your bill is the same as NIMC. Anything else goes to staff.';
 
 export const ADDRESS_LEAD_PENDING =
   'Staff are reviewing this. Tier 3 stays locked until they approve.';

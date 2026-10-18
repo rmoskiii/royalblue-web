@@ -27,7 +27,7 @@ export function AdminKycQueuePage() {
     <>
       <PageHeader
         title="KYC reviews"
-        subtitle="They live at the address they typed. NIN/BVN is last registered and often stale — do not send back only because it differs. A recent bill at the current address is the evidence. Close names and house numbers on the bill are a judgment call."
+        subtitle="Auto Tier 3 only when the bill address matches NIMC exactly. Approve or reject everything else — moves, unreadable bills, and typed confirmations."
       />
       <div className="grid gap-3">
         {(rows ?? []).length === 0 && (
