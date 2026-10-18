@@ -124,7 +124,18 @@ export const authService = {
         otp: '575235',
       });
     }
-    return http.post('/auth/forgot', { email });
+    return http.post('/auth/otp/send', { email, purpose: 'reset' });
+  }
+
+  verifyEmailOtp(
+    email: string,
+    otp: string,
+    purpose: 'signup' | 'reset' | 'login' = 'signup',
+  ): Promise<{ verified: boolean; email: string } | Session> {
+    if (env.useMocks) {
+      return mockResponse({ verified: true, email });
+    }
+    return http.post('/auth/otp/verify', { email, otp, purpose });
   },
 
   resetPassword(email: string, otp: string, newPassword: string): Promise<{ message: string }> {
@@ -179,6 +190,7 @@ export const authService = {
     otp?: string;
     message?: string;
     mfaRequired?: boolean;
+    totpRequired?: boolean;
   }> {
     if (env.useMocks) {
       writeDraft({ ...(readDraft() ?? { phone: '08000000000' }), firstName: mockUser.firstName });
@@ -188,12 +200,13 @@ export const authService = {
           otp: '575235',
           message: 'We’ve sent a 6-digit code to your email.',
           mfaRequired: false,
+          totpRequired: false,
         },
         400,
       );
     }
     writeDraft({ ...(readDraft() ?? { phone: '08000000000' }) });
-    return http.post('/auth/start', { email });
+    return http.post('/auth/otp/send', { email, purpose: 'signup' });
   },
 
   verifyPhone(phone: string, code: string): Promise<PhoneVerification> {

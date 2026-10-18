@@ -21,6 +21,8 @@ const PUBLIC_AUTH_PATHS = [
   '/auth/cac-lookup',
   '/auth/verify-otp',
   '/auth/resend-otp',
+  '/auth/otp/send',
+  '/auth/otp/verify',
   '/auth/forgot',
   '/auth/forgot/reset',
 ];

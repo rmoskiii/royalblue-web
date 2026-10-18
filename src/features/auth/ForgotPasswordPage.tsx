@@ -53,6 +53,11 @@ export function ForgotPasswordPage() {
     },
   });
 
+  const checkCode = useMutation({
+    mutationFn: () => authService.verifyEmailOtp(email.trim().toLowerCase(), code, 'reset'),
+    onSuccess: () => setStep('password'),
+  });
+
   const save = useMutation({
     mutationFn: () => authService.resetPassword(email.trim().toLowerCase(), code, password),
     onSuccess: (result) => {
@@ -73,10 +78,13 @@ export function ForgotPasswordPage() {
           onKeyDown={submitOnEnter}
           onSubmit={(e) => {
             e.preventDefault();
-            if (code.length === 6) setStep('password');
+            if (code.length === 6) checkCode.mutate();
           }}
         >
           <CodeInput label="Email code" value={code} onChange={setCode} />
+          {checkCode.isError && (
+            <p className="text-[13px] text-primary-text">{checkCode.error.message}</p>
+          )}
           <button
             type="button"
             className="justify-self-start text-sm font-medium text-brand"
@@ -84,8 +92,8 @@ export function ForgotPasswordPage() {
           >
             {resend.isPending ? 'Sending…' : 'Resend code'}
           </button>
-          <Button type="submit" size="lg" block disabled={code.length !== 6}>
-            Continue
+          <Button type="submit" size="lg" block disabled={code.length !== 6 || checkCode.isPending}>
+            {checkCode.isPending ? 'Checking…' : 'Continue'}
           </Button>
         </form>
       </AuthCard>
