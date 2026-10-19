@@ -345,6 +345,8 @@ export interface VerificationStatus {
   kycStatus?: string;
   hasBvn?: boolean;
   hasNin?: boolean;
+  bvnMasked?: string | null;
+  ninMasked?: string | null;
   identityVerified?: boolean;
   idDocumentVerified?: boolean;
   addressVerified?: boolean;

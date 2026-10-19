@@ -32,6 +32,12 @@ export function TierBanner() {
       ? 'Add BVN to raise daily and per-transfer limits to ₦50,000. Max balance stays ₦300,000 until Tier 2.'
       : (status.missing?.[0] ?? 'Complete ID and proof of address to raise your limits.');
   const cta = identityPending ? 'Finish in Settings' : ninOnly ? 'Add BVN' : 'Continue verification';
+  const nextStep =
+    ninOnly || !(status.hasBvn || status.hasNin)
+      ? 'bvn'
+      : status.completedSteps.includes('id-document')
+        ? 'proof-of-address'
+        : 'id-document';
 
   return (
     <section className="flex flex-wrap items-center gap-x-3.5 gap-y-3 rounded-card border border-amber-500/30 bg-amber-500/10 px-4 py-3.5">
@@ -46,7 +52,10 @@ export function TierBanner() {
         <p className="font-semibold">{title}</p>
         <p className="text-[13px] text-ink-2">{body}</p>
       </div>
-      <Link to={paths.verification} className={buttonClass({ variant: 'secondary', className: 'w-full sm:w-auto' })}>
+      <Link
+        to={`${paths.verification}?step=${nextStep}`}
+        className={buttonClass({ variant: 'secondary', className: 'w-full sm:w-auto' })}
+      >
         {cta}
       </Link>
     </section>

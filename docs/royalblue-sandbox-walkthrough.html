@@ -4,43 +4,44 @@
   <meta charset="utf-8" />
   <title>RoyalBlue sandbox walkthrough</title>
   <style>
-    @page { size: A4; margin: 18mm 16mm; }
+    @page { size: A4; margin: 16mm 15mm; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
       color: #12203a;
-      font-size: 11.5pt;
+      font-size: 11pt;
       line-height: 1.45;
       max-width: 720px;
       margin: 0 auto;
     }
     h1 { font-size: 20pt; margin: 0 0 4px; letter-spacing: -0.02em; }
-    .kicker { color: #5a6a88; font-size: 10pt; margin-bottom: 18px; }
-    h2 { font-size: 13pt; margin: 22px 0 8px; border-bottom: 1px solid #d7deea; padding-bottom: 4px; }
-    p { margin: 0 0 10px; }
+    .kicker { color: #5a6a88; font-size: 10pt; margin-bottom: 16px; }
+    h2 { font-size: 13pt; margin: 20px 0 8px; border-bottom: 1px solid #d7deea; padding-bottom: 4px; }
+    h3 { font-size: 11pt; margin: 14px 0 6px; }
+    p { margin: 0 0 9px; }
     a { color: #1a4f9c; }
     table { width: 100%; border-collapse: collapse; font-size: 9.5pt; margin: 8px 0 14px; }
     th, td { text-align: left; vertical-align: top; padding: 6px 7px; border-bottom: 1px solid #e3e8f0; }
     th { background: #12203a; color: #fff; font-weight: 600; }
     code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 9pt; background: #f3f6fb; padding: 1px 4px; border-radius: 3px; }
-    ol { margin: 6px 0 12px; padding-left: 20px; }
+    ol, ul { margin: 6px 0 12px; padding-left: 20px; }
     li { margin-bottom: 4px; }
     .note { background: #f3f6fb; border-left: 3px solid #1a4f9c; padding: 10px 12px; margin: 12px 0; }
+    .warn { background: #fbf6ee; border-left: 3px solid #c47b1a; padding: 10px 12px; margin: 12px 0; }
   </style>
 </head>
 <body>
   <h1>RoyalBlue sandbox walkthrough</h1>
-  <p class="kicker">Product observations · hosted prototype · not a finished build</p>
+  <p class="kicker">Hosted prototype · 19 October 2026 · staff logins only</p>
 
-  <p>Walk the customer and staff flows and send notes back. We’ll use those observations as the next build list.</p>
+  <p>Walk a <strong>new customer signup</strong> and the <strong>staff credit desk</strong>, then send notes. There are no saved retail demo customers anymore — open an account the same way a real person would.</p>
 
-  <p><strong>Landing page:</strong> <a href="https://royalblue-web.vercel.app/welcome">https://royalblue-web.vercel.app/welcome</a> (also where <a href="https://royalblue-web.vercel.app/">https://royalblue-web.vercel.app/</a> opens)</p>
-  <p><strong>Login:</strong> <a href="https://royalblue-web.vercel.app/login">https://royalblue-web.vercel.app/login</a><br />
-  First load can take ~30–60s if the API was asleep.</p>
+  <p><strong>Landing:</strong> <a href="https://royalblue-web.vercel.app/welcome">https://royalblue-web.vercel.app/welcome</a><br />
+  <strong>Login:</strong> <a href="https://royalblue-web.vercel.app/login">https://royalblue-web.vercel.app/login</a><br />
+  <strong>Sign up:</strong> <a href="https://royalblue-web.vercel.app/sign-up">https://royalblue-web.vercel.app/sign-up</a></p>
+  <p>First load can take ~30–60s if the API was asleep. Login with <strong>email or Nigerian phone</strong> + password. Use a <strong>private window</strong> (or logout) when you switch roles.</p>
 
-  <p>Login with <strong>email or Nigerian phone</strong> + password. Use a <strong>private window</strong> (or logout) when you switch roles.</p>
-
-  <h2>Staff</h2>
-  <p>Land on the credit desk (<code>/admin</code>), not Home. No transaction PIN.</p>
+  <h2>Staff (saved in this environment)</h2>
+  <p>These three still exist. They land on the credit desk (<code>/admin</code>), not Home. They have no customer NUBAN and no transaction PIN until they set one under Settings.</p>
   <table>
     <thead>
       <tr><th>Role</th><th>Email</th><th>Phone</th><th>Password</th><th>What to look at</th></tr>
@@ -70,45 +71,77 @@
     </tbody>
   </table>
 
-  <h2>Customers</h2>
-  <p>Land on Home. PIN is <code>123456</code> for send / bills.</p>
+  <h2>How onboarding works</h2>
+  <p>Use a <strong>new email that can receive mail</strong>. Do not reuse the old <code>customer@</code> / <code>starter@</code> accounts; they are gone. If the email is already registered, login opens instead of Home.</p>
+  <ol>
+    <li><strong>Email.</strong> We send a 6-digit code.</li>
+    <li><strong>Verify email.</strong> Enter that code (not the PIN you set later).</li>
+    <li><strong>Password.</strong></li>
+    <li><strong>Authenticator</strong> only if the API asks for it. You can usually skip this for now.</li>
+    <li><strong>Personal or business.</strong> Business is a wallet (money in / send), not POS or cashiers.</li>
+    <li><strong>Name and phone.</strong></li>
+    <li><strong>BVN and/or NIN.</strong> Both fields are on the same screen. Prefer both; at least one is required. There is no skip and no phone-only “starter” account.</li>
+    <li><strong>Confirm identity (“Is this you?”).</strong> Shows the name, date of birth, and the residential address on the BVN/NIN record.</li>
+    <li><strong>Live selfie.</strong> Optional now — same step later under Account limits. Allow camera; the light should go off after you take the photo, continue, or skip.</li>
+    <li><strong>Residential address.</strong> Prefills from the identity record. You can confirm it, upload a utility bill, or skip. Tier 3 only unlocks if the bill address matches NIMC; anything else goes to staff.</li>
+    <li><strong>Business details</strong> if you chose business.</li>
+    <li><strong>6-digit transaction PIN</strong> (create, then confirm). This is for sends and bills, not the email code.</li>
+  </ol>
+  <p>After PIN, you land on Home. A dedicated NUBAN (virtual account) is minted when BVN <em>or</em> NIN is on file. Inbound transfers credit that VA. Outbound NIP debit the merchant wallet against the customer’s ledger. Intra-RoyalBlue stays on our books.</p>
+
+  <h2>Tiers and limits</h2>
+  <p>Opening the account puts you on <strong>Tier 1</strong>. Limits depend on whether a confirmed BVN is linked.</p>
   <table>
     <thead>
-      <tr><th>Profile</th><th>Email</th><th>Phone</th><th>Password</th><th>Account</th></tr>
+      <tr><th>Tier</th><th>What is on file</th><th>Per transfer</th><th>Daily</th><th>Max balance</th></tr>
     </thead>
     <tbody>
       <tr>
-        <td>Funded, Tier 2</td>
-        <td><code>customer@royalblue.ng</code></td>
-        <td><code>08044444444</code></td>
-        <td><code>RoyalBlueCustomer1!</code></td>
-        <td>NUBAN <code>8044444444</code>, ₦185k, BVN + NIN + ID. Proof of address → Tier 3 (<code>/verification</code>)</td>
+        <td>Tier 1 · NIN</td>
+        <td>NIN only (no BVN)</td>
+        <td>₦30,000</td>
+        <td>₦30,000</td>
+        <td>₦300,000</td>
       </tr>
       <tr>
-        <td>Starter ₦50k</td>
-        <td><code>starter@royalblue.ng</code></td>
-        <td><code>08055555555</code></td>
-        <td><code>RoyalBlueStarter1!</code></td>
-        <td>NUBAN <code>8055555555</code>, ₦32.5k, no BVN/docs</td>
+        <td>Tier 1 · BVN</td>
+        <td>BVN (NIN optional)</td>
+        <td>₦50,000</td>
+        <td>₦50,000</td>
+        <td>₦300,000</td>
+      </tr>
+      <tr>
+        <td>Tier 2</td>
+        <td>Tier 1 + live selfie matched to the BVN or NIN photo</td>
+        <td>₦200,000</td>
+        <td>₦500,000</td>
+        <td>₦500,000</td>
+      </tr>
+      <tr>
+        <td>Tier 3</td>
+        <td>Tier 2 + residential address confirmed (bill matches NIMC)</td>
+        <td>₦5,000,000</td>
+        <td>No daily cap</td>
+        <td>No max</td>
       </tr>
     </tbody>
   </table>
-
-  <h2>New signup</h2>
-  <p>Use a <strong>new</strong> email, not the ones above:<br />
-  <a href="https://royalblue-web.vercel.app/sign-up">https://royalblue-web.vercel.app/sign-up</a></p>
-  <p>Email → password → personal/business → <strong>BVN or NIN</strong> (keep the number even if the check is slow; skip only if you want starter ₦50k) → confirm → 6-digit PIN.</p>
-  <p>Email OTP and authenticator are <strong>off</strong> in this sandbox.</p>
+  <p>Finish selfie and address later from <strong>Account limits</strong> (Me / Settings). Staff see address files that did not auto-match.</p>
 
   <h2>Worth walking</h2>
   <ol>
-    <li>Landing / login / signup as a new person</li>
-    <li>Starter vs funded customer: Home, limits, KYC, send, bills, cards, Me</li>
-    <li>Same loan file as officer vs manager vs admin — who can claim, recommend, freeze, decide</li>
+    <li>Sign up with a real BVN, a real NIN, and both — confirm the address on the identity screen, then check Home for a NUBAN.</li>
+    <li>Skip selfie and address, then complete them from Account limits. Try a send (needs the PIN you set).</li>
+    <li>Business signup: wallet dashboard and money in, not a till.</li>
+    <li>Same loan file as officer vs manager vs admin — who can claim, recommend, freeze, decide.</li>
   </ol>
 
+  <div class="warn">
+    <strong>Do not use</strong> old saved retail logins (<code>customer@royalblue.ng</code>, <code>starter@royalblue.ng</code>, PIN <code>123456</code>). They are not in this environment. Open a new account instead.
+  </div>
+
   <div class="note">
-    <strong>Please ignore for now:</strong> cold starts, empty bank/bill lists on a slow API, missing email codes, anything that looks like FX.
+    <strong>Please ignore for now:</strong> cold starts, empty bank/bill lists on a slow API, anything that looks like FX.
   </div>
 
   <p>Send: what felt unclear, what you’d expect next, and anything that looks wrong for a Nigerian MFB. Screenshots + “I was this user” is enough.</p>

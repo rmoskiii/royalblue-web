@@ -6,12 +6,11 @@ import { accountService } from '@/api/services/accounts';
 import { useToast } from '@/app/providers/ToastProvider';
 import { QuickTransferCard } from '@/features/transfer/components/QuickTransferCard';
 import { ActiveLoanCard } from './components/ActiveLoanCard';
-import { AddMoneySheet } from './components/AddMoneySheet';
 import { BalanceCard } from './components/BalanceCard';
 import { InsightsCard } from './components/InsightsCard';
+import { PaymentLinkSheet } from './components/PaymentLinkSheet';
 import { ReferCard } from './components/PromoCards';
 import { QuickServices } from './components/QuickServices';
-import { ReceiveSheet } from './components/ReceiveSheet';
 import { RecentTransactions } from './components/RecentTransactions';
 import { TierBanner } from './components/TierBanner';
 
@@ -20,7 +19,7 @@ import { TierBanner } from './components/TierBanner';
  * and quick transfer / beneficiaries (right) from xl. Everything stacks below xl.
  */
 export function HomePage() {
-  const [sheet, setSheet] = useState<'receive' | 'add-money' | null>(null);
+  const [sheet, setSheet] = useState<'payment-link' | null>(null);
   const [params, setParams] = useSearchParams();
   const queryClient = useQueryClient();
   const { showToast } = useToast();
@@ -52,7 +51,7 @@ export function HomePage() {
 
   return (
     <div className="grid gap-4">
-      <BalanceCard onReceive={() => setSheet('receive')} onAddMoney={() => setSheet('add-money')} />
+      <BalanceCard onPaymentLink={() => setSheet('payment-link')} />
       <QuickServices />
       <TierBanner />
 
@@ -82,8 +81,7 @@ export function HomePage() {
         </div>
       </div>
 
-      <ReceiveSheet open={sheet === 'receive'} onClose={() => setSheet(null)} />
-      <AddMoneySheet open={sheet === 'add-money'} onClose={() => setSheet(null)} />
+      <PaymentLinkSheet open={sheet === 'payment-link'} onClose={() => setSheet(null)} />
     </div>
   );
 }
