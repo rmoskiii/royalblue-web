@@ -25,7 +25,15 @@ function toLookup(result: {
   };
 }
 
-export function BvnForm({ onDone }: { onDone: () => void }) {
+export function BvnForm({
+  onDone,
+  lockedBvn,
+  lockedNin,
+}: {
+  onDone: () => void;
+  lockedBvn?: string | null;
+  lockedNin?: string | null;
+}) {
   const [identity, setIdentity] = useState<IdentityLookup | null>(null);
   const submit = useMutation({
     mutationFn: async (numbers: { bvn?: string; nin?: string }) => {
@@ -67,7 +75,15 @@ export function BvnForm({ onDone }: { onDone: () => void }) {
 
   return (
     <IdentityNumberForm
-      onSubmit={(numbers) => submit.mutate(numbers)}
+      lockedBvn={lockedBvn}
+      lockedNin={lockedNin}
+      onSubmit={(numbers) => {
+        if (!numbers.bvn && !numbers.nin) {
+          onDone();
+          return;
+        }
+        submit.mutate(numbers);
+      }}
       isPending={submit.isPending}
       error={submit.isError ? submit.error.message : undefined}
       submitLabel="Continue"

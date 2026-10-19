@@ -1,4 +1,4 @@
-import { ArrowDownLeft, Copy, Eye, EyeOff, Plus, Send } from 'lucide-react';
+import { Copy, Eye, EyeOff, Link2, Send } from 'lucide-react';
 import { useState } from 'react';
 import { useAccount } from '@/api/hooks';
 import { useToast } from '@/app/providers/ToastProvider';
@@ -8,13 +8,7 @@ import { copyText } from '@/lib/clipboard';
 import { formatAccountNumber } from '@/lib/format';
 
 /** PRD View 1: balance with a one-tap privacy toggle, then quick actions (2×2 on phones). */
-export function BalanceCard({
-  onReceive,
-  onAddMoney,
-}: {
-  onReceive: () => void;
-  onAddMoney: () => void;
-}) {
+export function BalanceCard({ onPaymentLink }: { onPaymentLink: () => void }) {
   const { data: account, isLoading } = useAccount();
   const [hidden, setHidden] = useState(false);
   const { showToast } = useToast();
@@ -78,14 +72,8 @@ export function BalanceCard({
         <Button onClick={() => openTransfer()}>
           <Send className="size-4" /> Send money
         </Button>
-        <Button variant="glass" onClick={onReceive}>
-          <ArrowDownLeft className="size-4" /> Receive
-        </Button>
-        {/* <Link to={paths.payBills} className={buttonClass({ variant: 'glass' })}>
-          <Zap className="size-4" /> Pay bills
-        </Link> */}
-        <Button variant="glass" onClick={onAddMoney}>
-          <Plus className="size-4" /> Add money
+        <Button variant="glass" onClick={onPaymentLink}>
+          <Link2 className="size-4" /> Payment link
         </Button>
       </div>
     </section>

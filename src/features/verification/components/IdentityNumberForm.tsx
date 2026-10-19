@@ -10,6 +10,8 @@ export function IdentityNumberForm({
   submitLabel = 'Continue',
   bvnHint,
   ninHint = 'Dial *346# from your NIN-linked phone if you don’t know it.',
+  lockedBvn,
+  lockedNin,
 }: {
   onSubmit: (numbers: { bvn?: string; nin?: string }) => void;
   isPending?: boolean;
@@ -17,13 +19,17 @@ export function IdentityNumberForm({
   submitLabel?: string;
   bvnHint?: string;
   ninHint?: string;
+  lockedBvn?: string | null;
+  lockedNin?: string | null;
 }) {
   const bvnHelp =
     bvnHint ??
     'Don’t know your BVN? Dial *565*0# from the phone number linked to your bank account.';
   const [bvn, setBvn] = useState('');
   const [nin, setNin] = useState('');
-  const ready = bvn.length === 11 || nin.length === 11;
+  const bvnLocked = Boolean(lockedBvn);
+  const ninLocked = Boolean(lockedNin);
+  const ready = bvn.length === 11 || nin.length === 11 || bvnLocked || ninLocked;
 
   return (
     <form
@@ -33,8 +39,8 @@ export function IdentityNumberForm({
         e.preventDefault();
         if (!ready) return;
         onSubmit({
-          ...(bvn.length === 11 ? { bvn } : {}),
-          ...(nin.length === 11 ? { nin } : {}),
+          ...(!bvnLocked && bvn.length === 11 ? { bvn } : {}),
+          ...(!ninLocked && nin.length === 11 ? { nin } : {}),
         });
       }}
     >
@@ -45,13 +51,14 @@ export function IdentityNumberForm({
         label="Bank Verification Number"
         inputMode="numeric"
         autoComplete="off"
-        autoFocus
+        autoFocus={!bvnLocked}
         maxLength={11}
         placeholder="11 digits"
-        value={bvn}
+        value={bvnLocked ? lockedBvn ?? '' : bvn}
+        disabled={bvnLocked}
         onChange={(e) => setBvn(e.target.value.replace(/\D/g, ''))}
         inputClassName="tabular"
-        hint={bvnHelp}
+        hint={bvnLocked ? 'Already on your account' : bvnHelp}
       />
       <TextField
         label="National Identity Number"
@@ -59,10 +66,11 @@ export function IdentityNumberForm({
         autoComplete="off"
         maxLength={11}
         placeholder="11 digits"
-        value={nin}
+        value={ninLocked ? lockedNin ?? '' : nin}
+        disabled={ninLocked}
         onChange={(e) => setNin(e.target.value.replace(/\D/g, ''))}
         inputClassName="tabular"
-        hint={ninHint}
+        hint={ninLocked ? 'Already on your account' : ninHint}
         error={error}
       />
       <Button type="submit" size="lg" block disabled={!ready || isPending}>

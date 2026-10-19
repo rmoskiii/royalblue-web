@@ -47,6 +47,21 @@ export const accountService = {
     return http.post('/accounts/sandbox-fund', { amount });
   },
 
+  createPaymentLink(
+    amount: number,
+    description?: string,
+  ): Promise<{ paymentLink: string; refId: string; paycode: string; amount: number }> {
+    if (env.useMocks) {
+      return mockResponse({
+        paymentLink: `https://app.budpay.com/pay/mock_${Date.now()}`,
+        refId: `mock_${Date.now()}`,
+        paycode: 'PMOCK',
+        amount,
+      });
+    }
+    return http.post('/accounts/payment-link', { amount, description });
+  },
+
   startCardTopup(amount = 5_000): Promise<{ authorizationUrl: string; reference: string; amount: number }> {
     if (env.useMocks) {
       return mockResponse({

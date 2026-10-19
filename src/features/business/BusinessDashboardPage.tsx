@@ -3,10 +3,9 @@ import { Link } from 'react-router';
 import { useProfile } from '@/app/providers/ProfileProvider';
 import { paths } from '@/components/layout/navigation';
 import { Card, CardHeader, PageHeader } from '@/components/ui';
-import { AddMoneySheet } from '@/features/home/components/AddMoneySheet';
 import { BalanceCard } from '@/features/home/components/BalanceCard';
+import { PaymentLinkSheet } from '@/features/home/components/PaymentLinkSheet';
 import { QuickServices } from '@/features/home/components/QuickServices';
-import { ReceiveSheet } from '@/features/home/components/ReceiveSheet';
 import { TierBanner } from '@/features/home/components/TierBanner';
 import { QuickTransferCard } from '@/features/transfer/components/QuickTransferCard';
 import { LiveBadge } from './components/LiveBadge';
@@ -18,13 +17,13 @@ import { useLiveSettlements } from './hooks/useLiveSettlements';
 export function BusinessDashboardPage() {
   const { profile } = useProfile();
   const { data: settlements, isLoading, freshIds } = useLiveSettlements();
-  const [sheet, setSheet] = useState<'receive' | 'add-money' | null>(null);
+  const [sheet, setSheet] = useState<'payment-link' | null>(null);
 
   return (
     <>
       <PageHeader title="Dashboard" subtitle={profile?.name} />
       <div className="grid gap-4">
-        <BalanceCard onReceive={() => setSheet('receive')} onAddMoney={() => setSheet('add-money')} />
+        <BalanceCard onPaymentLink={() => setSheet('payment-link')} />
         <QuickServices />
         <TierBanner />
         <SummaryCards />
@@ -51,8 +50,7 @@ export function BusinessDashboardPage() {
           <QuickTransferCard />
         </div>
       </div>
-      <ReceiveSheet open={sheet === 'receive'} onClose={() => setSheet(null)} />
-      <AddMoneySheet open={sheet === 'add-money'} onClose={() => setSheet(null)} />
+      <PaymentLinkSheet open={sheet === 'payment-link'} onClose={() => setSheet(null)} />
     </>
   );
 }

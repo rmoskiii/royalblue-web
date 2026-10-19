@@ -51,7 +51,10 @@ export function CameraCapture({
   const mountedRef = useRef(true);
   const [live, setLive] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cameraTries, setCameraTries] = useState(0);
+  const [cameraUnavailable, setCameraUnavailable] = useState(false);
   const kind = facing === 'user' ? 'selfie' : 'document';
+  const allowUpload = kind !== 'selfie' || cameraUnavailable || cameraTries >= 2;
 
   const preview = useMemo(() => (value ? URL.createObjectURL(value) : null), [value]);
   useEffect(
@@ -82,6 +85,17 @@ export function CameraCapture({
   }, [stop]);
 
   useEffect(() => {
+    if (kind !== 'selfie' || !navigator.mediaDevices?.enumerateDevices) {
+      if (kind === 'selfie' && !navigator.mediaDevices?.getUserMedia) setCameraUnavailable(true);
+      return;
+    }
+    void navigator.mediaDevices.enumerateDevices().then((devices) => {
+      if (!mountedRef.current) return;
+      if (!devices.some((d) => d.kind === 'videoinput')) setCameraUnavailable(true);
+    });
+  }, [kind]);
+
+  useEffect(() => {
     if (live && videoRef.current && streamRef.current) {
       videoRef.current.srcObject = streamRef.current;
     }
@@ -102,6 +116,11 @@ export function CameraCapture({
   const start = async () => {
     setError(null);
     stopActiveCamera?.();
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setCameraUnavailable(true);
+      setError('This device has no camera. Upload a photo instead.');
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -117,8 +136,10 @@ export function CameraCapture({
       }
       streamRef.current = stream;
       stopActiveCamera = stop;
+      setCameraTries((n) => n + 1);
       setLive(true);
     } catch {
+      setCameraUnavailable(true);
       setError('We couldn’t open your camera. Allow camera access, or upload a photo instead.');
     }
   };
@@ -198,23 +219,27 @@ export function CameraCapture({
               {value ? <RefreshCw className="size-4" /> : <Camera className="size-4" />}
               {value ? 'Retake' : 'Use camera'}
             </Button>
-            <label htmlFor={inputId} className="max-sm:w-full cursor-pointer">
-              <span className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-field bg-surface-2 px-4 font-medium hover:bg-surface-3 sm:w-auto">
-                <ImageUp className="size-4" /> Upload photo
-              </span>
-            </label>
-            <input
-              id={inputId}
-              type="file"
-              accept="image/*"
-              capture={isMobile() ? facing : undefined}
-              className="sr-only"
-              onChange={(e) => {
-                const file = e.target.files?.[0] ?? null;
-                e.target.value = '';
-                void setFile(file);
-              }}
-            />
+            {allowUpload && (
+              <>
+                <label htmlFor={inputId} className="max-sm:w-full cursor-pointer">
+                  <span className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-field bg-surface-2 px-4 font-medium hover:bg-surface-3 sm:w-auto">
+                    <ImageUp className="size-4" /> Upload photo
+                  </span>
+                </label>
+                <input
+                  id={inputId}
+                  type="file"
+                  accept="image/*"
+                  capture={isMobile() ? facing : undefined}
+                  className="sr-only"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] ?? null;
+                    e.target.value = '';
+                    void setFile(file);
+                  }}
+                />
+              </>
+            )}
           </>
         )}
       </div>

@@ -1,6 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { CircleCheck, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { queryKeys, useTierLimits, useVerificationStatus } from '@/api/hooks';
 import type { VerificationStepId } from '@/api/types';
 import { Button, Card, PageHeader } from '@/components/ui';
@@ -33,6 +34,7 @@ export function VerificationPage() {
   const queryClient = useQueryClient();
   const { data: status } = useVerificationStatus();
   const { data: tiers } = useTierLimits();
+  const [params] = useSearchParams();
 
   // Steps finished in this session, on top of what the API reports.
   const [justCompleted, setJustCompleted] = useState<VerificationStepId[]>([]);
@@ -43,7 +45,9 @@ export function VerificationPage() {
 
   const completed = new Set([...status.completedSteps, ...justCompleted]);
   const firstIncomplete = verificationSteps.find((s) => !completed.has(s.id))?.id ?? null;
-  const active = selected ?? firstIncomplete;
+  const requested = params.get('step') as VerificationStepId | null;
+  const requestedOk = verificationSteps.some((s) => s.id === requested) ? requested : null;
+  const active = selected ?? requestedOk ?? firstIncomplete;
   const allDone = completed.size === verificationSteps.length;
   const currentTier = tiers.find(
     (t) =>
@@ -53,7 +57,7 @@ export function VerificationPage() {
 
   const finish = (id: VerificationStepId) => {
     setJustCompleted((c) => [...c, id]);
-    setSelected(null);
+    setSelected(id === 'bvn' ? 'id-document' : id === 'id-document' ? 'proof-of-address' : null);
     setEditing(false);
     queryClient.invalidateQueries({ queryKey: queryKeys.verification });
     queryClient.invalidateQueries({ queryKey: queryKeys.account });
@@ -140,13 +144,26 @@ export function VerificationPage() {
                 {!showForm ? (
                   <div className="flex min-w-0 flex-wrap items-center gap-3 rounded-tile bg-success-soft px-4 py-3">
                     <CircleCheck className="size-5 shrink-0 text-success" />
-                    <span className="min-w-0 flex-1 font-medium text-success">Verified</span>
+                    <span className="min-w-0 flex-1 font-medium text-success">
+                      {active === 'bvn'
+                        ? [
+                            status.hasBvn ? 'Verified BVN' : null,
+                            status.hasNin ? 'Verified NIN' : null,
+                          ]
+                            .filter(Boolean)
+                            .join(' · ') || 'Verified'
+                        : 'Verified'}
+                    </span>
                     <Button variant="secondary" size="sm" onClick={() => setEditing(true)}>
                       Update
                     </Button>
                   </div>
                 ) : active === 'bvn' ? (
-                  <BvnForm onDone={() => finish('bvn')} />
+                  <BvnForm
+                    lockedBvn={status.hasBvn ? status.bvnMasked : null}
+                    lockedNin={status.hasNin ? status.ninMasked : null}
+                    onDone={() => finish('bvn')}
+                  />
                 ) : active === 'id-document' ? (
                   <IdDocumentForm
                     canMatchOnFile={Boolean(status.hasBvn || status.hasNin)}
