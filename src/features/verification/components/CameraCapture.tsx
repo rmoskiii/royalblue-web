@@ -6,8 +6,25 @@ import { cn } from '@/lib/cn';
 
 let stopActiveCamera: (() => void) | null = null;
 
+/** Chrome on macOS keeps the camera LED on until tracks stop and the <video> drops srcObject. */
+export function releaseActiveCamera() {
+  stopActiveCamera?.();
+}
+
 function isMobile() {
   return typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+}
+
+function detachVideo(video: HTMLVideoElement | null) {
+  if (!video) return;
+  video.pause();
+  video.srcObject = null;
+  video.removeAttribute('src');
+  video.load();
+}
+
+function stopTracks(stream: MediaStream | null) {
+  stream?.getTracks().forEach((t) => t.stop());
 }
 
 /**
@@ -31,6 +48,7 @@ export function CameraCapture({
   const inputId = useId();
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const mountedRef = useRef(true);
   const [live, setLive] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const kind = facing === 'user' ? 'selfie' : 'document';
@@ -44,12 +62,24 @@ export function CameraCapture({
   );
 
   const stop = useCallback(() => {
-    streamRef.current?.getTracks().forEach((t) => t.stop());
+    detachVideo(videoRef.current);
+    const stream = streamRef.current;
     streamRef.current = null;
-    stopActiveCamera = null;
+    if (stopActiveCamera === stop) stopActiveCamera = null;
+    stopTracks(stream);
     setLive(false);
   }, []);
-  useEffect(() => () => stop(), [stop]);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    const onLeave = () => stop();
+    window.addEventListener('pagehide', onLeave);
+    return () => {
+      mountedRef.current = false;
+      window.removeEventListener('pagehide', onLeave);
+      stop();
+    };
+  }, [stop]);
 
   useEffect(() => {
     if (live && videoRef.current && streamRef.current) {
@@ -81,6 +111,10 @@ export function CameraCapture({
         },
         audio: false,
       });
+      if (!mountedRef.current) {
+        stopTracks(stream);
+        return;
+      }
       streamRef.current = stream;
       stopActiveCamera = stop;
       setLive(true);
