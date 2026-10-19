@@ -1,4 +1,4 @@
-import { Copy, Eye, EyeOff, Link2, Send } from 'lucide-react';
+import { ArrowDownLeft, Copy, Eye, EyeOff, Send } from 'lucide-react';
 import { useState } from 'react';
 import { useAccount } from '@/api/hooks';
 import { useToast } from '@/app/providers/ToastProvider';
@@ -73,7 +73,7 @@ export function BalanceCard({ onPaymentLink }: { onPaymentLink: () => void }) {
           <Send className="size-4" /> Send money
         </Button>
         <Button variant="glass" onClick={onPaymentLink}>
-          <Link2 className="size-4" /> Payment link
+          <ArrowDownLeft className="size-4" /> Receive
         </Button>
       </div>
     </section>
