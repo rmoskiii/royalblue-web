@@ -326,21 +326,23 @@ export const mockVerification: VerificationStatus = {
   missing: ['Confirm your residential address to unlock Tier 3 limits.'],
 };
 
-/** From the PRD (§3B) plus CBN starter KYC without BVN. */
 export const mockTierLimits: TierLimit[] = [
   {
     tier: 1,
-    restrictedNoBvn: true,
-    requirements: 'Phone only. Add BVN or NIN to lift the ₦50,000 CBN starter cap.',
-    singleTransactionLimit: 50_000,
-    dailyLimit: 50_000,
-    maxBalance: 50_000,
+    hasBvn: false,
+    label: 'Tier 1 · NIN',
+    requirements: 'NIN linked. ₦30,000 per transfer and daily, ₦300,000 max balance.',
+    singleTransactionLimit: 30_000,
+    dailyLimit: 30_000,
+    maxBalance: 300_000,
   },
   {
     tier: 1,
-    requirements: 'BVN or NIN linked to this profile.',
+    hasBvn: true,
+    label: 'Tier 1 · BVN',
+    requirements: 'BVN linked. ₦50,000 per transfer and daily, ₦300,000 max balance.',
     singleTransactionLimit: 50_000,
-    dailyLimit: 300_000,
+    dailyLimit: 50_000,
     maxBalance: 300_000,
   },
   {

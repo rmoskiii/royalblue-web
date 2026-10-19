@@ -5,8 +5,10 @@ import { formatNaira } from '@/lib/format';
 
 const limit = (value: number | null) => (value === null ? 'Unlimited' : formatNaira(value));
 
-function isCurrent(t: TierLimit, current: KycTier, currentRestricted: boolean) {
-  return t.restrictedNoBvn ? currentRestricted : t.tier === current && !currentRestricted;
+function isCurrent(t: TierLimit, current: KycTier, hasBvn: boolean) {
+  if (t.tier !== current) return false;
+  if (current === 1) return Boolean(t.hasBvn) === hasBvn;
+  return true;
 }
 
 function YouChip() {
@@ -17,31 +19,35 @@ function YouChip() {
   );
 }
 
-/** PRD §3B tier structure, with the customer's current tier highlighted. */
+function tierLabel(t: TierLimit) {
+  return t.label ?? `Tier ${t.tier}`;
+}
+
+/** Account tiers, with the customer's current band highlighted. */
 export function TierLimitsTable({
   tiers,
   current,
-  restrictedNoBvn,
+  hasBvn,
 }: {
   tiers: TierLimit[];
   current: KycTier;
-  restrictedNoBvn?: boolean;
+  hasBvn?: boolean;
 }) {
-  const currentRestricted = Boolean(restrictedNoBvn);
+  const bvnLinked = Boolean(hasBvn);
   return (
     <>
       <ul className="grid min-w-0 gap-2 lg:hidden">
         {tiers.map((t, i) => (
           <li
-            key={`${t.tier}-${t.restrictedNoBvn ? 'starter' : 'full'}-${i}`}
+            key={`${t.tier}-${t.hasBvn ? 'bvn' : 'nin'}-${i}`}
             className={cn(
               'min-w-0 overflow-hidden rounded-tile border border-line px-4 py-3',
-              isCurrent(t, current, currentRestricted) && 'bg-primary-soft/60',
+              isCurrent(t, current, bvnLinked) && 'bg-primary-soft/60',
             )}
           >
             <p className="flex min-w-0 flex-wrap items-center gap-1 font-semibold">
-              {t.restrictedNoBvn ? 'Starter' : `Tier ${t.tier}`}
-              {isCurrent(t, current, currentRestricted) && <YouChip />}
+              {tierLabel(t)}
+              {isCurrent(t, current, bvnLinked) && <YouChip />}
             </p>
             <p className="mt-1 text-[13px] break-words text-ink-2">{t.requirements}</p>
             <dl className="mt-2 grid grid-cols-1 gap-y-1 text-[13px] tabular">
@@ -77,16 +83,15 @@ export function TierLimitsTable({
           <tbody>
             {tiers.map((t, i) => (
               <tr
-                key={`${t.tier}-${t.restrictedNoBvn ? 'starter' : 'full'}-${i}`}
-                aria-current={isCurrent(t, current, currentRestricted) ? 'true' : undefined}
+                key={`${t.tier}-${t.hasBvn ? 'bvn' : 'nin'}-${i}`}
+                aria-current={isCurrent(t, current, bvnLinked) ? 'true' : undefined}
                 className={cn(
                   'border-t border-line [&>td]:px-3.5 [&>td]:py-3',
-                  isCurrent(t, current, currentRestricted) && 'bg-primary-soft/60',
+                  isCurrent(t, current, bvnLinked) && 'bg-primary-soft/60',
                 )}
               >
                 <td className="font-semibold whitespace-nowrap">
-                  {t.restrictedNoBvn ? 'Starter' : `Tier ${t.tier}`}{' '}
-                  {isCurrent(t, current, currentRestricted) && <YouChip />}
+                  {tierLabel(t)} {isCurrent(t, current, bvnLinked) && <YouChip />}
                 </td>
                 <td className="text-ink-2">{t.requirements}</td>
                 <td>{limit(t.singleTransactionLimit)}</td>

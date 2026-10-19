@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button, PinPad } from '@/components/ui';
 import { submitOnEnter } from '../lib/submitOnEnter';
 
-export function PinStep({ onDone }: { onDone: (pin: string) => void }) {
+export function PinStep({ onDone, busy = false }: { onDone: (pin: string) => void; busy?: boolean }) {
   const [pin, setPin] = useState('');
   const [confirm, setConfirm] = useState('');
   const [stage, setStage] = useState<'create' | 'confirm'>('create');
@@ -24,6 +24,7 @@ export function PinStep({ onDone }: { onDone: (pin: string) => void }) {
           setConfirm('');
           return;
         }
+        if (busy) return;
         onDone(pin);
       }}
     >
@@ -49,8 +50,8 @@ export function PinStep({ onDone }: { onDone: (pin: string) => void }) {
         }}
       />
       {error && <p className="text-[13px] text-primary-text">{error}</p>}
-      <Button type="submit" size="lg" block disabled={(stage === 'create' ? pin : confirm).length !== 6}>
-        {stage === 'create' ? 'Continue' : 'Confirm PIN'}
+      <Button type="submit" size="lg" block disabled={busy || (stage === 'create' ? pin : confirm).length !== 6}>
+        {stage === 'create' ? 'Continue' : busy ? 'Opening your account…' : 'Confirm PIN'}
       </Button>
     </form>
   );

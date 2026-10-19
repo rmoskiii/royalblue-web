@@ -46,7 +46,9 @@ export function VerificationPage() {
   const active = selected ?? firstIncomplete;
   const allDone = completed.size === verificationSteps.length;
   const currentTier = tiers.find(
-    (t) => t.tier === status.tier && Boolean(t.restrictedNoBvn) === Boolean(status.restrictedNoBvn),
+    (t) =>
+      t.tier === status.tier &&
+      (status.tier !== 1 || Boolean(t.hasBvn) === Boolean(status.hasBvn)),
   );
 
   const finish = (id: VerificationStepId) => {
@@ -71,7 +73,7 @@ export function VerificationPage() {
           <div className="min-w-0 lg:flex-[1_1_200px]">
             <p className="text-xs font-semibold tracking-wider text-ink-3 uppercase">Your tier</p>
             <p className="text-2xl font-semibold tracking-tight">
-              {status.restrictedNoBvn ? 'Starter' : `Tier ${status.tier}`}
+              {status.tier === 1 && !status.hasBvn ? 'Tier 1 · NIN' : `Tier ${status.tier}`}
             </p>
             {status.kycStatus && (
               <p className="text-[13px] text-ink-3">
@@ -167,7 +169,7 @@ export function VerificationPage() {
 
         <section className="min-w-0">
           <h2 className="mb-2.5 text-base font-semibold">Tiers and limits</h2>
-          <TierLimitsTable tiers={tiers} current={status.tier} restrictedNoBvn={status.restrictedNoBvn} />
+          <TierLimitsTable tiers={tiers} current={status.tier} hasBvn={status.hasBvn} />
         </section>
       </div>
     </>

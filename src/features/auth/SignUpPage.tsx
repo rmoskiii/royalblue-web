@@ -177,7 +177,7 @@ export function SignUpPage() {
   const [pinDraft, setPinDraft] = useState('');
   const [emailRefresh, setEmailRefresh] = useState(false);
   const [refreshCode, setRefreshCode] = useState('');
-  const { establishSession } = useAuth();
+  const { establishSession, logout } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -222,6 +222,12 @@ export function SignUpPage() {
     },
     onSuccess: () => navigate(paths.home, { replace: true }),
     onError: (error) => {
+      if (isEmailTaken(error)) {
+        logout();
+        showToast('This email already has an account. Log in instead.');
+        navigate(paths.login, { replace: true });
+        return;
+      }
       if (emailRefresh || !isExpiredEmailProof(error)) return;
       setEmailRefresh(true);
       void authService
@@ -446,7 +452,7 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Identity verification"
-        subtitle="We’ll confirm BVN or NIN now. Skip only if you’re opening a ₦50k starter account — the number is not saved until it matches."
+        subtitle="We’ll confirm BVN and NIN if you have both — at least one is required. Numbers are not saved until they match."
         back={
           <BackButton
             onClick={() =>
@@ -475,8 +481,8 @@ export function SignUpPage() {
               ...state,
               step: 'confirm',
               identity,
-              bvn: submitted.type === 'bvn' ? submitted.number : undefined,
-              nin: submitted.type === 'nin' ? submitted.number : undefined,
+              bvn: submitted.bvn,
+              nin: submitted.nin,
             })
           }
         />
@@ -487,12 +493,8 @@ export function SignUpPage() {
   if (state.step === 'confirm') {
     return (
       <AuthCard
-        title={state.identity.verified && !state.identity.pending ? 'Is this you?' : 'Verification not completed'}
-        subtitle={
-          state.identity.verified && !state.identity.pending
-            ? undefined
-            : 'Your account can still be created. ID, selfie and proof of address are next — or skip them and finish in Account limits.'
-        }
+        title="Is this you?"
+        subtitle="Name, date of birth, and the address on record when NIMC or NIBSS returned one."
         back={
           <BackButton
             onClick={() =>
@@ -661,6 +663,8 @@ export function SignUpPage() {
         </div>
         <ProofOfAddressForm
           persist={false}
+          currentAddress={state.identity.residentialAddress}
+          lastRegistryAddress={state.identity.residentialAddress}
           onSkip={() => {
             setPendingAddress(null);
             setPendingConfirmedAddress(null);
@@ -831,7 +835,9 @@ export function SignUpPage() {
       ) : (
         <>
           <PinStep
+            busy={finish.isPending}
             onDone={(pin) => {
+              if (finish.isPending) return;
               setPinDraft(pin);
               finish.mutate(pinPayload(state.otp, pin));
             }}
@@ -847,6 +853,11 @@ export function SignUpPage() {
 function isExpiredEmailProof(error: unknown) {
   const message = error instanceof Error ? error.message : '';
   return /email code expired|email verification expired|that code is not right/i.test(message);
+}
+
+function isEmailTaken(error: unknown) {
+  const message = error instanceof Error ? error.message : '';
+  return /already has an account|email already registered/i.test(message);
 }
 
 function EmailStep({
@@ -894,7 +905,16 @@ function EmailStep({
           value={email}
           onChange={(e) => onEmail(e.target.value)}
         />
-        {start.isError && <p className="text-[13px] text-primary-text">{start.error.message}</p>}
+        {start.isError && (
+          <p className="text-[13px] text-primary-text">
+            {start.error.message}{' '}
+            {isEmailTaken(start.error) && (
+              <Link to={paths.login} className="font-medium underline">
+                Log in
+              </Link>
+            )}
+          </p>
+        )}
         <Button type="submit" size="lg" block disabled={!email.includes('@') || start.isPending}>
           {start.isPending ? 'Continuing…' : 'Continue'}
         </Button>

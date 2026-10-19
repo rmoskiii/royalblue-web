@@ -17,7 +17,7 @@ const faqs = [
   },
   {
     q: 'How do I raise my limit?',
-    a: 'Account limits. Complete identity in order. Starter stays at ₦50,000 until that file is in.',
+    a: 'Account limits. Complete BVN and/or NIN, then selfie and address. NIN-only Tier 1 is ₦30,000 daily; BVN is ₦50,000.',
   },
   {
     q: 'Who sees my PIN?',

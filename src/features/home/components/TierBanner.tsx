@@ -13,30 +13,30 @@ export function TierBanner() {
   if (isStaffRole(me?.role)) return null;
   if (!status) return null;
 
-  const restricted = Boolean(status.restrictedNoBvn || account?.restrictedNoBvn);
   const identityPending =
     Boolean(status.hasBvn || status.hasNin) && status.identityVerified === false;
   // Stay on Home and Me until ID + address unlock Tier 3. The bell is only for new money events.
-  if (status.tier >= 3 && !restricted && !identityPending) return null;
+  if (status.tier >= 3 && !identityPending) return null;
 
-  const cap = status.limits?.maxBalance ?? account?.maxBalance ?? 50_000;
+  const cap = status.limits?.dailyLimit ?? account?.dailyLimit ?? 50_000;
+  const ninOnly = status.tier === 1 && !status.hasBvn;
   const title = identityPending
     ? 'Identity not confirmed'
-    : restricted
-      ? `Starter limit ${formatNaira(cap)} — add BVN`
+    : ninOnly
+      ? `Tier 1 · NIN — ${formatNaira(cap)} daily`
       : `Finish verification · Tier ${status.tier}`;
   const body = identityPending
     ? (status.missing?.[0] ??
-      'We have not confirmed this BVN yet. Keep using the account, then finish verification in Settings.')
-    : restricted
-      ? 'You skipped identity checks. Starter limits cap balance, daily send and a single transfer at ₦50,000 until BVN or NIN is linked.'
+      'We have not confirmed this identity yet. Keep using the account, then finish verification in Settings.')
+    : ninOnly
+      ? 'Add BVN to raise daily and per-transfer limits to ₦50,000. Max balance stays ₦300,000 until Tier 2.'
       : (status.missing?.[0] ?? 'Complete ID and proof of address to raise your limits.');
-  const cta = identityPending ? 'Finish in Settings' : restricted ? 'Add BVN' : 'Continue verification';
+  const cta = identityPending ? 'Finish in Settings' : ninOnly ? 'Add BVN' : 'Continue verification';
 
   return (
     <section className="flex flex-wrap items-center gap-x-3.5 gap-y-3 rounded-card border border-amber-500/30 bg-amber-500/10 px-4 py-3.5">
       <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-500/15 text-amber-800 dark:text-amber-200">
-        {restricted || identityPending ? (
+        {ninOnly || identityPending ? (
           <ShieldAlert className="size-5" />
         ) : (
           <ShieldCheck className="size-5" />

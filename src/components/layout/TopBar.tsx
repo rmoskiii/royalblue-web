@@ -57,14 +57,10 @@ export function TopBar() {
             className="mr-1 inline-flex h-7 shrink-0 items-center gap-1 rounded-full bg-primary-soft px-2 text-[11px] font-bold tracking-wider whitespace-nowrap text-primary-text uppercase hover:brightness-95 sm:px-2.5"
           >
             <ShieldCheck className="size-3.5" />
-            {account.restrictedNoBvn ? (
-              'Starter · ₦50k'
-            ) : (
-              <>
-                <span className="sr-only sm:not-sr-only">Tier </span>
-                {account.tier}
-              </>
-            )}
+            <>
+              <span className="sr-only sm:not-sr-only">Tier </span>
+              {account.tier}
+            </>
           </Link>
         )}
         {!staff && (

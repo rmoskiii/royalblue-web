@@ -58,7 +58,7 @@ export function SettingsPage() {
                 {staff && me?.role && <Chip>{me.role.replaceAll('_', ' ')}</Chip>}
                 {!staff && kyc && <Chip tone={kyc === 'VERIFIED' ? 'success' : 'warning'}>{kyc}</Chip>}
                 {!staff && account && (
-                  <Chip>{account.restrictedNoBvn ? 'Starter' : `Tier ${account.tier}`}</Chip>
+                  <Chip>{`Tier ${account.tier}`}</Chip>
                 )}
               </div>
             </div>
@@ -102,7 +102,7 @@ export function SettingsPage() {
               icon={ShieldCheck}
               label="Identity and limits"
               value={
-                account?.restrictedNoBvn ? 'Starter ₦50k' : account ? `Tier ${account.tier}` : kyc
+                account ? `Tier ${account.tier}` : kyc
               }
             />
           )}

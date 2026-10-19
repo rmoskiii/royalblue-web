@@ -31,12 +31,12 @@ export function buildInbox(input: {
     });
   }
 
-  if (input.account?.restrictedNoBvn || input.verification?.restrictedNoBvn) {
+  if (input.verification?.hasNin && !input.verification?.hasBvn && input.verification.tier === 1) {
     items.push({
-      id: 'limits-starter',
+      id: 'limits-add-bvn',
       kind: 'limits',
-      title: 'You’re on starter limits',
-      body: 'Raise your daily cap by completing identity on Account limits.',
+      title: 'Add BVN to raise Tier 1 send limits',
+      body: 'NIN accounts can send ₦30,000 a day. BVN raises that to ₦50,000.',
       createdAt: '2020-01-01T00:00:00.000Z',
       href: paths.verification,
     });

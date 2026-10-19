@@ -20,6 +20,9 @@ export function friendlyApiMessage(raw: string, status = 0, path = ''): string {
   if (/invalid credentials/i.test(message)) {
     return 'That email, phone or password is not right.';
   }
+  if (/email already registered/i.test(message)) {
+    return 'This email already has an account. Log in instead.';
+  }
   if (/email verification expired/i.test(message)) {
     return 'Your email code expired. Enter a new one from your inbox to finish opening the account.';
   }
