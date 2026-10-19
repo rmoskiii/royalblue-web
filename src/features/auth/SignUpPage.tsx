@@ -174,6 +174,9 @@ export function SignUpPage() {
   const [pendingIdDoc, setPendingIdDoc] = useState<IdDocumentSubmission | null>(null);
   const [pendingAddress, setPendingAddress] = useState<File | null>(null);
   const [pendingConfirmedAddress, setPendingConfirmedAddress] = useState<string | null>(null);
+  const [pinDraft, setPinDraft] = useState('');
+  const [emailRefresh, setEmailRefresh] = useState(false);
+  const [refreshCode, setRefreshCode] = useState('');
   const { establishSession } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -218,6 +221,17 @@ export function SignUpPage() {
       establishSession(session);
     },
     onSuccess: () => navigate(paths.home, { replace: true }),
+    onError: (error) => {
+      if (emailRefresh || !isExpiredEmailProof(error)) return;
+      setEmailRefresh(true);
+      void authService
+        .startEmail(state.step === 'email' ? email : state.email)
+        .then((result) => {
+          if (result.otp) setRefreshCode(result.otp);
+          showToast('We’ve sent a new email code');
+        })
+        .catch((sendError: Error) => showToast(sendError.message));
+    },
   });
 
   if (state.step === 'email') {
@@ -724,75 +738,115 @@ export function SignUpPage() {
     );
   }
 
+  const pinPayload = (otp: string, pin: string) => ({
+    email: state.email,
+    otp,
+    password: state.password,
+    pin,
+    totpCode: state.totpCode,
+    kind: state.kind,
+    entityType: state.entityType,
+    firstName: state.firstName,
+    lastName: state.lastName,
+    phone: state.phone,
+    bvn: state.bvn,
+    nin: state.nin,
+    business: state.business,
+  });
+
   return (
     <AuthCard
-      title="Transaction PIN"
-      subtitle="You’ll enter this 6-digit PIN to send money, pay bills, or make a payout. Not your sign-in password."
+      title={emailRefresh ? 'Confirm email again' : 'Transaction PIN'}
+      subtitle={
+        emailRefresh
+          ? 'Your first email code expired while you were finishing signup. Enter the new 6-digit code — this is not your transaction PIN.'
+          : 'You’ll enter this 6-digit PIN to send money, pay bills, or make a payout. Not your sign-in password.'
+      }
       back={
         <BackButton
           onClick={() =>
-            state.kind === 'business'
-              ? setState({
-                  step: 'business',
-                  email: state.email,
-                  otp: state.otp,
-                  password: state.password,
-                  totpCode: state.totpCode,
-                  kind: state.kind,
-                  entityType: state.entityType,
-                  firstName: state.firstName,
-                  lastName: state.lastName,
-                  phone: state.phone,
-                  bvn: state.bvn,
-                  nin: state.nin,
-                })
-              : setState({
-                  step: 'proof-of-address',
-                  email: state.email,
-                  otp: state.otp,
-                  password: state.password,
-                  totpCode: state.totpCode,
-                  kind: state.kind,
-                  entityType: state.entityType,
-                  firstName: state.firstName,
-                  lastName: state.lastName,
-                  phone: state.phone,
-                  identity: state.identity ?? {
+            emailRefresh
+              ? setEmailRefresh(false)
+              : state.kind === 'business'
+                ? setState({
+                    step: 'business',
+                    email: state.email,
+                    otp: state.otp,
+                    password: state.password,
+                    totpCode: state.totpCode,
+                    kind: state.kind,
+                    entityType: state.entityType,
                     firstName: state.firstName,
                     lastName: state.lastName,
-                    dateOfBirth: null,
-                    photoUrl: null,
-                  },
-                  bvn: state.bvn,
-                  nin: state.nin,
-                })
+                    phone: state.phone,
+                    bvn: state.bvn,
+                    nin: state.nin,
+                  })
+                : setState({
+                    step: 'proof-of-address',
+                    email: state.email,
+                    otp: state.otp,
+                    password: state.password,
+                    totpCode: state.totpCode,
+                    kind: state.kind,
+                    entityType: state.entityType,
+                    firstName: state.firstName,
+                    lastName: state.lastName,
+                    phone: state.phone,
+                    identity: state.identity ?? {
+                      firstName: state.firstName,
+                      lastName: state.lastName,
+                      dateOfBirth: null,
+                      photoUrl: null,
+                    },
+                    bvn: state.bvn,
+                    nin: state.nin,
+                  })
           }
         />
       }
     >
-      <PinStep
-        onDone={(pin) =>
-          finish.mutate({
-            email: state.email,
-            otp: state.otp,
-            password: state.password,
-            pin,
-            totpCode: state.totpCode,
-            kind: state.kind,
-            entityType: state.entityType,
-            firstName: state.firstName,
-            lastName: state.lastName,
-            phone: state.phone,
-            bvn: state.bvn,
-            nin: state.nin,
-            business: state.business,
-          })
-        }
-      />
-      {finish.isError && <p className="mt-3 text-[13px] text-primary-text">{finish.error.message}</p>}
-      {finish.isPending && <p className="mt-3 text-sm text-ink-3">Opening your account…</p>}
+      {emailRefresh ? (
+        <form
+          className="grid gap-4"
+          onKeyDown={submitOnEnter}
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (refreshCode.length !== 6 || !pinDraft) return;
+            void authService
+              .verifyEmailOtp(state.email, refreshCode, 'signup')
+              .then(() => {
+                setState({ ...state, otp: refreshCode });
+                finish.mutate(pinPayload(refreshCode, pinDraft));
+              })
+              .catch((verifyError: Error) => showToast(verifyError.message));
+          }}
+        >
+          <CodeInput label="Email code" value={refreshCode} onChange={setRefreshCode} />
+          {finish.isError && <p className="text-[13px] text-primary-text">{finish.error.message}</p>}
+          <Button type="submit" size="lg" block disabled={refreshCode.length !== 6 || finish.isPending}>
+            {finish.isPending ? 'Opening your account…' : 'Verify and open account'}
+          </Button>
+        </form>
+      ) : (
+        <>
+          <PinStep
+            onDone={(pin) => {
+              setPinDraft(pin);
+              finish.mutate(pinPayload(state.otp, pin));
+            }}
+          />
+          {finish.isError && <p className="mt-3 text-[13px] text-primary-text">{finish.error.message}</p>}
+          {finish.isPending && <p className="mt-3 text-sm text-ink-3">Opening your account…</p>}
+        </>
+      )}
     </AuthCard>
   );
+}
+
+function isExpiredEmailProof(error: unknown) {
+  const message = error instanceof Error ? error.message : '';
+  return /email code expired|email verification expired|that code is not right/i.test(message);
 }
 
 function EmailStep({
