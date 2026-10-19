@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { verificationService } from '@/api/services/verification';
 import type { IdDocumentSubmission, IdDocumentType } from '@/api/types';
 import { Button, SelectField, TextField } from '@/components/ui';
-import { CameraCapture } from './CameraCapture';
+import { CameraCapture, releaseActiveCamera } from './CameraCapture';
 
 const idTypes: { value: IdDocumentType; label: string; placeholder: string }[] = [
   { value: 'voters-card', label: 'Voter’s card', placeholder: 'VIN' },
@@ -46,7 +46,10 @@ export function IdDocumentForm({
       if (persist) await verificationService.submitIdDocument(payload);
       return payload;
     },
-    onSuccess: onDone,
+    onSuccess: (payload) => {
+      releaseActiveCamera();
+      onDone(payload);
+    },
     onError: (error: Error) => {
       if (needsIdFallback(error.message)) setRequireId(true);
     },
@@ -102,7 +105,14 @@ export function IdDocumentForm({
         {submit.isPending ? 'Checking your selfie…' : persist ? 'Submit selfie' : 'Continue'}
       </Button>
       {onSkip && (
-        <button type="button" className="justify-self-start text-sm font-medium text-ink-2" onClick={onSkip}>
+        <button
+          type="button"
+          className="justify-self-start text-sm font-medium text-ink-2"
+          onClick={() => {
+            releaseActiveCamera();
+            onSkip();
+          }}
+        >
           Skip for now — finish later in Account limits
         </button>
       )}
