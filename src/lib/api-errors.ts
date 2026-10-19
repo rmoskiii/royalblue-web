@@ -20,7 +20,13 @@ export function friendlyApiMessage(raw: string, status = 0, path = ''): string {
   if (/invalid credentials/i.test(message)) {
     return 'That email, phone or password is not right.';
   }
+  if (/email verification expired/i.test(message)) {
+    return 'Your email code expired. Enter a new one from your inbox to finish opening the account.';
+  }
   if (/invalid otp/i.test(message)) {
+    if (/\/auth\/complete/i.test(path)) {
+      return 'Your email code expired. Enter a new one from your inbox to finish opening the account.';
+    }
     return 'That code is not right. Request a new one if it expired.';
   }
   if (/invalid authenticator/i.test(message)) {
