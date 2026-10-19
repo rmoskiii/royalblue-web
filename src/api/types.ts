@@ -52,6 +52,9 @@ export interface IdentityLookup {
   lastName: string;
   dateOfBirth?: ISODateString | null;
   photoUrl: string | null;
+  residentialAddress?: string | null;
+  city?: string | null;
+  state?: string | null;
   pending?: boolean;
   verified?: boolean;
 }
@@ -362,7 +365,9 @@ export interface VerificationStatus {
 /** PRD §3B tier structure. `null` means unlimited. */
 export interface TierLimit {
   tier: KycTier;
+  hasBvn?: boolean;
   restrictedNoBvn?: boolean;
+  label?: string;
   requirements: string;
   singleTransactionLimit: number | null;
   dailyLimit: number | null;

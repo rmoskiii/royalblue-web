@@ -3,20 +3,20 @@ import { Avatar, Button } from '@/components/ui';
 import { formatDate } from '@/lib/format';
 import { submitOnEnter, useEnterToSubmit } from '../lib/submitOnEnter';
 
-/** Confirmed NIMC match, or starter skip (empty number) with ₦50k caps. */
+/** Confirmed NIMC/NIBSS match, including the address on record when the provider returned one. */
 export function ConfirmStep({
   identity,
   onConfirm,
   onReject,
-  unverifiedHint = 'No BVN or NIN yet. You can open with ₦50,000 starter limits and add identity later in Account limits.',
 }: {
   identity: IdentityLookup;
   onConfirm: () => void;
   onReject: () => void;
-  unverifiedHint?: string;
 }) {
   const verified = identity.verified === true && !identity.pending;
   const name = [identity.firstName, identity.lastName].filter(Boolean).join(' ');
+  const locality = [identity.city, identity.state].filter(Boolean).join(', ');
+  const address = identity.residentialAddress || locality || null;
   const formRef = useEnterToSubmit();
   return (
     <form
@@ -42,16 +42,20 @@ export function ConfirmStep({
               <dt className="sr-only">Date of birth</dt>
               <dd className="text-[13px] text-ink-2">Born {formatDate(identity.dateOfBirth)}</dd>
             </>
-          ) : verified ? null : (
-            <dd className="text-[13px] text-ink-2">{unverifiedHint}</dd>
-          )}
+          ) : null}
+          {verified && address ? (
+            <>
+              <dt className="sr-only">Address on record</dt>
+              <dd className="text-[13px] text-ink-2">{address}</dd>
+            </>
+          ) : null}
         </dl>
       </div>
-      <Button type="submit" size="lg" block>
-        {verified ? 'Yes, this is me' : 'Continue with starter limits'}
+      <Button type="submit" size="lg" block disabled={!verified}>
+        Yes, this is me
       </Button>
       <Button type="button" variant="secondary" size="lg" block onClick={onReject}>
-        {verified ? 'This isn’t me' : 'Try a different number'}
+        This isn’t me
       </Button>
     </form>
   );

@@ -1,34 +1,29 @@
 import { useState } from 'react';
-import { Button, SegmentedControl, TextField } from '@/components/ui';
+import { Button, TextField } from '@/components/ui';
 import { submitOnEnter } from '@/features/auth/lib/submitOnEnter';
 
-export type IdentityKind = 'bvn' | 'nin';
-
-/** Same BVN/NIN capture used at signup and on Account limits. */
+/** Same BVN and/or NIN capture used at signup and on Account limits. Both preferred; one required. */
 export function IdentityNumberForm({
   onSubmit,
   isPending,
   error,
   submitLabel = 'Continue',
-  onSkip,
-  skipLabel = 'Skip for now — finish later in Account limits',
   bvnHint,
   ninHint = 'Dial *346# from your NIN-linked phone if you don’t know it.',
 }: {
-  onSubmit: (kind: IdentityKind, number: string) => void;
+  onSubmit: (numbers: { bvn?: string; nin?: string }) => void;
   isPending?: boolean;
   error?: string;
   submitLabel?: string;
-  onSkip?: () => void;
-  skipLabel?: string;
   bvnHint?: string;
   ninHint?: string;
 }) {
   const bvnHelp =
     bvnHint ??
     'Don’t know your BVN? Dial *565*0# from the phone number linked to your bank account.';
-  const [kind, setKind] = useState<IdentityKind>('bvn');
-  const [number, setNumber] = useState('');
+  const [bvn, setBvn] = useState('');
+  const [nin, setNin] = useState('');
+  const ready = bvn.length === 11 || nin.length === 11;
 
   return (
     <form
@@ -36,42 +31,43 @@ export function IdentityNumberForm({
       onKeyDown={submitOnEnter}
       onSubmit={(e) => {
         e.preventDefault();
-        if (number.length === 11) onSubmit(kind, number);
+        if (!ready) return;
+        onSubmit({
+          ...(bvn.length === 11 ? { bvn } : {}),
+          ...(nin.length === 11 ? { nin } : {}),
+        });
       }}
     >
-      <SegmentedControl
-        label="Identity number type"
-        value={kind}
-        onChange={(next) => {
-          setKind(next);
-          setNumber('');
-        }}
-        options={[
-          { value: 'bvn', label: 'BVN' },
-          { value: 'nin', label: 'NIN' },
-        ]}
-      />
+      <p className="text-sm text-ink-3">
+        Enter BVN and NIN if you have both. At least one is required — BVN is preferred.
+      </p>
       <TextField
-        label={kind === 'bvn' ? 'Bank Verification Number' : 'National Identity Number'}
+        label="Bank Verification Number"
         inputMode="numeric"
         autoComplete="off"
         autoFocus
         maxLength={11}
         placeholder="11 digits"
-        value={number}
-        onChange={(e) => setNumber(e.target.value.replace(/\D/g, ''))}
+        value={bvn}
+        onChange={(e) => setBvn(e.target.value.replace(/\D/g, ''))}
         inputClassName="tabular"
-        hint={kind === 'bvn' ? bvnHelp : ninHint}
+        hint={bvnHelp}
+      />
+      <TextField
+        label="National Identity Number"
+        inputMode="numeric"
+        autoComplete="off"
+        maxLength={11}
+        placeholder="11 digits"
+        value={nin}
+        onChange={(e) => setNin(e.target.value.replace(/\D/g, ''))}
+        inputClassName="tabular"
+        hint={ninHint}
         error={error}
       />
-      <Button type="submit" size="lg" block disabled={number.length !== 11 || isPending}>
+      <Button type="submit" size="lg" block disabled={!ready || isPending}>
         {isPending ? 'Checking identity…' : submitLabel}
       </Button>
-      {onSkip && (
-        <button type="button" className="text-sm font-medium text-ink-2" onClick={onSkip}>
-          {skipLabel}
-        </button>
-      )}
     </form>
   );
 }

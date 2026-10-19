@@ -8,6 +8,7 @@ export type IdentitySubmitResult = {
   lastName?: string;
   dateOfBirth?: string | null;
   photoUrl?: string | null;
+  residentialAddress?: string | null;
   pending?: boolean;
 };
 

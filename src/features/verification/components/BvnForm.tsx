@@ -3,13 +3,14 @@ import { useState } from 'react';
 import { verificationService } from '@/api/services/verification';
 import type { IdentityLookup } from '@/api/types';
 import { ConfirmStep } from '@/features/auth/signup/ConfirmStep';
-import { IdentityNumberForm, type IdentityKind } from './IdentityNumberForm';
+import { IdentityNumberForm } from './IdentityNumberForm';
 
 function toLookup(result: {
   firstName?: string;
   lastName?: string;
   dateOfBirth?: string | null;
   photoUrl?: string | null;
+  residentialAddress?: string | null;
   pending?: boolean;
 }): IdentityLookup {
   const pending = result.pending !== false;
@@ -18,6 +19,7 @@ function toLookup(result: {
     lastName: result.lastName ?? '',
     dateOfBirth: result.dateOfBirth ?? null,
     photoUrl: result.photoUrl ?? null,
+    residentialAddress: result.residentialAddress ?? null,
     pending,
     verified: Boolean(result.firstName) && !pending,
   };
@@ -26,18 +28,34 @@ function toLookup(result: {
 export function BvnForm({ onDone }: { onDone: () => void }) {
   const [identity, setIdentity] = useState<IdentityLookup | null>(null);
   const submit = useMutation({
-    mutationFn: ({ kind, number }: { kind: IdentityKind; number: string }) =>
-      kind === 'nin'
-        ? verificationService.submitNin(number)
-        : verificationService.submitBvn(number),
-    onSuccess: (result) => setIdentity(toLookup(result ?? {})),
+    mutationFn: async (numbers: { bvn?: string; nin?: string }) => {
+      let next: IdentityLookup | null = null;
+      if (numbers.bvn) {
+        next = toLookup((await verificationService.submitBvn(numbers.bvn)) ?? {});
+      }
+      if (numbers.nin) {
+        const ninLookup = toLookup((await verificationService.submitNin(numbers.nin)) ?? {});
+        next = next
+          ? {
+              ...next,
+              ...ninLookup,
+              firstName: ninLookup.firstName || next.firstName,
+              lastName: ninLookup.lastName || next.lastName,
+              residentialAddress: ninLookup.residentialAddress || next.residentialAddress,
+              verified: Boolean(ninLookup.verified || next.verified),
+              pending: Boolean(ninLookup.pending && next.pending),
+            }
+          : ninLookup;
+      }
+      return next;
+    },
+    onSuccess: (result) => setIdentity(result),
   });
 
   if (identity) {
     return (
       <ConfirmStep
         identity={identity}
-        unverifiedHint="We couldn’t confirm this number. Check the digits and try again — it is not saved until it matches."
         onConfirm={onDone}
         onReject={() => {
           setIdentity(null);
@@ -49,7 +67,7 @@ export function BvnForm({ onDone }: { onDone: () => void }) {
 
   return (
     <IdentityNumberForm
-      onSubmit={(kind, number) => submit.mutate({ kind, number })}
+      onSubmit={(numbers) => submit.mutate(numbers)}
       isPending={submit.isPending}
       error={submit.isError ? submit.error.message : undefined}
       submitLabel="Continue"

@@ -34,11 +34,11 @@ export const learnArticles: LearnArticle[] = [
   {
     slug: 'limits',
     title: 'Account limits',
-    summary: 'Starter, tier 1, 2 and 3 cap how much you can hold and send each day.',
+    summary: 'Tier 1, 2 and 3 cap how much you can hold and send each day.',
     href: paths.verification,
     body: [
-      'Starter accounts can transact up to ₦50,000 until identity is completed.',
-      'Account limits walks you through BVN or NIN, photo ID and proof of address.',
+      'Tier 1 with NIN is ₦30,000 daily and per transfer, ₦300,000 max balance. BVN raises send limits to ₦50,000.',
+      'Account limits walks you through BVN and/or NIN, a live selfie, and proof of address.',
       'Raising a tier does not change your PIN or sign-in email.',
     ],
   },

@@ -1,5 +1,5 @@
 import { env } from '@/config/env';
-import { http, mockResponse, setAccessToken } from '../client';
+import { ApiError, http, mockResponse, setAccessToken } from '../client';
 import { mockUser } from '../mocks/data';
 import type {
   CompleteSignUpRequest,
@@ -237,47 +237,42 @@ export const authService = {
       );
     }
     const draft = readDraft() ?? { phone: extras?.phone ?? '' };
-    try {
-      const lookedUp = await http.post<{
-        firstName: string;
-        lastName: string;
-        dateOfBirth: string | null;
-        photoUrl: string | null;
-        pending?: boolean;
-        verified?: boolean;
-      }>('/auth/identity-lookup', {
-        type,
-        number,
-        phone: extras?.phone ?? draft.phone,
-        firstName: extras?.firstName,
-        lastName: extras?.lastName,
-      });
-      writeDraft({
-        ...draft,
-        identityType: type,
-        identityNumber: number,
-        firstName: lookedUp.firstName,
-        lastName: lookedUp.lastName,
-        dateOfBirth: lookedUp.dateOfBirth ?? undefined,
-      });
-      return {
-        firstName: lookedUp.firstName,
-        lastName: lookedUp.lastName,
-        dateOfBirth: lookedUp.dateOfBirth,
-        photoUrl: lookedUp.photoUrl,
-        pending: lookedUp.pending,
-        verified: lookedUp.verified,
-      };
-    } catch {
-      return {
-        firstName: extras?.firstName || '',
-        lastName: extras?.lastName || '',
-        dateOfBirth: null,
-        photoUrl: null,
-        pending: true,
-        verified: false,
-      };
-    }
+    const lookedUp = await http.post<{
+      firstName: string;
+      lastName: string;
+      dateOfBirth: string | null;
+      photoUrl: string | null;
+      residentialAddress?: string | null;
+      city?: string | null;
+      state?: string | null;
+      pending?: boolean;
+      verified?: boolean;
+    }>('/auth/identity-lookup', {
+      type,
+      number,
+      phone: extras?.phone ?? draft.phone,
+      firstName: extras?.firstName,
+      lastName: extras?.lastName,
+    });
+    writeDraft({
+      ...draft,
+      identityType: type,
+      identityNumber: number,
+      firstName: lookedUp.firstName,
+      lastName: lookedUp.lastName,
+      dateOfBirth: lookedUp.dateOfBirth ?? undefined,
+    });
+    return {
+      firstName: lookedUp.firstName,
+      lastName: lookedUp.lastName,
+      dateOfBirth: lookedUp.dateOfBirth,
+      photoUrl: lookedUp.photoUrl,
+      residentialAddress: lookedUp.residentialAddress ?? null,
+      city: lookedUp.city,
+      state: lookedUp.state,
+      pending: lookedUp.pending,
+      verified: lookedUp.verified,
+    };
   },
 
   async lookupCac(registrationNumber: string, type?: string) {
@@ -306,28 +301,35 @@ export const authService = {
       return mockResponse({ accessToken: 'mock-token', user: mockUser }, 800);
     }
     const draft = readDraft();
-    const session = await http.post<NestLogin>('/auth/complete', {
-      email: body.email,
-      password: body.password,
-      phone: body.phone ?? draft?.phone,
-      firstName: body.firstName,
-      lastName: body.lastName,
-      bvn: body.bvn,
-      nin: body.nin,
-      pin: body.pin,
-      accountKind: body.accountKind,
-      entityType: body.entityType,
-      business: body.business,
-      ...(body.signUpToken && body.signUpToken !== '000000' ? { otp: body.signUpToken } : {}),
-      ...(body.totpCode?.length === 6 ? { totpCode: body.totpCode } : {}),
-    });
-    const next = toSession(session);
-    setAccessToken(next.accessToken);
     try {
-      await http.post('/accounts/provision');
-    } catch {
-      /* VA can wait until BVN/KYC finishes */
+      const session = await http.post<NestLogin>('/auth/complete', {
+        email: body.email,
+        password: body.password,
+        phone: body.phone ?? draft?.phone,
+        firstName: body.firstName,
+        lastName: body.lastName,
+        bvn: body.bvn,
+        nin: body.nin,
+        pin: body.pin,
+        accountKind: body.accountKind,
+        entityType: body.entityType,
+        business: body.business,
+        ...(body.signUpToken && body.signUpToken !== '000000' ? { otp: body.signUpToken } : {}),
+        ...(body.totpCode?.length === 6 ? { totpCode: body.totpCode } : {}),
+      });
+      const next = toSession(session);
+      setAccessToken(next.accessToken);
+      try {
+        await http.post('/accounts/provision');
+      } catch {
+        /* VA can wait until BVN/KYC finishes */
+      }
+      return next;
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 409) {
+        setAccessToken(null);
+      }
+      throw error;
     }
-    return next;
   },
 };
