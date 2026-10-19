@@ -1,5 +1,5 @@
 import { Copy, Link2, Share2 } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useAccount } from '@/api/hooks';
 import { accountService } from '@/api/services/accounts';
@@ -16,12 +16,12 @@ export function PaymentLinkSheet({ open, onClose }: { open: boolean; onClose: ()
   const [link, setLink] = useState<string | null>(null);
   const naira = parseAmount(amount);
 
-  const close = () => {
+  const close = useCallback(() => {
     setAmount('');
     setDescription('');
     setLink(null);
     onClose();
-  };
+  }, [onClose]);
 
   const create = useMutation({
     mutationFn: () => accountService.createPaymentLink(naira, description || undefined),
