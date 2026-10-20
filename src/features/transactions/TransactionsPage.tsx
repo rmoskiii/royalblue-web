@@ -1,10 +1,11 @@
 import { Search } from 'lucide-react';
-import { useDeferredValue, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router';
-import { useInsights, useTransactions } from '@/api/hooks';
+import { useInsights, useTransactionFeed } from '@/api/hooks';
 import type { Transaction, TransactionFilters } from '@/api/types';
 import { useToast } from '@/app/providers/ToastProvider';
 import { Button, Card, Money, PageHeader } from '@/components/ui';
+import { useDebouncedValue } from '@/lib/useDebouncedValue';
 import { ReceiptSheet } from './components/ReceiptSheet';
 import { TransactionList } from './components/TransactionList';
 
@@ -28,14 +29,32 @@ function toApiFilters(filter: Filter, search: string): TransactionFilters {
 export function TransactionsPage() {
   const [filter, setFilter] = useState<Filter>('all');
   const [search, setSearch] = useState('');
-  const deferredSearch = useDeferredValue(search);
+  const debouncedSearch = useDebouncedValue(search, 400);
   const [selected, setSelected] = useState<Transaction | null>(null);
   const [params, setParams] = useSearchParams();
   const { showToast } = useToast();
 
-  const { data, isLoading } = useTransactions(toApiFilters(filter, deferredSearch));
+  const filters = useMemo(
+    () => toApiFilters(filter, debouncedSearch),
+    [filter, debouncedSearch],
+  );
+  const feed = useTransactionFeed(filters);
+  const data = feed.data?.pages.flatMap((page) => page.items);
   const { data: insights } = useInsights();
   const receiptKey = params.get('receipt');
+  const loadedPages = feed.data?.pages.length ?? 0;
+  const restoreKey = feedRestoreKey(filters);
+
+  useEffect(() => {
+    const want = Number(sessionStorage.getItem(restoreKey) || '1');
+    if (loadedPages > 0 && loadedPages < want && feed.hasNextPage && !feed.isFetchingNextPage) {
+      void feed.fetchNextPage();
+      return;
+    }
+    if (loadedPages > 0 && (loadedPages >= want || !feed.hasNextPage)) {
+      sessionStorage.setItem(restoreKey, String(loadedPages));
+    }
+  }, [feed.fetchNextPage, feed.hasNextPage, feed.isFetchingNextPage, loadedPages, restoreKey]);
 
   useEffect(() => {
     if (!receiptKey || !data?.length) return;
@@ -102,7 +121,19 @@ export function TransactionsPage() {
       </div>
 
       <Card className="px-2.5 py-2">
-        <TransactionList transactions={data} isLoading={isLoading} onSelect={setSelected} />
+        <TransactionList transactions={data} isLoading={feed.isLoading} onSelect={setSelected} />
+        {feed.hasNextPage && (
+          <div className="px-2 pb-3">
+            <Button
+              variant="secondary"
+              block
+              disabled={feed.isFetchingNextPage}
+              onClick={() => void feed.fetchNextPage()}
+            >
+              {feed.isFetchingNextPage ? 'Loading…' : 'Load older transactions'}
+            </Button>
+          </div>
+        )}
       </Card>
       <ReceiptSheet
         transaction={selected}
@@ -117,4 +148,8 @@ export function TransactionsPage() {
       />
     </>
   );
+}
+
+function feedRestoreKey(filters: TransactionFilters) {
+  return `rb.txn.pages:${filters.direction ?? ''}:${filters.status ?? ''}:${filters.search ?? ''}`;
 }

@@ -35,7 +35,7 @@ export function AdminQueuePage() {
   const tabs = role === 'LOAN_OFFICER' ? officerTabs : role === 'CREDIT_MANAGER' ? managerTabs : adminTabs;
   const [params, setParams] = useSearchParams();
   const tab = tabs.some((t) => t.id === params.get('tab')) ? params.get('tab')! : tabs[0].id;
-  const { page, pageSize, q, query, setListParams } = useStaffListParams();
+  const { page, pageSize, q, setQ, query, setListParams } = useStaffListParams();
   const { data } = useQuery({
     queryKey: queryKeys.staff.applications(JSON.stringify({ ...query, tab })),
     queryFn: () =>
@@ -78,7 +78,7 @@ export function AdminQueuePage() {
               label="Search"
               placeholder="Application number, name, email, or officer"
               value={q}
-              onChange={(e) => setListParams({ q: e.target.value })}
+              onChange={(e) => setQ(e.target.value)}
             />
           </div>
         }

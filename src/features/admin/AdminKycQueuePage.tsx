@@ -24,7 +24,7 @@ const statusLabel = {
 export function AdminKycQueuePage() {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  const { page, pageSize, q, status, decidedBy, query, setListParams } = useStaffListParams({
+  const { page, pageSize, q, setQ, status, decidedBy, query, setListParams } = useStaffListParams({
     status: 'pending',
   });
   const { data } = useQuery({
@@ -59,7 +59,7 @@ export function AdminKycQueuePage() {
               label="Search"
               placeholder="Name, email, or address"
               value={q}
-              onChange={(e) => setListParams({ q: e.target.value })}
+              onChange={(e) => setQ(e.target.value)}
             />
             <SelectField
               label="Status"

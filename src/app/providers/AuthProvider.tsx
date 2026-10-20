@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import { authService } from '@/api/services/auth';
-import { setAccessToken, setActiveProfileId, setOnUnauthorized } from '@/api/client';
+import { setAccessToken, setActiveProfileId, setOnAccessTokenUpdated, setOnUnauthorized } from '@/api/client';
 import type { Session } from '@/api/types';
 import { storage } from '@/lib/storage';
 
@@ -39,8 +39,8 @@ function loadSession(): Session | null {
 
 /**
  * Holds the signed-in session.
- * TODO(api): confirm token storage with the backend team — an httpOnly cookie
- * is safer than localStorage for a banking app if the API supports it.
+ * Access JWT lives in memory/localStorage for the Authorization header.
+ * The refresh token is an httpOnly cookie set by Nest and rotated on /auth/refresh.
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(loadSession);
@@ -64,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [establishSession]);
 
   const logout = useCallback(() => {
+    void authService.logout();
     setAccessToken(null);
     setActiveProfileId(null);
     storage.remove(SESSION_KEY);
@@ -79,7 +80,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setOnUnauthorized(logout);
-    return () => setOnUnauthorized(null);
+    setOnAccessTokenUpdated((token) => {
+      setSession((prev) => {
+        if (!prev) return prev;
+        const next = { ...prev, accessToken: token };
+        storage.set(SESSION_KEY, JSON.stringify(next));
+        return next;
+      });
+    });
+    return () => {
+      setOnUnauthorized(null);
+      setOnAccessTokenUpdated(null);
+    };
   }, [logout]);
 
   const value = useMemo(

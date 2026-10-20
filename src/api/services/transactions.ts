@@ -13,18 +13,34 @@ function applyFilters(list: Transaction[], f: TransactionFilters) {
   );
 }
 
-type TxnPage = { items: Transaction[] };
+type TxnPage = { items: Transaction[]; nextCursor?: string | null; hasMore?: boolean };
 
 export const transactionService = {
   async list(filters: TransactionFilters = {}): Promise<Transaction[]> {
-    if (env.useMocks) return mockResponse(applyFilters(mockTransactions, filters), 250);
+    const page = await this.listPage(filters);
+    return page.items;
+  },
+
+  async listPage(
+    filters: TransactionFilters = {},
+    cursor?: string,
+  ): Promise<{ items: Transaction[]; nextCursor: string | null; hasMore: boolean }> {
+    if (env.useMocks) {
+      const items = applyFilters(mockTransactions, filters);
+      return mockResponse({ items, nextCursor: null, hasMore: false }, 250);
+    }
     const page = await http.get<TxnPage>('/accounts/transactions', {
       direction: filters.direction,
       status: filters.status,
       search: filters.search,
       limit: 50,
+      cursor,
     });
-    return page.items ?? [];
+    return {
+      items: page.items ?? [],
+      nextCursor: page.nextCursor ?? null,
+      hasMore: Boolean(page.hasMore),
+    };
   },
 
   getInsights(): Promise<InsightsSummary> {

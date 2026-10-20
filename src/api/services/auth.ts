@@ -79,6 +79,11 @@ export const authService = {
     return toSession(data);
   },
 
+  async logout(): Promise<void> {
+    if (env.useMocks) return;
+    await http.post('/auth/logout').catch(() => undefined);
+  },
+
   async completeLoginMfa(challengeToken: string, totpCode: string): Promise<Session> {
     if (env.useMocks) return mockResponse({ accessToken: 'mock-token', user: mockUser }, 400);
     const data = await http.post<NestLogin>('/auth/login/mfa', { challengeToken, totpCode });
