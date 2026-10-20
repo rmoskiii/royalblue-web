@@ -19,17 +19,24 @@ function naira(value: number | string | null | undefined) {
 }
 
 function mapProduct(p: NestProduct): LoanProduct {
-  const min = p.minTenorMonths;
-  const max = p.maxTenorMonths;
-  const tenorOptions = min === max ? [min] : [...new Set([min, 3, 6, 12, max])].filter((n) => n >= min && n <= max).sort((a, b) => a - b);
+  const minTenorMonths = Math.max(1, p.minTenorMonths || 1);
+  const maxTenorMonths = Math.min(12, p.maxTenorMonths || 12);
+  const tenorOptions =
+    minTenorMonths === maxTenorMonths
+      ? [minTenorMonths]
+      : Array.from({ length: maxTenorMonths - minTenorMonths + 1 }, (_, i) => minTenorMonths + i);
+  const indicativeRatePA = naira(p.interestRatePA);
   return {
     id: p.id,
     name: p.name,
     description: p.code,
     minAmount: naira(p.minAmount),
     maxAmount: naira(p.maxAmount),
+    minTenorMonths,
+    maxTenorMonths,
     tenorOptions,
-    monthlyRate: naira(p.interestRatePA) / 100 / 12,
+    indicativeRatePA,
+    monthlyRate: indicativeRatePA / 100 / 12,
   };
 }
 
@@ -42,6 +49,7 @@ function loanStatus(status: CreditFile['status']): Loan['status'] {
 }
 
 function mapLoan(row: CreditFile): Loan {
+  const rateFromOffer = row.offeredInterestRatePA != null ? naira(row.offeredInterestRatePA) / 100 / 12 : 0;
   const rateFromProduct = row.loanProduct?.interestRatePA
     ? naira(row.loanProduct.interestRatePA) / 100 / 12
     : 0.02;
@@ -50,7 +58,7 @@ function mapLoan(row: CreditFile): Loan {
     productId: row.loanProduct?.id ?? '',
     productName: row.loanProduct?.name ?? 'Loan',
     principal: naira(row.approvedAmount ?? row.requestedAmount),
-    monthlyRate: naira(row.monthlyRate) || rateFromProduct,
+    monthlyRate: naira(row.monthlyRate) || rateFromOffer || rateFromProduct,
     tenorMonths: row.approvedTenorMonths ?? row.tenorMonths,
     disbursedAt: row.disbursedAt ?? row.submittedAt ?? row.createdAt,
     firstRepaymentAt: row.firstRepaymentAt ?? row.disbursedAt ?? row.createdAt,
@@ -82,14 +90,20 @@ export const loanService = {
     return http.get(`/applications/${id}`);
   },
 
-  quote(productId: string, amount: number, tenor: number) {
+  quote(productId: string, amount: number, tenor: number, ratePA?: number, equityPercent?: number) {
     return http.get<{
       monthlyPayment: number;
       totalRepayable: number;
       totalInterest: number;
       equity: number;
       monthlyRate: number;
-    }>(`/applications/products/${productId}/quote`, { amount, tenor });
+      offeredInterestRatePA: number;
+    }>(`/applications/products/${productId}/quote`, {
+      amount,
+      tenor,
+      ...(ratePA != null ? { rate: ratePA } : {}),
+      ...(equityPercent != null ? { equity: equityPercent } : {}),
+    });
   },
 
   async apply(body: ApplyLoanRequest, files: File[]): Promise<CreditFile> {

@@ -1,7 +1,13 @@
 import type { Loan } from '@/api/types';
 
-/** Customers deposit 20% of the loan amount before disbursement (RoyalBlue policy). */
+/** Default / maximum equity the customer may offer before disbursement. */
 export const EQUITY_CONTRIBUTION = 0.2;
+export const MIN_EQUITY_PERCENT = 0;
+export const MAX_EQUITY_PERCENT = 20;
+export const DEFAULT_EQUITY_PERCENT = 20;
+export const MIN_LOAN_TENOR_MONTHS = 1;
+export const MAX_LOAN_TENOR_MONTHS = 12;
+export const MAX_OFFERED_RATE_PA = 60;
 
 export type InstalmentStatus = 'paid' | 'due' | 'upcoming';
 
@@ -71,8 +77,9 @@ export function summariseLoan(loan: Loan) {
   };
 }
 
-export function estimateLoan(amount: number, monthlyRate: number, months: number) {
+export function estimateLoan(amount: number, monthlyRate: number, months: number, equityPercent = DEFAULT_EQUITY_PERCENT) {
   const monthly = monthlyPayment(amount, monthlyRate, months);
   const total = monthly * months;
-  return { monthly, total, interest: total - amount, equity: amount * EQUITY_CONTRIBUTION };
+  const percent = Number.isNaN(equityPercent) ? DEFAULT_EQUITY_PERCENT : equityPercent;
+  return { monthly, total, interest: total - amount, equity: amount * (percent / 100) };
 }

@@ -30,6 +30,9 @@ export function AdminCreditFilePage() {
 
   const [notes, setNotes] = useState('');
   const [amount, setAmount] = useState('');
+  const [tenor, setTenor] = useState('');
+  const [ratePA, setRatePA] = useState('');
+  const [equityPercent, setEquityPercent] = useState('');
   const [income, setIncome] = useState('');
   const [debt, setDebt] = useState('');
   const [risk, setRisk] = useState('MEDIUM');
@@ -65,6 +68,9 @@ export function AdminCreditFilePage() {
       staffService.decide(id, {
         decision,
         finalAmount: amount ? Number(amount) : undefined,
+        finalTenor: tenor ? Number(tenor) : undefined,
+        finalInterestRatePA: ratePA ? Number(ratePA) : undefined,
+        finalEquityPercent: equityPercent === '' ? undefined : Number(equityPercent),
         decisionNotes: notes || decision,
       }),
     onSuccess: refresh,
@@ -95,11 +101,24 @@ export function AdminCreditFilePage() {
           <p>{data.loanProduct?.name}</p>
           <p>
             Requested {formatNaira(Number(data.requestedAmount))} · {data.tenorMonths} months
+            {data.offeredInterestRatePA != null
+              ? ` · offered ${Number(data.offeredInterestRatePA)}% p.a.`
+              : ''}
+            {data.offeredEquityPercent != null ? ` · ${Number(data.offeredEquityPercent)}% equity` : ''}
           </p>
           <p>Purpose: {data.purpose}</p>
           {data.applicant?.ippisNumber && <p>IPPIS {data.applicant.ippisNumber}</p>}
           {data.approvedAmount != null && (
-            <p>Approved {formatNaira(Number(data.approvedAmount))} · {data.approvedTenorMonths ?? data.tenorMonths} months</p>
+            <p>
+              Approved {formatNaira(Number(data.approvedAmount))} · {data.approvedTenorMonths ?? data.tenorMonths}{' '}
+              months
+              {data.monthlyRate != null
+                ? ` · ${(Number(data.monthlyRate) * 100 * 12).toFixed(2)}% p.a.`
+                : ''}
+              {data.approvedEquityPercent != null
+                ? ` · ${Number(data.approvedEquityPercent)}% equity`
+                : ''}
+            </p>
           )}
           {data.disbursementReference && <p>Disbursed to RoyalBlue · {data.disbursementReference}</p>}
           {data.payrollMandateRef && <p>Payroll mandate {data.payrollMandateRef}</p>}
@@ -206,7 +225,50 @@ export function AdminCreditFilePage() {
         {openForDecide && (
           <Card className="grid gap-3 p-4 text-sm lg:col-span-2">
             <h2 className="font-semibold">Decision</h2>
-            <TextField label="Approved amount (₦)" value={amount} onChange={(e) => setAmount(e.target.value)} />
+            <p className="text-ink-2">
+              Leave a field blank to accept the customer’s offer. You can still change amount, tenor, rate, or equity.
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <TextField
+                label="Approved amount (₦)"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder={String(data.requestedAmount)}
+              />
+              <TextField
+                label="Approved tenor (months)"
+                type="number"
+                min={1}
+                max={12}
+                value={tenor}
+                onChange={(e) => setTenor(e.target.value)}
+                placeholder={String(data.tenorMonths)}
+              />
+              <TextField
+                label="Approved rate (% p.a.)"
+                type="number"
+                min={0}
+                max={60}
+                step={0.5}
+                value={ratePA}
+                onChange={(e) => setRatePA(e.target.value)}
+                placeholder={
+                  data.offeredInterestRatePA != null ? String(Number(data.offeredInterestRatePA)) : undefined
+                }
+              />
+              <TextField
+                label="Approved equity (%)"
+                type="number"
+                min={0}
+                max={20}
+                step={0.5}
+                value={equityPercent}
+                onChange={(e) => setEquityPercent(e.target.value)}
+                placeholder={
+                  data.offeredEquityPercent != null ? String(Number(data.offeredEquityPercent)) : '20'
+                }
+              />
+            </div>
             <TextField label="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
             {decide.isError && <p className="text-primary-text">{decide.error.message}</p>}
             <div className="flex flex-wrap gap-2">
@@ -224,7 +286,8 @@ export function AdminCreditFilePage() {
             <h2 className="font-semibold">Disburse to RoyalBlue account</h2>
             <p>
               Credits {formatNaira(Number(data.approvedAmount ?? data.requestedAmount))} to the customer’s
-              passbook. They must already hold 20% equity in that account.
+              passbook. They must already hold{' '}
+              {Number(data.approvedEquityPercent ?? data.offeredEquityPercent ?? 20)}% equity in that account.
             </p>
             {disburse.isError && <p className="text-primary-text">{disburse.error.message}</p>}
             <Button onClick={() => disburse.mutate()} disabled={disburse.isPending}>

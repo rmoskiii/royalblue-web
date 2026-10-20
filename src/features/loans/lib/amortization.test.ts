@@ -23,12 +23,16 @@ describe('monthlyPayment', () => {
 });
 
 describe('estimateLoan', () => {
-  it('adds equity as 20% of principal', () => {
+  it('adds equity as 20% of principal by default', () => {
     const estimate = estimateLoan(100_000, 0, 4);
     expect(estimate.monthly).toBe(25_000);
     expect(estimate.total).toBe(100_000);
     expect(estimate.interest).toBe(0);
     expect(estimate.equity).toBe(100_000 * EQUITY_CONTRIBUTION);
+  });
+
+  it('lets the customer offer 0% equity', () => {
+    expect(estimateLoan(100_000, 0, 4, 0).equity).toBe(0);
   });
 });
 
