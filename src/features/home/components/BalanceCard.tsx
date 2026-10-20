@@ -58,14 +58,14 @@ export function BalanceCard({ onPaymentLink }: { onPaymentLink: () => void }) {
           <span className="tabular">{formatAccountNumber(account.accountNumber)}</span>
           <Copy className="size-3.5" />
         </button>
+      ) : isLoading ? (
+        <div className="mt-1 h-8 w-48 animate-pulse rounded-[9px] bg-white/10" />
       ) : (
-        !isLoading && (
           <p className="mt-1 text-[13px] text-white/70">
             {account?.provisionError
               ? 'We’re still setting up your account number. This page will update when it’s ready.'
               : 'We’re setting up your account number. This page will update when it’s ready.'}
           </p>
-        )
       )}
 
       <div className="mt-5 grid grid-cols-2 gap-2 md:flex md:flex-wrap">

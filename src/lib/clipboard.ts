@@ -58,6 +58,11 @@ export async function shareFile(input: {
   file: File;
 }): Promise<'shared' | 'saved' | 'cancelled'> {
   const { title, file } = input;
+  // Desktop Chrome/Safari often accept canShare(PDF) then never resolve share().
+  if (file.type === 'application/pdf') {
+    saveFile(file);
+    return 'saved';
+  }
   const filesOnly: ShareData = { files: [file] };
   const withTitle: ShareData = { title, files: [file] };
   try {
@@ -71,8 +76,11 @@ export async function shareFile(input: {
               : undefined
           : withTitle;
       if (payload) {
-        await navigator.share(payload);
-        return 'shared';
+        const result = await Promise.race([
+          navigator.share(payload).then(() => 'shared' as const),
+          new Promise<'timeout'>((resolve) => window.setTimeout(() => resolve('timeout'), 8_000)),
+        ]);
+        if (result === 'shared') return 'shared';
       }
     }
   } catch (error) {

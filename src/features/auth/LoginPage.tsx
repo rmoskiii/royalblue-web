@@ -39,7 +39,7 @@ export function LoginPage() {
         setChallenge(result);
         return 'mfa' as const;
       }
-      if (!('accessToken' in result)) {
+      if (!('user' in result) || !result.user) {
         throw new Error('Authenticator code required');
       }
       goIn(result);

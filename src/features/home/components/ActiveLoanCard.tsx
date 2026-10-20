@@ -8,9 +8,12 @@ import { summariseLoan } from '@/features/loans/lib/amortization';
 import { formatDate } from '@/lib/format';
 
 export function ActiveLoanCard() {
-  const { data: loans } = useLoans();
+  const { data: loans, isLoading } = useLoans();
   const { showToast } = useToast();
   const loan = loans?.find((l) => l.status === 'active');
+  if (isLoading && !loans) {
+    return <Card className="h-40 animate-pulse bg-surface-2" aria-busy="true" aria-label="Loading loan" />;
+  }
   if (!loan) return null;
 
   const s = summariseLoan(loan);

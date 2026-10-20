@@ -19,7 +19,9 @@ export function PhysicalCardSection() {
   const { data: order, isLoading } = usePhysicalOrder();
   const [open, setOpen] = useState(false);
 
-  if (isLoading) return null;
+  if (isLoading) {
+    return <div className="h-28 animate-pulse rounded-card bg-surface-2" aria-busy="true" aria-label="Loading card order" />;
+  }
 
   if (!order) {
     return (

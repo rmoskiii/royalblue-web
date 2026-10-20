@@ -1,7 +1,7 @@
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useSavingsSummary, useVaults } from '@/api/hooks';
-import { Button, PageHeader } from '@/components/ui';
+import { Button, PageHeader, SectionLoader } from '@/components/ui';
 import { CreateVaultModal } from './components/CreateVaultModal';
 import { SavingsBanner } from './components/SavingsBanner';
 import { VaultCard } from './components/VaultCard';
@@ -9,7 +9,7 @@ import { YieldCalculator } from './components/YieldCalculator';
 
 /** PRD View 4: Smart savings & yield vaults. */
 export function SavingsPage() {
-  const { data: vaults } = useVaults();
+  const { data: vaults, isLoading } = useVaults();
   const { data: summary } = useSavingsSummary();
   const [createOpen, setCreateOpen] = useState(false);
 
@@ -25,6 +25,7 @@ export function SavingsPage() {
         }
       />
       <div className="grid gap-4">
+        {isLoading && !vaults ? <SectionLoader label="Loading savings" /> : null}
         <SavingsBanner />
         <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
           <section>

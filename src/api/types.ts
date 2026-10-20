@@ -10,7 +10,6 @@ export type ISODateString = string;
 
 // ---------- Auth ----------
 export interface Session {
-  accessToken: string;
   user: User;
 }
 
@@ -36,6 +35,7 @@ export interface SecuritySettings {
   marketingEmailsEnabled?: boolean;
   passwordSet: boolean;
   biometricsAvailable: boolean;
+  pinLocked?: boolean;
 }
 
 /** Sign-up (PRD FR-01): phone → SMS code → BVN/NIN → confirm → login details */

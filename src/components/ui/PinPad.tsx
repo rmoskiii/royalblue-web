@@ -15,6 +15,7 @@ export function PinPad({
   onBiometric,
   disabled,
   length = 4,
+  largeOnMobile = false,
 }: {
   value: string;
   onChange: (pin: string) => void;
@@ -22,6 +23,8 @@ export function PinPad({
   onBiometric?: () => void;
   disabled?: boolean;
   length?: 4 | 6;
+  /** Bigger keys below `lg`. Desktop pad size is unchanged. */
+  largeOnMobile?: boolean;
 }) {
   const press = (digit: string) => {
     if (disabled || value.length >= length) return;
@@ -40,8 +43,9 @@ export function PinPad({
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  const keyClass =
-    'grid h-11 place-items-center rounded-xl text-lg font-semibold transition hover:bg-surface-2 active:bg-surface-3 disabled:opacity-40 sm:h-12 sm:rounded-2xl sm:text-xl';
+  const keyClass = largeOnMobile
+    ? 'grid h-16 place-items-center rounded-2xl text-2xl font-semibold transition hover:bg-surface-2 active:bg-surface-3 disabled:opacity-40 lg:h-12 lg:text-xl'
+    : 'grid h-11 place-items-center rounded-xl text-lg font-semibold transition hover:bg-surface-2 active:bg-surface-3 disabled:opacity-40 sm:h-12 sm:rounded-2xl sm:text-xl';
 
   return (
     <div className="grid justify-items-center gap-4">
@@ -55,13 +59,19 @@ export function PinPad({
             key={i}
             className={cn(
               'size-3 rounded-full border-2 border-ink-3 transition',
+              largeOnMobile && 'max-lg:size-3.5',
               i < value.length && 'border-brand bg-brand',
             )}
           />
         ))}
       </div>
 
-      <div className="grid w-full max-w-[240px] grid-cols-3 gap-1.5">
+      <div
+        className={cn(
+          'grid w-full grid-cols-3 gap-1.5',
+          largeOnMobile ? 'max-w-[320px] gap-2 lg:max-w-[240px] lg:gap-1.5' : 'max-w-[240px]',
+        )}
+      >
         {KEYS.map((k) => (
           <button
             key={k}

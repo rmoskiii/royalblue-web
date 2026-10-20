@@ -1,10 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Fingerprint, KeyRound, LockKeyhole, ShieldCheck, Smartphone } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
 import { authService } from '@/api/services/auth';
 import { queryKeys } from '@/api/hooks';
+import { useAuth } from '@/app/providers/AuthProvider';
 import { useToast } from '@/app/providers/ToastProvider';
-import { Button, Card, PageHeader, PinPad, TextField } from '@/components/ui';
+import { env } from '@/config/env';
+import { Button, Card, PageHeader, PinPad, SectionLoader, TextField } from '@/components/ui';
+import { paths } from '@/components/layout/navigation';
 import { PasswordField } from '@/features/auth/components/PasswordField';
 import { CodeInput } from '@/features/auth/components/CodeInput';
 import { SettingsBack } from './SettingsBack';
@@ -12,11 +16,16 @@ import { SettingsBack } from './SettingsBack';
 export function SecuritySettingsPage() {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const pinLock = params.get('pinLock') === '1';
   const { data: security } = useQuery({
     queryKey: queryKeys.security,
     queryFn: authService.getSecurity,
   });
   const [password, setPassword] = useState({ current: '', next: '' });
+  const [otp, setOtp] = useState('');
   const [pin, setPin] = useState('');
   const [currentPin, setCurrentPin] = useState('');
   const [totpCode, setTotpCode] = useState('');
@@ -24,14 +33,38 @@ export function SecuritySettingsPage() {
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: queryKeys.security });
 
-  const savePassword = useMutation({
-    mutationFn: () => authService.changePassword(password.current, password.next),
-    onSuccess: () => {
-      showToast('Password updated');
-      setPassword({ current: '', next: '' });
+  const sendPasswordOtp = useMutation({
+    mutationFn: () => authService.requestPasswordChangeOtp(),
+    onSuccess: (result) => {
+      showToast(env.useMocks && result.otp ? `Code ${result.otp}` : result.message);
     },
     onError: (error: Error) => showToast(error.message),
   });
+
+  const savePassword = useMutation({
+    mutationFn: () =>
+      authService.changePassword(
+        password.current,
+        password.next,
+        otp,
+        security?.totpEnabled ? totpCode : undefined,
+      ),
+    onSuccess: () => {
+      showToast('Password updated. Sign in again.');
+      setPassword({ current: '', next: '' });
+      setOtp('');
+      logout();
+      navigate(paths.login, { replace: true });
+    },
+    onError: (error: Error) => showToast(error.message),
+  });
+
+  const otpSent = useRef(false);
+  useEffect(() => {
+    if (!pinLock || otpSent.current) return;
+    otpSent.current = true;
+    sendPasswordOtp.mutate();
+  }, [pinLock, sendPasswordOtp]);
 
   const savePin = useMutation({
     mutationFn: () => authService.setPin(pin, currentPin || undefined),
@@ -71,7 +104,8 @@ export function SecuritySettingsPage() {
     onError: (error: Error) => showToast(error.message),
   });
 
-  if (!security) return null;
+  if (!security) return <SectionLoader label="Loading security settings" />;
+  const pinBlocked = Boolean(security.pinLocked || pinLock);
   const qr = totpSetup
     ? `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(totpSetup.otpauthUrl)}`
     : null;
@@ -91,7 +125,11 @@ export function SecuritySettingsPage() {
             </span>
             <div>
               <h2 className="font-semibold">Password</h2>
-              <p className="text-[13px] text-ink-3">Used on web. The app can also sign in with PIN.</p>
+              <p className="text-[13px] text-ink-3">
+                {pinLock
+                  ? 'PIN is locked. We email a code, then you set a new password and sign in again.'
+                  : 'A 6-digit email code is required. If Authenticator is on, enter that too.'}
+              </p>
             </div>
           </div>
           <form
@@ -111,9 +149,31 @@ export function SecuritySettingsPage() {
               value={password.next}
               onChange={(e) => setPassword((p) => ({ ...p, next: e.target.value }))}
             />
-            <Button type="submit" disabled={password.next.length < 8 || savePassword.isPending}>
-              Update password
-            </Button>
+            <CodeInput label="Email code" value={otp} onChange={setOtp} />
+            {security.totpEnabled && (
+              <CodeInput label="Authenticator code" value={totpCode} onChange={setTotpCode} />
+            )}
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={sendPasswordOtp.isPending}
+                onClick={() => sendPasswordOtp.mutate()}
+              >
+                {sendPasswordOtp.isPending ? 'Sending…' : 'Email a code'}
+              </Button>
+              <Button
+                type="submit"
+                disabled={
+                  password.next.length < 8 ||
+                  otp.length !== 6 ||
+                  (security.totpEnabled && totpCode.length !== 6) ||
+                  savePassword.isPending
+                }
+              >
+                {savePassword.isPending ? 'Updating…' : 'Update password'}
+              </Button>
+            </div>
           </form>
         </Card>
 
@@ -125,11 +185,15 @@ export function SecuritySettingsPage() {
             <div>
               <h2 className="font-semibold">Payment PIN</h2>
               <p className="text-[13px] text-ink-3">
-                {security.pinSet ? 'PIN is set. Enter the current PIN to change it.' : 'Set a 6-digit PIN for transfers.'}
+                {pinBlocked
+                  ? 'PIN is locked. Change your password with an email code to unlock sends. You cannot change the PIN while it is locked.'
+                  : security.pinSet
+                    ? 'PIN is set. Enter the current PIN to change it.'
+                    : 'Set a 6-digit PIN for transfers.'}
               </p>
             </div>
           </div>
-          {security.pinSet && (
+          {!pinBlocked && security.pinSet && (
             <TextField
               label="Current PIN"
               inputMode="numeric"
@@ -139,15 +203,19 @@ export function SecuritySettingsPage() {
               className="mb-3"
             />
           )}
-          <PinPad length={6} value={pin} onChange={setPin} onComplete={setPin} />
-          <Button
-            className="mt-4"
-            block
-            disabled={pin.length !== 6 || savePin.isPending}
-            onClick={() => savePin.mutate()}
-          >
-            {security.pinSet ? 'Change PIN' : 'Save PIN'}
-          </Button>
+          {!pinBlocked && (
+            <>
+              <PinPad length={6} value={pin} onChange={setPin} onComplete={setPin} />
+              <Button
+                className="mt-4"
+                block
+                disabled={pin.length !== 6 || savePin.isPending}
+                onClick={() => savePin.mutate()}
+              >
+                {security.pinSet ? 'Change PIN' : 'Save PIN'}
+              </Button>
+            </>
+          )}
         </Card>
 
         <Card>

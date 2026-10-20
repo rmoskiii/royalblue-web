@@ -11,7 +11,9 @@ export function TierBanner() {
   const { data: status } = useVerificationStatus();
   const { data: account } = useAccount();
   if (isStaffRole(me?.role)) return null;
-  if (!status) return null;
+  if (!status) {
+    return <div className="h-20 animate-pulse rounded-card bg-surface-2" aria-busy="true" aria-label="Loading limits" />;
+  }
 
   const identityPending =
     Boolean(status.hasBvn || status.hasNin) && status.identityVerified === false;

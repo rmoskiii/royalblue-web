@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { queryKeys, useTierLimits, useVerificationStatus } from '@/api/hooks';
 import type { VerificationStepId } from '@/api/types';
-import { Button, Card, PageHeader } from '@/components/ui';
+import { Button, Card, PageHeader, SectionLoader } from '@/components/ui';
 import { formatNaira } from '@/lib/format';
 import { BvnForm } from './components/BvnForm';
 import { IdDocumentForm } from './components/IdDocumentForm';
@@ -41,7 +41,7 @@ export function VerificationPage() {
   const [selected, setSelected] = useState<VerificationStepId | null>(null);
   const [editing, setEditing] = useState(false);
 
-  if (!status || !tiers) return null;
+  if (!status || !tiers) return <SectionLoader label="Loading account limits" rows={4} />;
 
   const completed = new Set([...status.completedSteps, ...justCompleted]);
   const firstIncomplete = verificationSteps.find((s) => !completed.has(s.id))?.id ?? null;

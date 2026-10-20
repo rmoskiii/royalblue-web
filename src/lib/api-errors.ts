@@ -29,6 +29,18 @@ export function friendlyApiMessage(raw: string, status = 0, path = ''): string {
   if (/email verification expired/i.test(message)) {
     return 'Your email code expired. Enter a new one from your inbox to finish opening the account.';
   }
+  if (
+    status === 429 ||
+    /too many requests|too many incorrect codes|wait a few minutes before requesting/i.test(message)
+  ) {
+    if (/incorrect codes/i.test(message)) {
+      return 'Too many incorrect codes. Request a new one.';
+    }
+    if (/wait a few minutes/i.test(message)) {
+      return 'Wait a few minutes before requesting another code.';
+    }
+    return 'Too many attempts. Wait a moment and try again.';
+  }
   if (/invalid otp/i.test(message)) {
     if (/\/auth\/complete/i.test(path)) {
       return 'Your email code expired. Enter a new one from your inbox to finish opening the account.';
@@ -38,8 +50,13 @@ export function friendlyApiMessage(raw: string, status = 0, path = ''): string {
   if (/invalid authenticator/i.test(message)) {
     return 'That authenticator code is not right. Try the next code from the app.';
   }
+  if (/pin locked|3 incorrect tries/i.test(message)) {
+    return 'Transaction PIN locked after 3 incorrect tries. Change your password with an email code to unlock sends.';
+  }
   if (/incorrect transaction pin|current pin is incorrect/i.test(message)) {
-    return 'That PIN is not right. Use the 6-digit PIN you set at sign-up.';
+    return message.includes('tries left') || message.includes('try left')
+      ? message
+      : 'That PIN is not right. Use the 6-digit PIN you set at sign-up.';
   }
   if (/insufficient funds/i.test(message)) {
     return 'There isn’t enough money in this account.';

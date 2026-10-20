@@ -24,10 +24,10 @@ const statusLabel = {
 export function AdminKycQueuePage() {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  const { page, pageSize, q, status, decidedBy, query, setListParams } = useStaffListParams({
+  const { page, pageSize, q, setQ, status, decidedBy, query, setListParams } = useStaffListParams({
     status: 'pending',
   });
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: queryKeys.staff.kycReviews(JSON.stringify(query)),
     queryFn: () => staffService.kycReviews(query),
   });
@@ -59,7 +59,7 @@ export function AdminKycQueuePage() {
               label="Search"
               placeholder="Name, email, or address"
               value={q}
-              onChange={(e) => setListParams({ q: e.target.value })}
+              onChange={(e) => setQ(e.target.value)}
             />
             <SelectField
               label="Status"
@@ -83,6 +83,7 @@ export function AdminKycQueuePage() {
         page={page}
         pageSize={pageSize}
         total={data?.total ?? 0}
+        isLoading={isLoading}
         empty="No address reviews match these filters."
         onPageChange={(next) => setListParams({ page: next }, false)}
       >

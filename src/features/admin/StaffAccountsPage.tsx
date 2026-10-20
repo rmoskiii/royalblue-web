@@ -10,8 +10,8 @@ import { useStaffListParams } from './useStaffListParams';
 
 export function StaffAccountsPage() {
   const queryClient = useQueryClient();
-  const { page, pageSize, q, status, query, setListParams } = useStaffListParams({ status: 'all' });
-  const { data } = useQuery({
+  const { page, pageSize, q, setQ, status, query, setListParams } = useStaffListParams({ status: 'all' });
+  const { data, isLoading } = useQuery({
     queryKey: queryKeys.staff.accounts(JSON.stringify(query)),
     queryFn: () => staffService.accounts({ ...query, status: query.status === 'all' ? undefined : query.status }),
   });
@@ -48,7 +48,7 @@ export function StaffAccountsPage() {
               label="Search"
               placeholder="Name, email, NUBAN, or freeze reason"
               value={q}
-              onChange={(e) => setListParams({ q: e.target.value })}
+              onChange={(e) => setQ(e.target.value)}
             />
             <SelectField
               label="Status"
@@ -66,6 +66,7 @@ export function StaffAccountsPage() {
         page={page}
         pageSize={pageSize}
         total={data?.total ?? 0}
+        isLoading={isLoading}
         empty="No customer accounts match these filters."
         onPageChange={(next) => setListParams({ page: next }, false)}
       >

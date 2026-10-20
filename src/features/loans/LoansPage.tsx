@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { useLoanProducts, useLoans } from '@/api/hooks';
 import type { LoanProduct } from '@/api/types';
 import { paths } from '@/components/layout/navigation';
-import { buttonClass, Card, Chip, PageHeader } from '@/components/ui';
+import { buttonClass, Card, Chip, PageHeader, SectionLoader } from '@/components/ui';
 import { formatNaira } from '@/lib/format';
 import { ActiveLoanDetail } from './components/ActiveLoanDetail';
 import { HowItWorks } from './components/HowItWorks';
@@ -11,8 +11,8 @@ import { LoanCalculator } from './components/LoanCalculator';
 import { LoanProducts } from './components/LoanProducts';
 
 export function LoansPage() {
-  const { data: loans } = useLoans();
-  const { data: products } = useLoanProducts();
+  const { data: loans, isLoading: loansLoading } = useLoans();
+  const { data: products, isLoading: productsLoading } = useLoanProducts();
   const [selected, setSelected] = useState<LoanProduct | null>(null);
   const calculatorRef = useRef<HTMLDivElement>(null);
 
@@ -38,6 +38,9 @@ export function LoansPage() {
           </Link>
         }
       />
+      {loansLoading && productsLoading && !loans && !products ? (
+        <SectionLoader label="Loading loans" />
+      ) : (
       <div className="grid gap-4">
         <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
           {pipeline && pipeline.length > 0 && (
@@ -68,6 +71,7 @@ export function LoansPage() {
         {products && <LoanProducts products={products} onEstimate={estimate} />}
         <HowItWorks />
       </div>
+      )}
     </>
   );
 }

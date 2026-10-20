@@ -62,15 +62,16 @@ export const cardService = {
   },
 
   /** Address lookup for delivery (PRD View 5). */
-  searchAddresses(query: string): Promise<AddressSuggestion[]> {
+  searchAddresses(query: string, signal?: AbortSignal): Promise<AddressSuggestion[]> {
     if (env.useMocks) {
       const q = query.trim().toLowerCase();
       return mockResponse(
         mockAddresses.filter((a) => `${a.line1} ${a.city} ${a.state}`.toLowerCase().includes(q)),
         250,
+        signal,
       );
     }
-    return http.get<AddressSuggestion[]>('/addresses/search', { q: query });
+    return http.get<AddressSuggestion[]>('/addresses/search', { q: query }, signal);
   },
 };
 

@@ -25,16 +25,20 @@ export const transferService = {
     return http.get<Beneficiary[]>('/transfers/beneficiaries');
   },
 
-  nameEnquiry(bankCode: string, accountNumber: string): Promise<NameEnquiryResult> {
+  nameEnquiry(
+    bankCode: string,
+    accountNumber: string,
+    signal?: AbortSignal,
+  ): Promise<NameEnquiryResult> {
     if (env.useMocks) {
       const match = mockBeneficiaries.find((b) => b.accountNumber === accountNumber);
       const accountName =
         bankCode === 'royalblue' && accountNumber === mockAccount.accountNumber
           ? mockAccount.accountName
           : (match?.name ?? 'Adebola Johnson');
-      return mockResponse({ accountName, accountNumber, bankCode }, 500);
+      return mockResponse({ accountName, accountNumber, bankCode }, 500, signal);
     }
-    return http.get<NameEnquiryResult>('/transfers/name-enquiry', { bankCode, accountNumber });
+    return http.get<NameEnquiryResult>('/transfers/name-enquiry', { bankCode, accountNumber }, signal);
   },
 
   send(body: TransferRequest): Promise<TransferResult> {

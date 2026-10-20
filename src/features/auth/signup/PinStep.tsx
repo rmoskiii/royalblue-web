@@ -10,7 +10,7 @@ export function PinStep({ onDone, busy = false }: { onDone: (pin: string) => voi
 
   return (
     <form
-      className="grid gap-4"
+      className="grid gap-4 max-lg:flex-1 max-lg:content-center max-lg:gap-8"
       onKeyDown={submitOnEnter}
       onSubmit={(e) => {
         e.preventDefault();
@@ -35,6 +35,7 @@ export function PinStep({ onDone, busy = false }: { onDone: (pin: string) => voi
       </p>
       <PinPad
         length={6}
+        largeOnMobile
         value={stage === 'create' ? pin : confirm}
         onChange={(value) => {
           setError('');

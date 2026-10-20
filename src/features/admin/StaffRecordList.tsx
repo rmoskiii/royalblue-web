@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Button, Card } from '@/components/ui';
+import { Button, Card, SectionLoader } from '@/components/ui';
 
 export type StaffListPage<T> = {
   items: T[];
@@ -15,6 +15,7 @@ export function StaffRecordList({
   total,
   empty,
   onPageChange,
+  isLoading,
   children,
 }: {
   filters?: ReactNode;
@@ -23,6 +24,7 @@ export function StaffRecordList({
   total: number;
   empty: string;
   onPageChange: (page: number) => void;
+  isLoading?: boolean;
   children: ReactNode;
 }) {
   const lastPage = Math.max(1, Math.ceil(total / pageSize) || 1);
@@ -32,7 +34,13 @@ export function StaffRecordList({
   return (
     <div className="grid gap-3">
       {filters}
-      {total === 0 ? <Card className="p-4 text-[13px] text-ink-2">{empty}</Card> : children}
+      {isLoading ? (
+        <SectionLoader label="Loading records" />
+      ) : total === 0 ? (
+        <Card className="p-4 text-[13px] text-ink-2">{empty}</Card>
+      ) : (
+        children
+      )}
       {total > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-2 text-[13px] text-ink-3">
           <p>

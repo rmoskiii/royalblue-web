@@ -3,7 +3,7 @@ import { authService } from '@/api/services/auth';
 import { queryKeys } from '@/api/hooks';
 import { Link } from 'react-router';
 import { paths } from '@/components/layout/navigation';
-import { Card, PageHeader, Switch } from '@/components/ui';
+import { Card, PageHeader, SectionLoader, Switch } from '@/components/ui';
 import { SettingsBack } from './SettingsBack';
 
 export function NotificationsSettingsPage() {
@@ -21,7 +21,7 @@ export function NotificationsSettingsPage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.security }),
   });
 
-  if (!security) return null;
+  if (!security) return <SectionLoader label="Loading notification settings" />;
 
   return (
     <>

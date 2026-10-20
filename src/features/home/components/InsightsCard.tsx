@@ -1,11 +1,11 @@
 import { Link } from 'react-router';
 import { useInsights } from '@/api/hooks';
 import { paths } from '@/components/layout/navigation';
-import { Card, CardHeader, Money } from '@/components/ui';
+import { Card, CardHeader, Money, Skeleton } from '@/components/ui';
 import { padBreakdown, spendColour } from '@/features/insights/spendCategories';
 
 export function InsightsCard() {
-  const { data } = useInsights();
+  const { data, isLoading } = useInsights();
   const rows = padBreakdown(data?.breakdown, data?.moneyOut ?? 0);
   const spent = rows.filter((row) => (row.amount ?? 0) > 0);
 
@@ -19,6 +19,13 @@ export function InsightsCard() {
           </Link>
         }
       />
+      {isLoading && !data && (
+        <div className="mt-3 grid gap-3" aria-busy="true" aria-label="Loading insights">
+          <Skeleton className="h-10" />
+          <Skeleton className="h-2.5" />
+          <Skeleton className="h-16" />
+        </div>
+      )}
       {data && (
         <>
           <div className="my-3 grid grid-cols-2 gap-3">

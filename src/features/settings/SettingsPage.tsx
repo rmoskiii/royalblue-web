@@ -20,8 +20,8 @@ import { TierBanner } from '@/features/home/components/TierBanner';
 import { SettingsRow } from './SettingsRow';
 
 export function SettingsPage() {
-  const { data: me } = useMe();
-  const { data: profile } = useCustomerProfile();
+  const { data: me, isLoading: meLoading } = useMe();
+  const { data: profile, isLoading: profileLoading } = useCustomerProfile();
   const { data: account } = useAccount();
   const { showToast } = useToast();
   const { requestLogout } = useLogoutConfirm();
@@ -47,6 +47,9 @@ export function SettingsPage() {
     <>
       <PageHeader title="Me" subtitle="Profile, security and how RoyalBlue talks to you." />
       <div className="mx-auto grid max-w-xl gap-4">
+        {meLoading && profileLoading && !me && !profile ? (
+          <div className="h-40 animate-pulse rounded-card bg-surface-2" aria-busy="true" aria-label="Loading profile" />
+        ) : null}
         {!staff && <TierBanner />}
         <Card className="grid gap-4 p-5">
           <div className="flex items-start gap-3">

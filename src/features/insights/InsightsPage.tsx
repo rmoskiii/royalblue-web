@@ -1,5 +1,5 @@
 import { useInsights } from '@/api/hooks';
-import { Card, CardHeader, Money, PageHeader } from '@/components/ui';
+import { Card, CardHeader, Money, PageHeader, Skeleton } from '@/components/ui';
 import { formatNaira } from '@/lib/format';
 import { monthDelta, padBreakdown, spendColour } from './spendCategories';
 
@@ -8,6 +8,22 @@ export function InsightsPage() {
   const rows = padBreakdown(data?.breakdown, data?.moneyOut ?? 0);
   const moneyOut = data?.moneyOut ?? 0;
   const spent = rows.filter((row) => (row.amount ?? moneyOut * row.share) > 0);
+
+  if (isLoading && !data) {
+    return (
+      <div className="mx-auto grid min-w-0 max-w-2xl gap-4 overflow-x-hidden">
+        <PageHeader title="Insights" subtitle="Spending this month, split by category" />
+        <div className="grid gap-3" aria-busy="true" aria-label="Loading insights">
+          <div className="grid min-w-0 grid-cols-1 gap-3 lg:grid-cols-3">
+            <Skeleton className="h-20" />
+            <Skeleton className="h-20" />
+            <Skeleton className="h-20" />
+          </div>
+          <Skeleton className="h-48" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto grid min-w-0 max-w-2xl gap-4 overflow-x-hidden">

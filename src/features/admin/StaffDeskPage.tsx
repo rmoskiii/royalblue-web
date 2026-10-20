@@ -41,7 +41,7 @@ function StatCard({
 export function StaffDeskPage() {
   const { session } = useAuth();
   const role = session?.user.role;
-  const { data: summary } = useQuery({
+  const { data: summary, isLoading: summaryLoading } = useQuery({
     queryKey: queryKeys.staff.summary,
     queryFn: staffService.summary,
   });
@@ -77,6 +77,13 @@ export function StaffDeskPage() {
   return (
     <>
       <PageHeader title={copy.title} subtitle={copy.subtitle} />
+      {summaryLoading && !summary ? (
+        <div className="mb-3 grid gap-3 md:grid-cols-3" aria-busy="true" aria-label="Loading desk">
+          <Card className="h-28 animate-pulse bg-surface-2" />
+          <Card className="h-28 animate-pulse bg-surface-2" />
+          <Card className="h-28 animate-pulse bg-surface-2" />
+        </div>
+      ) : null}
       <div className="grid gap-3 md:grid-cols-3">
         {isStaffRole(role) && (
           <StatCard

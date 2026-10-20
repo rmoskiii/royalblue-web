@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { accountService } from './services/accounts';
 import { billService } from './services/bills';
 import { businessService } from './services/business';
@@ -69,8 +69,19 @@ export const useTransactions = (filters: TransactionFilters = {}) =>
     queryKey: queryKeys.transactions(filters),
     queryFn: () => transactionService.list(filters),
     placeholderData: (previous) => previous,
-    refetchInterval: 12_000,
-    refetchOnWindowFocus: true,
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
+  });
+
+export const useTransactionFeed = (filters: TransactionFilters = {}) =>
+  useInfiniteQuery({
+    queryKey: [...queryKeys.transactions(filters), 'feed'] as const,
+    queryFn: ({ pageParam }) => transactionService.listPage(filters, pageParam),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (last) => last.nextCursor ?? undefined,
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
 export const useInsights = () =>
@@ -86,9 +97,10 @@ export const useBeneficiaries = () =>
 export const useNameEnquiry = (bankCode: string, accountNumber: string) =>
   useQuery({
     queryKey: queryKeys.nameEnquiry(bankCode, accountNumber),
-    queryFn: () => transferService.nameEnquiry(bankCode, accountNumber),
+    queryFn: ({ signal }) => transferService.nameEnquiry(bankCode, accountNumber, signal),
     enabled: /^\d{10}$/.test(accountNumber) && Boolean(bankCode),
     staleTime: Infinity,
+    retry: false,
   });
 
 export const useLoans = () =>
@@ -149,7 +161,7 @@ export const usePhysicalOrder = () =>
 export const useAddressSearch = (query: string) =>
   useQuery({
     queryKey: queryKeys.addressSearch(query),
-    queryFn: () => cardService.searchAddresses(query),
+    queryFn: ({ signal }) => cardService.searchAddresses(query, signal),
     enabled: query.trim().length >= 3,
     staleTime: 60_000,
   });

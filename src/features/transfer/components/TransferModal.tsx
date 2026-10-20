@@ -33,7 +33,13 @@ export function TransferModal({
   );
 
   return (
-    <Modal open onClose={onClose} title={titles[step.name]} hideHeader>
+    <Modal
+      open
+      onClose={onClose}
+      title={titles[step.name]}
+      hideHeader
+      expandOnMobile={step.name === 'approve'}
+    >
       <div className="flex shrink-0 items-center gap-2 px-4 pt-3">
         {step.name === 'approve' && (
           <button
@@ -49,7 +55,13 @@ export function TransferModal({
         <CloseButton onClick={onClose} className="ml-auto" />
       </div>
 
-      <div className="px-4 pt-2 pb-4">
+      <div
+        className={
+          step.name === 'approve'
+            ? 'flex flex-1 flex-col px-4 pt-2 pb-4 max-lg:justify-center max-lg:pb-8'
+            : 'px-4 pt-2 pb-4'
+        }
+      >
         {/* Details stay mounted while approving so Back keeps what was typed. */}
         <div hidden={step.name !== 'details'}>
           <TransferDetailsStep

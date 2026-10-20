@@ -9,8 +9,8 @@ import { staffRoleLabel } from './staffAccess';
 import { useStaffListParams } from './useStaffListParams';
 
 export function StaffTeamPage() {
-  const { page, pageSize, q, status, setListParams } = useStaffListParams({ status: 'all' });
-  const { data: rows } = useQuery({
+  const { page, pageSize, q, setQ, status, setListParams } = useStaffListParams({ status: 'all' });
+  const { data: rows, isLoading } = useQuery({
     queryKey: queryKeys.staff.team,
     queryFn: staffService.team,
   });
@@ -37,7 +37,7 @@ export function StaffTeamPage() {
               label="Search"
               placeholder="Email"
               value={q}
-              onChange={(e) => setListParams({ q: e.target.value })}
+              onChange={(e) => setQ(e.target.value)}
             />
             <SelectField
               label="Role"
@@ -55,6 +55,7 @@ export function StaffTeamPage() {
         page={page}
         pageSize={pageSize}
         total={filtered.length}
+        isLoading={isLoading}
         empty="No team members match these filters."
         onPageChange={(next) => setListParams({ page: next }, false)}
       >

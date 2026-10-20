@@ -1,19 +1,20 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { MapPin, Search } from 'lucide-react';
-import { useDeferredValue, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { queryKeys, useAddressSearch } from '@/api/hooks';
 import { cardService } from '@/api/services/cards';
 import type { DeliveryAddress } from '@/api/types';
 import { useToast } from '@/app/providers/ToastProvider';
 import { Button, Modal, TextField } from '@/components/ui';
+import { useDebouncedValue } from '@/lib/useDebouncedValue';
 
 /** PRD View 5: order a physical debit card with address lookup. */
 export function OrderPhysicalCardModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   const [query, setQuery] = useState('');
-  const deferredQuery = useDeferredValue(query);
-  const { data: suggestions, isFetching } = useAddressSearch(deferredQuery);
+  const debouncedQuery = useDebouncedValue(query, 400);
+  const { data: suggestions, isFetching } = useAddressSearch(debouncedQuery);
   const [address, setAddress] = useState<DeliveryAddress>({ line1: '', city: '', state: '' });
   const [phone, setPhone] = useState('');
 
