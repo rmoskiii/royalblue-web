@@ -220,10 +220,26 @@ export const authService = {
     return Promise.resolve({ signUpToken: phone });
   },
 
+  async checkPhoneAvailable(phone: string, email: string, otp?: string) {
+    if (env.useMocks) return mockResponse({ available: true, phone }, 200);
+    return http.post<{ available: boolean; phone: string }>('/auth/phone-available', {
+      phone,
+      email,
+      otp,
+    });
+  },
+
   async lookupIdentity(
     type: IdentityType,
     number: string,
-    extras?: { phone?: string; firstName?: string; lastName?: string; email?: string; otp?: string },
+    extras?: {
+      phone?: string;
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      otp?: string;
+      accountKind?: 'personal' | 'business';
+    },
   ): Promise<IdentityLookup> {
     if (env.useMocks) {
       return mockResponse(
@@ -257,6 +273,7 @@ export const authService = {
       phone: extras?.phone ?? draft.phone,
       firstName: extras?.firstName,
       lastName: extras?.lastName,
+      accountKind: extras?.accountKind,
     });
     writeDraft({
       ...draft,

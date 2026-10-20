@@ -7,18 +7,26 @@ export function IdentityNumberForm({
   onSubmit,
   isPending,
   error,
+  bvnError,
+  ninError,
   submitLabel = 'Continue',
   bvnHint,
   ninHint = 'Dial *346# from your NIN-linked phone if you don’t know it.',
+  intro,
+  requireBvn = false,
   lockedBvn,
   lockedNin,
 }: {
   onSubmit: (numbers: { bvn?: string; nin?: string }) => void;
   isPending?: boolean;
   error?: string;
+  bvnError?: string;
+  ninError?: string;
   submitLabel?: string;
   bvnHint?: string;
   ninHint?: string;
+  intro?: string;
+  requireBvn?: boolean;
   lockedBvn?: string | null;
   lockedNin?: string | null;
 }) {
@@ -29,7 +37,11 @@ export function IdentityNumberForm({
   const [nin, setNin] = useState('');
   const bvnLocked = Boolean(lockedBvn);
   const ninLocked = Boolean(lockedNin);
-  const ready = bvn.length === 11 || nin.length === 11 || bvnLocked || ninLocked;
+  const hasBvn = bvnLocked || bvn.length === 11;
+  const hasNin = ninLocked || nin.length === 11;
+  const ready = requireBvn ? hasBvn : hasBvn || hasNin;
+  const bvnFieldError = bvnError ?? (requireBvn && error && !ninError ? error : undefined);
+  const ninFieldError = ninError ?? (!bvnError ? error : undefined);
 
   return (
     <form
@@ -45,7 +57,10 @@ export function IdentityNumberForm({
       }}
     >
       <p className="text-sm text-ink-3">
-        Enter BVN and NIN if you have both. At least one is required — BVN is preferred.
+        {intro ??
+          (requireBvn
+            ? 'BVN is required for the person opening this business account. NIN is optional.'
+            : 'Enter BVN and NIN if you have both. At least one is required — BVN is preferred.')}
       </p>
       <TextField
         label="Bank Verification Number"
@@ -59,6 +74,7 @@ export function IdentityNumberForm({
         onChange={(e) => setBvn(e.target.value.replace(/\D/g, ''))}
         inputClassName="tabular"
         hint={bvnLocked ? 'Already on your account' : bvnHelp}
+        error={bvnFieldError}
       />
       <TextField
         label="National Identity Number"
@@ -71,7 +87,7 @@ export function IdentityNumberForm({
         onChange={(e) => setNin(e.target.value.replace(/\D/g, ''))}
         inputClassName="tabular"
         hint={ninLocked ? 'Already on your account' : ninHint}
-        error={error}
+        error={ninFieldError}
       />
       <Button type="submit" size="lg" block disabled={!ready || isPending}>
         {isPending ? 'Checking identity…' : submitLabel}

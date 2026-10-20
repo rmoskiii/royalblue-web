@@ -440,6 +440,8 @@ export function SignUpPage() {
         }
       >
         <PersonDetailsStep
+          email={state.email}
+          otp={state.otp}
           onDone={(person) =>
             setState({
               ...state,
@@ -456,7 +458,11 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Identity verification"
-        subtitle="We’ll confirm BVN and NIN if you have both — at least one is required. Numbers are not saved until they match."
+        subtitle={
+          state.kind === 'business'
+            ? 'BVN is required for the person opening this business account. NIN is optional.'
+            : 'We’ll confirm BVN and NIN if you have both — at least one is required. Numbers are not saved until they match.'
+        }
         back={
           <BackButton
             onClick={() =>
@@ -482,6 +488,7 @@ export function SignUpPage() {
           firstName={state.firstName}
           lastName={state.lastName}
           phone={state.phone}
+          accountKind={state.kind}
           onDone={(identity, submitted) =>
             setState({
               ...state,

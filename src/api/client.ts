@@ -18,6 +18,7 @@ const PUBLIC_AUTH_PATHS = [
   '/auth/register',
   '/auth/complete',
   '/auth/identity-lookup',
+  '/auth/phone-available',
   '/auth/cac-lookup',
   '/auth/verify-otp',
   '/auth/resend-otp',

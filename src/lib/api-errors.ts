@@ -23,6 +23,9 @@ export function friendlyApiMessage(raw: string, status = 0, path = ''): string {
   if (/email already registered/i.test(message)) {
     return 'This email already has an account. Log in instead.';
   }
+  if (/phone already registered/i.test(message)) {
+    return 'This phone number is already on a RoyalBlue account. Log in instead.';
+  }
   if (/email verification expired/i.test(message)) {
     return 'Your email code expired. Enter a new one from your inbox to finish opening the account.';
   }
@@ -43,6 +46,9 @@ export function friendlyApiMessage(raw: string, status = 0, path = ''): string {
   }
   if (/bvn is already (linked|registered)/i.test(message)) {
     return 'This BVN is already linked to another RoyalBlue account. Sign in to that account to raise limits.';
+  }
+  if (/nin is already (linked|registered)/i.test(message)) {
+    return 'This NIN is already linked to another RoyalBlue account. Sign in to that account to raise limits.';
   }
   if (/merchant wallet/i.test(message)) {
     return 'We can’t complete payments just now. Please try again shortly.';
