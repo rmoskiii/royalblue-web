@@ -1,5 +1,5 @@
-import type { ComponentType } from 'react';
-import { createBrowserRouter, Navigate } from 'react-router';
+import { useEffect, type ComponentType } from 'react';
+import { createBrowserRouter, Navigate, useRouteError } from 'react-router';
 import { AppShell } from '@/components/layout/AppShell';
 import { AuthLayout } from '@/components/layout/AuthLayout';
 import { comingSoon, paths } from '@/components/layout/navigation';
@@ -22,15 +22,63 @@ import {
   RequireStaffRole,
 } from './guards';
 
+const STALE_CHUNK = 'rb.stale-chunk';
+
+function isStaleChunk(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  return /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module|Unable to preload CSS/i.test(
+    message,
+  );
+}
+
+/** After a Vercel deploy, old hashed chunks 404 until the tab reloads. */
+async function importPage<M>(load: () => Promise<M>): Promise<M> {
+  try {
+    const mod = await load();
+    sessionStorage.removeItem(STALE_CHUNK);
+    return mod;
+  } catch (error) {
+    if (!isStaleChunk(error)) throw error;
+    await new Promise((resolve) => window.setTimeout(resolve, 250));
+    try {
+      const mod = await load();
+      sessionStorage.removeItem(STALE_CHUNK);
+      return mod;
+    } catch {
+      if (!sessionStorage.getItem(STALE_CHUNK)) {
+        sessionStorage.setItem(STALE_CHUNK, '1');
+        window.location.reload();
+        return new Promise(() => undefined as never);
+      }
+      throw error;
+    }
+  }
+}
+
+function ChunkLoadFallback() {
+  const error = useRouteError();
+  const stale = isStaleChunk(error);
+  useEffect(() => {
+    if (!stale || sessionStorage.getItem(STALE_CHUNK)) return;
+    sessionStorage.setItem(STALE_CHUNK, '1');
+    window.location.reload();
+  }, [stale]);
+  if (stale) return <PageLoader />;
+  return <NotFoundPage />;
+}
+
 /**
  * Code-split a page: its feature bundle downloads the first time the route is visited.
  * Usage: page(() => import('@/features/x/XPage'), (m) => m.XPage)
  */
 function page<M>(load: () => Promise<M>, pick: (module: M) => ComponentType) {
-  return { lazy: async () => ({ Component: pick(await load()) }) };
+  return { lazy: async () => ({ Component: pick(await importPage(load)) }) };
 }
 
 export const router = createBrowserRouter([
+  {
+    errorElement: <ChunkLoadFallback />,
+    children: [
   // The bare URL (e.g. the Vercel link) opens the website
   { path: '/', element: <Navigate to={paths.welcome} replace /> },
   {
@@ -289,4 +337,6 @@ export const router = createBrowserRouter([
   { path: paths.terms, element: <LegalPage title="Terms of service" /> },
   { path: paths.privacy, element: <LegalPage title="Privacy policy" /> },
   { path: '*', element: <NotFoundPage /> },
+    ],
+  },
 ]);
