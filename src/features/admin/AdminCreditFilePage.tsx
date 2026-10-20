@@ -5,13 +5,16 @@ import { queryKeys } from '@/api/hooks';
 import { staffService } from '@/api/services/staff';
 import type { ApplicationStatus } from '@/api/types';
 import { useAuth } from '@/app/providers/AuthProvider';
+import { useToast } from '@/app/providers/ToastProvider';
 import { Button, Card, Chip, PageHeader, SelectField, TextField } from '@/components/ui';
 import { formatNaira } from '@/lib/format';
+import { openFetchedBlob } from '@/lib/openBlob';
 import { applicantName, canDecide, canRecommend, statusTone } from './staffAccess';
 
 export function AdminCreditFilePage() {
   const { id = '' } = useParams();
   const { session } = useAuth();
+  const { showToast } = useToast();
   const role = session?.user.role;
   const queryClient = useQueryClient();
   const { data } = useQuery({
@@ -139,13 +142,14 @@ export function AdminCreditFilePage() {
             <button
               key={doc.id}
               type="button"
-              className="text-left text-primary-text"
-              onClick={async () => {
-                const url = await staffService.documentBlob(data.id, doc.id);
-                window.open(url, '_blank', 'noopener');
+              className="text-left text-primary-text underline-offset-2 hover:underline"
+              onClick={() => {
+                void openFetchedBlob(() => staffService.documentBlob(data.id, doc.id)).catch((error) => {
+                  showToast(error instanceof Error ? error.message : 'Could not open that file', 6000);
+                });
               }}
             >
-              {doc.documentType} · {doc.status}
+              View {doc.originalName || doc.documentType}
             </button>
           ))}
           {(data.documents ?? []).length === 0 && <p className="text-ink-3">No files uploaded.</p>}

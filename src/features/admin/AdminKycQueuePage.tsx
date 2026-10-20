@@ -2,10 +2,13 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { queryKeys } from '@/api/hooks';
 import { staffService } from '@/api/services/staff';
+import { useToast } from '@/app/providers/ToastProvider';
 import { Button, Card, Chip, PageHeader, TextField } from '@/components/ui';
+import { openFetchedBlob } from '@/lib/openBlob';
 
 export function AdminKycQueuePage() {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   const { data: rows } = useQuery({
     queryKey: queryKeys.staff.kycReviews,
     queryFn: staffService.kycReviews,
@@ -55,13 +58,19 @@ export function AdminKycQueuePage() {
                   {row.hasFile ? (
                     <button
                       type="button"
-                      className="mt-1 text-[13px] font-medium text-primary-text"
-                      onClick={async () => {
-                        const url = await staffService.kycReviewDocument(row.applicantId);
-                        window.open(url, '_blank', 'noopener');
+                      className="mt-1 text-[13px] font-medium text-primary-text underline-offset-2 hover:underline"
+                      onClick={() => {
+                        void openFetchedBlob(() => staffService.kycReviewDocument(row.applicantId)).catch(
+                          (error) => {
+                            showToast(
+                              error instanceof Error ? error.message : 'Could not open that file',
+                              6000,
+                            );
+                          },
+                        );
                       }}
                     >
-                      Open uploaded document
+                      View {row.originalName || 'uploaded document'}
                     </button>
                   ) : (
                     <p className="mt-1 text-[13px] text-ink-3">No file attached — customer confirmed an address in text.</p>

@@ -134,7 +134,12 @@ export const http = {
       },
     });
     if (!res.ok) {
-      throw new ApiError(res.status, friendlyApiMessage(`Request failed (${res.status})`, res.status, path));
+      const data = await res.json().catch(() => undefined);
+      throw new ApiError(
+        res.status,
+        friendlyApiMessage(errorMessage(data, res.status), res.status, path),
+        data,
+      );
     }
     return res.blob();
   },

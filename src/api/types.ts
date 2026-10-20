@@ -594,6 +594,8 @@ export interface LoanDocument {
   id: string;
   documentType: string;
   status: string;
+  originalName?: string;
+  contentType?: string | null;
   createdAt: ISODateString;
 }
 
