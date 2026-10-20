@@ -21,11 +21,15 @@ function mergeIdentity(base: IdentityLookup | null, next: IdentityLookup): Ident
 }
 
 export function IdentityStep({
+  email,
+  otp,
   firstName,
   lastName,
   phone,
   onDone,
 }: {
+  email: string;
+  otp?: string;
   firstName?: string;
   lastName?: string;
   phone?: string;
@@ -34,16 +38,17 @@ export function IdentityStep({
   const submit = useMutation({
     mutationFn: async (numbers: { bvn?: string; nin?: string }) => {
       let identity: IdentityLookup | null = null;
+      const extras = { phone, firstName, lastName, email, otp };
       if (numbers.bvn) {
         identity = mergeIdentity(
           identity,
-          await authService.lookupIdentity('bvn', numbers.bvn, { phone, firstName, lastName }),
+          await authService.lookupIdentity('bvn', numbers.bvn, extras),
         );
       }
       if (numbers.nin) {
         identity = mergeIdentity(
           identity,
-          await authService.lookupIdentity('nin', numbers.nin, { phone, firstName, lastName }),
+          await authService.lookupIdentity('nin', numbers.nin, extras),
         );
       }
       if (!identity?.verified) {

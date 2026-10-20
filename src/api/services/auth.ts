@@ -221,7 +221,7 @@ export const authService = {
   async lookupIdentity(
     type: IdentityType,
     number: string,
-    extras?: { phone?: string; firstName?: string; lastName?: string },
+    extras?: { phone?: string; firstName?: string; lastName?: string; email?: string; otp?: string },
   ): Promise<IdentityLookup> {
     if (env.useMocks) {
       return mockResponse(
@@ -250,6 +250,8 @@ export const authService = {
     }>('/auth/identity-lookup', {
       type,
       number,
+      email: extras?.email ?? draft.email,
+      otp: extras?.otp ?? draft.otp,
       phone: extras?.phone ?? draft.phone,
       firstName: extras?.firstName,
       lastName: extras?.lastName,
