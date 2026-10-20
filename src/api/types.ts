@@ -356,6 +356,11 @@ export interface VerificationStatus {
   registryAddress?: string | null;
   latestBillName?: string | null;
   completedSteps: VerificationStepId[];
+  selfieCheck?: {
+    status: 'not_started' | 'passed' | 'failed';
+    stage?: 'liveness' | 'match';
+    message: string;
+  };
   missing?: string[];
   limits?: {
     singleTransactionLimit: number;
@@ -652,6 +657,7 @@ export interface KycAddressReview {
   registryAddress?: string | null;
   note?: string;
   originalName?: string;
+  hasFile?: boolean;
   requestedAt?: ISODateString;
   dojah: {
     error?: string;

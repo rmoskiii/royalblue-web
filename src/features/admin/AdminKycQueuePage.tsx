@@ -52,6 +52,20 @@ export function AdminKycQueuePage() {
                   {row.originalName && (
                     <p className="mt-1 text-[13px] text-ink-3">File: {row.originalName}</p>
                   )}
+                  {row.hasFile ? (
+                    <button
+                      type="button"
+                      className="mt-1 text-[13px] font-medium text-primary-text"
+                      onClick={async () => {
+                        const url = await staffService.kycReviewDocument(row.applicantId);
+                        window.open(url, '_blank', 'noopener');
+                      }}
+                    >
+                      Open uploaded document
+                    </button>
+                  ) : (
+                    <p className="mt-1 text-[13px] text-ink-3">No file attached — customer confirmed an address in text.</p>
+                  )}
                 </div>
                 <Chip tone="warning">Needs review</Chip>
               </div>
