@@ -647,20 +647,34 @@ export interface CreditFile {
     finalAmount?: number | null;
     decisionNotes: string;
     createdAt: ISODateString;
+    approver?: { email?: string } | null;
   }>;
   assignedOfficer?: { id: string; email: string } | null;
+}
+
+export interface StaffListPage<T> {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
 }
 
 export interface KycAddressReview {
   applicantId: string;
   email: string;
   name: string;
+  status?: 'pending' | 'approved' | 'returned';
   claimedAddress?: string;
   registryAddress?: string | null;
   note?: string;
   originalName?: string;
   hasFile?: boolean;
   requestedAt?: ISODateString;
+  decidedAt?: ISODateString;
+  decidedByName?: string;
+  decidedByEmail?: string;
+  decisionNotes?: string;
+  approved?: boolean;
   dojah: {
     error?: string;
     reason?: string;

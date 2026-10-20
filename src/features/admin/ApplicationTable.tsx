@@ -30,7 +30,9 @@ export function ApplicationTable({ rows }: { rows: CreditFile[] | undefined }) {
                 <td className="px-4 py-3">{applicantName(row)}</td>
                 <td className="px-4 py-3">{row.loanProduct?.name}</td>
                 <td className="px-4 py-3 tabular">{formatNaira(Number(row.requestedAmount))}</td>
-                <td className="px-4 py-3 text-ink-2">{row.assignedOfficer?.email ?? 'Unassigned'}</td>
+                <td className="px-4 py-3 text-ink-2">
+                  {row.decisions?.[0]?.approver?.email ?? row.assignedOfficer?.email ?? 'Unassigned'}
+                </td>
                 <td className="px-4 py-3">
                   <Chip tone={statusTone(row.status)}>{row.status.replaceAll('_', ' ')}</Chip>
                 </td>

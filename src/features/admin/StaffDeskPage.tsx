@@ -45,9 +45,9 @@ export function StaffDeskPage() {
     queryKey: queryKeys.staff.summary,
     queryFn: staffService.summary,
   });
-  const { data: rows } = useQuery({
+  const { data: deskQueue } = useQuery({
     queryKey: queryKeys.staff.applications('desk'),
-    queryFn: () => staffService.queue(),
+    queryFn: () => staffService.queue({ page: 1, pageSize: 8 }),
   });
 
   const copy =
@@ -66,12 +66,13 @@ export function StaffDeskPage() {
             subtitle: 'The full pipeline, customer accounts, and the credit team.',
           };
 
+  const rows = deskQueue?.items ?? [];
   const focus =
     role === 'CREDIT_MANAGER'
-      ? (rows ?? []).filter((row) => row.status === 'CREDIT_REVIEW')
+      ? rows.filter((row) => row.status === 'CREDIT_REVIEW')
       : role === 'LOAN_OFFICER'
-        ? (rows ?? []).filter((row) => intakeStatuses.includes(row.status))
-        : (rows ?? []).slice(0, 8);
+        ? rows.filter((row) => intakeStatuses.includes(row.status))
+        : rows;
 
   return (
     <>
