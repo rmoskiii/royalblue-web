@@ -77,7 +77,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const user = await authService.me();
         if (!cancelled) setSession({ user });
       } catch {
-        if (!cancelled) setSession(null);
+        // A 401 here is "not signed in". Do not clear a login that finished
+        // while this bootstrap request was still in flight.
       } finally {
         if (!cancelled) setReady(true);
       }
