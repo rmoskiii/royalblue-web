@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
+import { useState } from 'react';
 import { authService } from '@/api/services/auth';
-import type { IdentityLookup } from '@/api/types';
+import type { AccountKind, IdentityLookup } from '@/api/types';
 import { IdentityNumberForm } from '@/features/verification/components/IdentityNumberForm';
 
 function mergeIdentity(base: IdentityLookup | null, next: IdentityLookup): IdentityLookup {
@@ -20,12 +21,17 @@ function mergeIdentity(base: IdentityLookup | null, next: IdentityLookup): Ident
   };
 }
 
+function errorMessage(error: unknown) {
+  return error instanceof Error ? error.message : 'We couldn’t confirm that identity number.';
+}
+
 export function IdentityStep({
   email,
   otp,
   firstName,
   lastName,
   phone,
+  accountKind,
   onDone,
 }: {
   email: string;
@@ -33,23 +39,43 @@ export function IdentityStep({
   firstName?: string;
   lastName?: string;
   phone?: string;
+  accountKind?: AccountKind;
   onDone: (identity: IdentityLookup, submitted: { bvn?: string; nin?: string }) => void;
 }) {
+  const requireBvn = accountKind === 'business';
+  const [bvnError, setBvnError] = useState<string>();
+  const [ninError, setNinError] = useState<string>();
   const submit = useMutation({
     mutationFn: async (numbers: { bvn?: string; nin?: string }) => {
+      setBvnError(undefined);
+      setNinError(undefined);
+      if (requireBvn && !numbers.bvn) {
+        setBvnError('BVN is required for the person opening this business account.');
+        throw new Error('BVN is required for the person opening this business account.');
+      }
       let identity: IdentityLookup | null = null;
-      const extras = { phone, firstName, lastName, email, otp };
+      const extras = { phone, firstName, lastName, email, otp, accountKind };
       if (numbers.bvn) {
-        identity = mergeIdentity(
-          identity,
-          await authService.lookupIdentity('bvn', numbers.bvn, extras),
-        );
+        try {
+          identity = mergeIdentity(
+            identity,
+            await authService.lookupIdentity('bvn', numbers.bvn, extras),
+          );
+        } catch (error) {
+          setBvnError(errorMessage(error));
+          throw error;
+        }
       }
       if (numbers.nin) {
-        identity = mergeIdentity(
-          identity,
-          await authService.lookupIdentity('nin', numbers.nin, extras),
-        );
+        try {
+          identity = mergeIdentity(
+            identity,
+            await authService.lookupIdentity('nin', numbers.nin, extras),
+          );
+        } catch (error) {
+          setNinError(errorMessage(error));
+          throw error;
+        }
       }
       if (!identity?.verified) {
         throw new Error('We couldn’t confirm that identity number. Check the digits and try again.');
@@ -61,9 +87,11 @@ export function IdentityStep({
 
   return (
     <IdentityNumberForm
+      requireBvn={requireBvn}
       onSubmit={(numbers) => submit.mutate(numbers)}
       isPending={submit.isPending}
-      error={submit.isError ? submit.error.message : undefined}
+      bvnError={bvnError}
+      ninError={ninError}
     />
   );
 }

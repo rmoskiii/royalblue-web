@@ -35,14 +35,29 @@ export function BvnForm({
   lockedNin?: string | null;
 }) {
   const [identity, setIdentity] = useState<IdentityLookup | null>(null);
+  const [bvnError, setBvnError] = useState<string>();
+  const [ninError, setNinError] = useState<string>();
   const submit = useMutation({
     mutationFn: async (numbers: { bvn?: string; nin?: string }) => {
+      setBvnError(undefined);
+      setNinError(undefined);
       let next: IdentityLookup | null = null;
       if (numbers.bvn) {
-        next = toLookup((await verificationService.submitBvn(numbers.bvn)) ?? {});
+        try {
+          next = toLookup((await verificationService.submitBvn(numbers.bvn)) ?? {});
+        } catch (error) {
+          setBvnError(error instanceof Error ? error.message : 'We couldn’t confirm that BVN.');
+          throw error;
+        }
       }
       if (numbers.nin) {
-        const ninLookup = toLookup((await verificationService.submitNin(numbers.nin)) ?? {});
+        let ninLookup: IdentityLookup;
+        try {
+          ninLookup = toLookup((await verificationService.submitNin(numbers.nin)) ?? {});
+        } catch (error) {
+          setNinError(error instanceof Error ? error.message : 'We couldn’t confirm that NIN.');
+          throw error;
+        }
         next = next
           ? {
               ...next,
@@ -85,7 +100,8 @@ export function BvnForm({
         submit.mutate(numbers);
       }}
       isPending={submit.isPending}
-      error={submit.isError ? submit.error.message : undefined}
+      bvnError={bvnError}
+      ninError={ninError}
       submitLabel="Continue"
     />
   );
