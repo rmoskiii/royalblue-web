@@ -1,13 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { useMemo } from 'react';
 import { useSearchParams } from 'react-router';
 import { queryKeys } from '@/api/hooks';
 import { staffService } from '@/api/services/staff';
-import type { ApplicationStatus } from '@/api/types';
 import { useAuth } from '@/app/providers/AuthProvider';
-import { PageHeader, SegmentedControl } from '@/components/ui';
+import { PageHeader, SegmentedControl, TextField } from '@/components/ui';
 import { ApplicationTable } from './ApplicationTable';
-import { intakeStatuses } from './staffAccess';
+import { StaffRecordList } from './StaffRecordList';
+import { useStaffListParams } from './useStaffListParams';
 
 const officerTabs = [
   { id: 'intake', label: 'Intake' },
@@ -36,24 +35,18 @@ export function AdminQueuePage() {
   const tabs = role === 'LOAN_OFFICER' ? officerTabs : role === 'CREDIT_MANAGER' ? managerTabs : adminTabs;
   const [params, setParams] = useSearchParams();
   const tab = tabs.some((t) => t.id === params.get('tab')) ? params.get('tab')! : tabs[0].id;
-
-  const { data: rows } = useQuery({
-    queryKey: queryKeys.staff.applications('all'),
-    queryFn: () => staffService.queue(),
+  const { page, pageSize, q, query, setListParams } = useStaffListParams();
+  const { data } = useQuery({
+    queryKey: queryKeys.staff.applications(JSON.stringify({ ...query, tab })),
+    queryFn: () =>
+      staffService.queue({
+        bucket: tab === 'mine' || tab === 'all' ? undefined : tab,
+        mine: tab === 'mine',
+        q: query.q,
+        page: query.page,
+        pageSize: query.pageSize,
+      }),
   });
-
-  const filtered = useMemo(() => {
-    const list = rows ?? [];
-    if (tab === 'intake') return list.filter((row) => intakeStatuses.includes(row.status));
-    if (tab === 'mine') return list.filter((row) => row.assignedOfficer?.id === session?.user.id);
-    if (tab === 'credit') return list.filter((row) => row.status === 'CREDIT_REVIEW');
-    if (tab === 'booked') {
-      const booked: ApplicationStatus[] = ['APPROVED', 'APPROVED_WITH_CONDITIONS', 'DISBURSED', 'ACTIVE'];
-      return list.filter((row) => booked.includes(row.status));
-    }
-    if (tab === 'declined') return list.filter((row) => row.status === 'DECLINED');
-    return list;
-  }, [rows, tab, session?.user.id]);
 
   return (
     <>
@@ -67,15 +60,36 @@ export function AdminQueuePage() {
               : 'Every application across origination and credit.'
         }
       />
-      <div className="mb-4">
-        <SegmentedControl
-          label="Queue filter"
-          value={tab}
-          onChange={(id) => setParams({ tab: id })}
-          options={tabs.map((t) => ({ value: t.id, label: t.label }))}
-        />
-      </div>
-      <ApplicationTable rows={filtered} />
+      <StaffRecordList
+        filters={
+          <div className="grid gap-3">
+            <SegmentedControl
+              label="Queue filter"
+              value={tab}
+              onChange={(id) => {
+                const next = new URLSearchParams(params);
+                next.set('tab', id);
+                next.set('page', '1');
+                setParams(next, { replace: true });
+              }}
+              options={tabs.map((t) => ({ value: t.id, label: t.label }))}
+            />
+            <TextField
+              label="Search"
+              placeholder="Application number, name, email, or officer"
+              value={q}
+              onChange={(e) => setListParams({ q: e.target.value })}
+            />
+          </div>
+        }
+        page={page}
+        pageSize={pageSize}
+        total={data?.total ?? 0}
+        empty="Nothing in this queue yet."
+        onPageChange={(next) => setListParams({ page: next }, false)}
+      >
+        <ApplicationTable rows={data?.items} />
+      </StaffRecordList>
     </>
   );
 }

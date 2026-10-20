@@ -7,6 +7,7 @@ import type {
   CreditTeamMember,
   StaffSummary,
   KycAddressReview,
+  StaffListPage,
 } from '../types';
 
 export const staffService = {
@@ -25,17 +26,33 @@ export const staffService = {
     return http.get('/staff/summary');
   },
 
-  queue(query?: { status?: ApplicationStatus; mine?: boolean }): Promise<CreditFile[]> {
-    if (env.useMocks) return mockResponse([]);
+  queue(query?: {
+    status?: ApplicationStatus;
+    bucket?: string;
+    mine?: boolean;
+    q?: string;
+    page?: number;
+    pageSize?: number;
+  }): Promise<StaffListPage<CreditFile>> {
+    if (env.useMocks) return mockResponse({ items: [], total: 0, page: 1, pageSize: 20 });
     return http.get('/staff/applications', {
       status: query?.status,
+      bucket: query?.bucket,
       mine: query?.mine ? true : undefined,
+      q: query?.q,
+      page: query?.page,
+      pageSize: query?.pageSize,
     });
   },
 
-  accounts(): Promise<StaffBankAccount[]> {
-    if (env.useMocks) return mockResponse([]);
-    return http.get('/staff/accounts');
+  accounts(query?: {
+    q?: string;
+    status?: string;
+    page?: number;
+    pageSize?: number;
+  }): Promise<StaffListPage<StaffBankAccount>> {
+    if (env.useMocks) return mockResponse({ items: [], total: 0, page: 1, pageSize: 20 });
+    return http.get('/staff/accounts', query);
   },
 
   team(): Promise<CreditTeamMember[]> {
@@ -82,9 +99,15 @@ export const staffService = {
     return http.post(`/staff/accounts/${id}/unfreeze`);
   },
 
-  kycReviews(): Promise<KycAddressReview[]> {
-    if (env.useMocks) return mockResponse([]);
-    return http.get('/staff/kyc-reviews');
+  kycReviews(query?: {
+    q?: string;
+    status?: string;
+    decidedBy?: string;
+    page?: number;
+    pageSize?: number;
+  }): Promise<StaffListPage<KycAddressReview>> {
+    if (env.useMocks) return mockResponse({ items: [], total: 0, page: 1, pageSize: 20 });
+    return http.get('/staff/kyc-reviews', query);
   },
 
   decideKycReview(applicantId: string, body: { approve: boolean; notes?: string }) {
