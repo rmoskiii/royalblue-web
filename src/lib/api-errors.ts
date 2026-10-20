@@ -29,6 +29,18 @@ export function friendlyApiMessage(raw: string, status = 0, path = ''): string {
   if (/email verification expired/i.test(message)) {
     return 'Your email code expired. Enter a new one from your inbox to finish opening the account.';
   }
+  if (
+    status === 429 ||
+    /too many requests|too many incorrect codes|wait a few minutes before requesting/i.test(message)
+  ) {
+    if (/incorrect codes/i.test(message)) {
+      return 'Too many incorrect codes. Request a new one.';
+    }
+    if (/wait a few minutes/i.test(message)) {
+      return 'Wait a few minutes before requesting another code.';
+    }
+    return 'Too many attempts. Wait a moment and try again.';
+  }
   if (/invalid otp/i.test(message)) {
     if (/\/auth\/complete/i.test(path)) {
       return 'Your email code expired. Enter a new one from your inbox to finish opening the account.';
