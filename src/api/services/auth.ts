@@ -130,11 +130,11 @@ export const authService = {
     return http.get('/auth/security');
   },
 
-  requestPasswordChangeOtp() {
+  requestPasswordChangeOtp(): Promise<{ email?: string; message: string; otp?: string }> {
     if (env.useMocks) {
       return mockResponse({ message: 'We’ve sent a 6-digit code to your email.', otp: '575235' });
     }
-    return http.post<{ email: string; message: string; otp?: string }>('/auth/password/otp');
+    return http.post('/auth/password/otp');
   },
 
   changePassword(currentPassword: string, newPassword: string, otp: string, totpCode?: string) {
