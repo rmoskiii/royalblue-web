@@ -22,6 +22,7 @@ export function LoginPage() {
   const [password, setPassword] = useState(demo?.login.password ?? '');
   const [challenge, setChallenge] = useState<MfaChallenge | null>(null);
   const [totp, setTotp] = useState('');
+  const [emailOtp, setEmailOtp] = useState('');
 
   const goIn = (session: Awaited<ReturnType<typeof authService.completeLoginMfa>>) => {
     establishSession(session);
@@ -48,7 +49,11 @@ export function LoginPage() {
   });
 
   const verify = useMutation({
-    mutationFn: () => authService.completeLoginMfa(challenge!.challengeToken, totp),
+    mutationFn: () =>
+      authService.completeLoginMfa(challenge!.challengeToken, {
+        totpCode: challenge!.methods.includes('totp') ? totp : undefined,
+        otp: challenge!.methods.includes('otp') ? emailOtp || undefined : undefined,
+      }),
     onSuccess: (session) => {
       goIn(session);
     },
@@ -60,19 +65,46 @@ export function LoginPage() {
   };
 
   if (challenge) {
+    const totpOnly = challenge.methods.includes('totp');
+    const otpOnly = challenge.methods.includes('otp') && !totpOnly;
+    const ready = totpOnly ? totp.length === 6 : emailOtp.length === 6;
     return (
-      <AuthCard title="Authenticator code" subtitle="Open Google Authenticator and enter the 6-digit code.">
+      <AuthCard
+        title={totpOnly ? 'Authenticator code' : 'Check your email'}
+        subtitle={
+          totpOnly
+            ? 'Open Google Authenticator and enter the 6-digit code.'
+            : `We emailed a 6-digit code to ${challenge.email}. New browsers need this after your password.`
+        }
+      >
         <form
           className="grid gap-4"
           onKeyDown={submitOnEnter}
           onSubmit={(e) => {
             e.preventDefault();
-            if (totp.length === 6) verify.mutate();
+            if (ready) verify.mutate();
           }}
         >
-          <CodeInput label="Authenticator code" value={totp} onChange={setTotp} />
+          {totpOnly ? (
+            <CodeInput label="Authenticator code" value={totp} onChange={setTotp} />
+          ) : (
+            <CodeInput label="Email code" value={emailOtp} onChange={setEmailOtp} />
+          )}
+          {otpOnly && (
+            <button
+              type="button"
+              className="text-sm font-medium text-brand"
+              onClick={() => {
+                void authService.resendLoginOtp(challenge.challengeToken).then((result) => {
+                  if (result.otp) setEmailOtp(result.otp);
+                });
+              }}
+            >
+              Send a new code
+            </button>
+          )}
           {verify.isError && <p className="text-[13px] text-primary-text">{verify.error.message}</p>}
-          <Button type="submit" size="lg" block disabled={totp.length !== 6 || verify.isPending}>
+          <Button type="submit" size="lg" block disabled={!ready || verify.isPending}>
             {verify.isPending ? 'Checking…' : 'Verify'}
           </Button>
           <button type="button" className="text-sm font-medium text-ink-2" onClick={() => setChallenge(null)}>

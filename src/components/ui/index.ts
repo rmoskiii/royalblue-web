@@ -18,4 +18,5 @@ export { SectionLoader, Skeleton } from './Skeleton';
 export { SelectField } from './SelectField';
 export { Streaks } from './Streaks';
 export { Switch } from './Switch';
+export { TotpQr } from './TotpQr';
 export { TextField, type TextFieldProps } from './TextField';

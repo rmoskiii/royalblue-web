@@ -25,6 +25,7 @@ export interface MfaChallenge {
   challengeToken: string;
   methods: Array<'totp' | 'otp'>;
   email: string;
+  otp?: string;
 }
 
 export interface SecuritySettings {

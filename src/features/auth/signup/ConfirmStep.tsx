@@ -1,4 +1,5 @@
 import type { IdentityLookup } from '@/api/types';
+import { env } from '@/config/env';
 import { Avatar, Button } from '@/components/ui';
 import { formatDate } from '@/lib/format';
 import { submitOnEnter, useEnterToSubmit } from '../lib/submitOnEnter';
@@ -30,7 +31,15 @@ export function ConfirmStep({
     >
       <div className="flex items-center gap-3.5 rounded-tile bg-surface-2 p-4">
         {identity.photoUrl ? (
-          <img src={identity.photoUrl} alt="" className="size-16 rounded-full object-cover" />
+          <img
+            src={
+              identity.photoUrl.startsWith('http')
+                ? identity.photoUrl
+                : `${env.apiBaseUrl}${identity.photoUrl}`
+            }
+            alt=""
+            className="size-16 rounded-full object-cover"
+          />
         ) : (
           <Avatar name={name || 'RB'} className="size-16 text-lg" />
         )}

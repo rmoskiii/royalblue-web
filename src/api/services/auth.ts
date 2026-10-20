@@ -92,13 +92,23 @@ export const authService = {
     await http.post('/auth/logout').catch(() => undefined);
   },
 
-  async completeLoginMfa(challengeToken: string, totpCode: string): Promise<Session> {
+  async completeLoginMfa(
+    challengeToken: string,
+    codes: { totpCode?: string; otp?: string },
+  ): Promise<Session> {
     if (env.useMocks) {
       setAccessToken('mock-token');
       return mockResponse({ user: mockUser }, 400);
     }
-    const data = await http.post<NestLogin>('/auth/login/mfa', { challengeToken, totpCode });
+    const data = await http.post<NestLogin>('/auth/login/mfa', { challengeToken, ...codes });
     return toSession(data);
+  },
+
+  resendLoginOtp(challengeToken: string) {
+    if (env.useMocks) {
+      return mockResponse({ message: 'We’ve sent a 6-digit code to your email.', otp: '575235' });
+    }
+    return http.post<{ message: string; otp?: string }>('/auth/login/otp', { challengeToken });
   },
 
   async beginSignupMfa(email: string, otp: string) {

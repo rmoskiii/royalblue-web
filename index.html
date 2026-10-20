@@ -7,31 +7,8 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>RoyalBlue MFB</title>
 
-    <!-- Font: Inter (PRD: all-sans typography) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-    />
-
-    <!-- Apply the saved theme before first paint to avoid a light/dark flash. Keep in sync with src/lib/theme.ts -->
-    <script>
-      (function () {
-        try {
-          var saved = localStorage.getItem('rb.theme');
-          var theme =
-            saved === 'light' || saved === 'dark'
-              ? saved
-              : window.matchMedia('(prefers-color-scheme: dark)').matches
-                ? 'dark'
-                : 'light';
-          document.documentElement.dataset.theme = theme;
-        } catch (e) {
-          document.documentElement.dataset.theme = 'light';
-        }
-      })();
-    </script>
+    <!-- External so production CSP can ban inline scripts. Keep in sync with src/lib/theme.ts -->
+    <script src="/theme-init.js"></script>
   </head>
   <body>
     <div id="root"></div>

@@ -16,6 +16,8 @@ const REFRESH_PATH = '/auth/refresh';
 const PUBLIC_AUTH_PATHS = [
   '/auth/login',
   '/auth/login/mfa',
+  '/auth/login/otp',
+  '/auth/kyc-photo',
   '/auth/mfa/begin',
   '/auth/start',
   '/auth/register',

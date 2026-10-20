@@ -3,6 +3,10 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
 import { imagetools } from 'vite-imagetools';
+import {
+  browserSecurityHeaders,
+  developmentCsp,
+} from './src/lib/securityHeaders.ts';
 
 export default defineConfig({
   // imagetools resizes and converts images imported with a query, e.g. '?w=…&format=webp&as=srcset'
@@ -14,12 +18,16 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    headers: browserSecurityHeaders(developmentCsp, false),
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
       },
     },
+  },
+  preview: {
+    headers: browserSecurityHeaders(developmentCsp, false),
   },
   test: {
     environment: 'node',
@@ -34,6 +42,7 @@ export default defineConfig({
         'src/features/transactions/transactionDisplay.ts',
         'src/features/verification/addressCopy.ts',
         'src/features/insights/spendCategories.ts',
+        'src/lib/securityHeaders.ts',
       ],
     },
   },

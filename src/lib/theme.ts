@@ -2,7 +2,7 @@ import { storage } from './storage';
 
 export type Theme = 'light' | 'dark';
 
-/** Must match the key used by the inline script in index.html */
+/** Must match the key used by public/theme-init.js */
 export const THEME_STORAGE_KEY = 'rb.theme';
 
 export function getSavedTheme(): Theme | null {
