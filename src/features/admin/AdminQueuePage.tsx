@@ -36,7 +36,7 @@ export function AdminQueuePage() {
   const [params, setParams] = useSearchParams();
   const tab = tabs.some((t) => t.id === params.get('tab')) ? params.get('tab')! : tabs[0].id;
   const { page, pageSize, q, setQ, query, setListParams } = useStaffListParams();
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: queryKeys.staff.applications(JSON.stringify({ ...query, tab })),
     queryFn: () =>
       staffService.queue({
@@ -85,6 +85,7 @@ export function AdminQueuePage() {
         page={page}
         pageSize={pageSize}
         total={data?.total ?? 0}
+        isLoading={isLoading}
         empty="Nothing in this queue yet."
         onPageChange={(next) => setListParams({ page: next }, false)}
       >

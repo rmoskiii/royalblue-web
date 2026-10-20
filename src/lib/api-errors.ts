@@ -50,8 +50,13 @@ export function friendlyApiMessage(raw: string, status = 0, path = ''): string {
   if (/invalid authenticator/i.test(message)) {
     return 'That authenticator code is not right. Try the next code from the app.';
   }
+  if (/pin locked|3 incorrect tries/i.test(message)) {
+    return 'Transaction PIN locked after 3 incorrect tries. Change your password with an email code to unlock sends.';
+  }
   if (/incorrect transaction pin|current pin is incorrect/i.test(message)) {
-    return 'That PIN is not right. Use the 6-digit PIN you set at sign-up.';
+    return message.includes('tries left') || message.includes('try left')
+      ? message
+      : 'That PIN is not right. Use the 6-digit PIN you set at sign-up.';
   }
   if (/insufficient funds/i.test(message)) {
     return 'There isn’t enough money in this account.';

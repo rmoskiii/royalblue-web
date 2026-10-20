@@ -10,7 +10,7 @@ import { useStaffListParams } from './useStaffListParams';
 
 export function StaffTeamPage() {
   const { page, pageSize, q, setQ, status, setListParams } = useStaffListParams({ status: 'all' });
-  const { data: rows } = useQuery({
+  const { data: rows, isLoading } = useQuery({
     queryKey: queryKeys.staff.team,
     queryFn: staffService.team,
   });
@@ -55,6 +55,7 @@ export function StaffTeamPage() {
         page={page}
         pageSize={pageSize}
         total={filtered.length}
+        isLoading={isLoading}
         empty="No team members match these filters."
         onPageChange={(next) => setListParams({ page: next }, false)}
       >

@@ -27,7 +27,7 @@ export function AdminKycQueuePage() {
   const { page, pageSize, q, setQ, status, decidedBy, query, setListParams } = useStaffListParams({
     status: 'pending',
   });
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: queryKeys.staff.kycReviews(JSON.stringify(query)),
     queryFn: () => staffService.kycReviews(query),
   });
@@ -83,6 +83,7 @@ export function AdminKycQueuePage() {
         page={page}
         pageSize={pageSize}
         total={data?.total ?? 0}
+        isLoading={isLoading}
         empty="No address reviews match these filters."
         onPageChange={(next) => setListParams({ page: next }, false)}
       >

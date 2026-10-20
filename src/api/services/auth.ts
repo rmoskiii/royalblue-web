@@ -13,7 +13,7 @@ import type {
 } from '../types';
 
 type NestLogin = {
-  accessToken: string;
+  accessToken?: string;
   user?: {
     id?: string;
     sub?: string;
@@ -58,7 +58,6 @@ function isMfaChallenge(data: NestLogin | MfaChallenge): data is MfaChallenge {
 
 function toSession(data: NestLogin): Session {
   return {
-    accessToken: data.accessToken,
     user: {
       id: data.user?.id ?? data.user?.sub ?? '',
       firstName: data.user?.firstName ?? data.user?.displayName?.split(' ')[0] ?? 'RoyalBlue',
@@ -72,8 +71,17 @@ function toSession(data: NestLogin): Session {
 }
 
 export const authService = {
+  async me() {
+    if (env.useMocks) return mockUser;
+    const data = await http.get<NestLogin['user'] & { id: string; email: string }>('/auth/me');
+    return toSession({ user: data }).user;
+  },
+
   async login(body: LoginRequest): Promise<Session | MfaChallenge> {
-    if (env.useMocks) return mockResponse({ accessToken: 'mock-token', user: mockUser }, 600);
+    if (env.useMocks) {
+      setAccessToken('mock-token');
+      return mockResponse({ user: mockUser }, 600);
+    }
     const data = await http.post<NestLogin | MfaChallenge>('/auth/login', body);
     if (isMfaChallenge(data)) return data;
     return toSession(data);
@@ -85,7 +93,10 @@ export const authService = {
   },
 
   async completeLoginMfa(challengeToken: string, totpCode: string): Promise<Session> {
-    if (env.useMocks) return mockResponse({ accessToken: 'mock-token', user: mockUser }, 400);
+    if (env.useMocks) {
+      setAccessToken('mock-token');
+      return mockResponse({ user: mockUser }, 400);
+    }
     const data = await http.post<NestLogin>('/auth/login/mfa', { challengeToken, totpCode });
     return toSession(data);
   },
@@ -113,14 +124,22 @@ export const authService = {
         marketingEmailsEnabled: false,
         passwordSet: true,
         biometricsAvailable: false,
+        pinLocked: false,
       });
     }
     return http.get('/auth/security');
   },
 
-  changePassword(currentPassword: string, newPassword: string) {
-    if (env.useMocks) return mockResponse({ message: 'Password updated' });
-    return http.patch('/auth/password', { currentPassword, newPassword });
+  requestPasswordChangeOtp() {
+    if (env.useMocks) {
+      return mockResponse({ message: 'We’ve sent a 6-digit code to your email.', otp: '575235' });
+    }
+    return http.post<{ email: string; message: string; otp?: string }>('/auth/password/otp');
+  },
+
+  changePassword(currentPassword: string, newPassword: string, otp: string, totpCode?: string) {
+    if (env.useMocks) return mockResponse({ message: 'Password updated. Sign in again.' });
+    return http.patch('/auth/password', { currentPassword, newPassword, otp, totpCode });
   },
 
   requestPasswordReset(email: string): Promise<{ email: string; message?: string; otp?: string }> {
@@ -326,7 +345,7 @@ export const authService = {
   async completeSignUp(body: CompleteSignUpRequest): Promise<Session> {
     if (env.useMocks) {
       setAccessToken('mock-token');
-      return mockResponse({ accessToken: 'mock-token', user: mockUser }, 800);
+      return mockResponse({ user: mockUser }, 800);
     }
     const draft = readDraft();
     try {
@@ -346,7 +365,6 @@ export const authService = {
         ...(body.totpCode?.length === 6 ? { totpCode: body.totpCode } : {}),
       });
       const next = toSession(session);
-      setAccessToken(next.accessToken);
       try {
         await http.post('/accounts/provision');
       } catch {

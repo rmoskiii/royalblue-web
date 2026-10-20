@@ -773,6 +773,7 @@ export function SignUpPage() {
 
   return (
     <AuthCard
+      fillMobile={!emailRefresh}
       title={emailRefresh ? 'Confirm email again' : 'Transaction PIN'}
       subtitle={
         emailRefresh

@@ -1,5 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAccount, useMe, useTransactions, useVerificationStatus } from '@/api/hooks';
+import {
+  useAccount,
+  useCards,
+  useLoans,
+  useMe,
+  usePhysicalOrder,
+  useTransactions,
+  useVaults,
+  useVerificationStatus,
+} from '@/api/hooks';
 import { isStaffRole, type Session, type User } from '@/api/types';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { storage } from '@/lib/storage';
@@ -40,24 +49,31 @@ function mergeSets(...groups: Set<string>[]) {
   return next;
 }
 
-/** Standing copy that comes and goes with API health. Do not relight the bell for it. */
+/** Evergreen reminders stay on the list but should not keep the bell lit. */
 function countsTowardBadge(item: InboxItem) {
-  return item.kind !== 'limits' && item.id !== 'account-provision';
+  return !item.id.startsWith('limits-tier-') && item.id !== 'account-provision';
 }
 
 export function useInbox() {
   const { session } = useAuth();
-  const { data: me } = useMe();
-  const { data: account } = useAccount();
-  const { data: transactions } = useTransactions({});
-  const { data: verification } = useVerificationStatus();
+  const { data: me, isLoading: meLoading } = useMe();
+  const { data: account, isLoading: accountLoading } = useAccount();
+  const { data: transactions, isLoading: txnLoading } = useTransactions({});
+  const { data: verification, isLoading: kycLoading } = useVerificationStatus();
+  const { data: loans } = useLoans();
+  const { data: cards } = useCards();
+  const { data: physicalOrder } = usePhysicalOrder();
+  const { data: vaults } = useVaults();
   const userId = inboxOwnerId(session, me);
   const email = session?.user.email ?? '';
 
   const staff = isStaffRole(session?.user.role ?? me?.role);
   const items = useMemo(
-    () => (staff ? [] : buildInbox({ account, transactions, verification })),
-    [staff, account, transactions, verification],
+    () =>
+      staff
+        ? []
+        : buildInbox({ account, transactions, verification, loans, cards, physicalOrder, vaults }),
+    [staff, account, transactions, verification, loans, cards, physicalOrder, vaults],
   );
 
   const [readIds, setReadIds] = useState<Set<string>>(() =>
@@ -129,5 +145,7 @@ export function useInbox() {
     [items, readIds],
   );
 
-  return { items, unread, unreadCount: unread.length, isUnread, markRead, markAllRead };
+  const isLoading = !staff && (meLoading || accountLoading || txnLoading || kycLoading) && !account && !transactions;
+
+  return { items, unread, unreadCount: unread.length, isUnread, markRead, markAllRead, isLoading };
 }

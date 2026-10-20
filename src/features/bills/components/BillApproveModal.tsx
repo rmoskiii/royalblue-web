@@ -31,8 +31,9 @@ export function BillApproveModal({ draft, onClose }: { draft: BillDraft; onClose
       open
       onClose={onClose}
       title={result ? 'Payment successful' : 'Confirm payment'}
+      expandOnMobile={!result}
     >
-      <div className="px-4 pt-2 pb-4">
+      <div className={!result ? 'flex flex-1 flex-col px-4 pt-2 pb-4 max-lg:justify-center max-lg:pb-8' : 'px-4 pt-2 pb-4'}>
         {!result ? (
           <PinApproval
             onApprove={pay.mutateAsync}

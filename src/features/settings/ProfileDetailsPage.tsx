@@ -89,7 +89,13 @@ export function ProfileDetailsPage() {
     onError: (error: Error) => showToast(error.message),
   });
 
-  if (!data) return null;
+  if (!data) {
+    return (
+      <div className="mx-auto max-w-xl">
+        <div className="h-64 animate-pulse rounded-card bg-surface-2" aria-busy="true" aria-label="Loading profile" />
+      </div>
+    );
+  }
   const locked = data.editable;
   const set = (key: keyof typeof form) => (e: { target: { value: string } }) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));

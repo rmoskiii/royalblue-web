@@ -9,7 +9,6 @@ import { friendlyApiMessage } from '@/lib/api-errors';
 let accessToken: string | null = null;
 let activeProfileId: string | null = null;
 let onUnauthorized: (() => void) | null = null;
-let onAccessTokenUpdated: ((token: string) => void) | null = null;
 let refreshInFlight: Promise<boolean> | null = null;
 
 const REFRESH_PATH = '/auth/refresh';
@@ -41,10 +40,6 @@ export function setAccessToken(token: string | null) {
 /** AuthProvider registers this so a dead JWT drops the session instead of trapping the dashboard. */
 export function setOnUnauthorized(handler: (() => void) | null) {
   onUnauthorized = handler;
-}
-
-export function setOnAccessTokenUpdated(handler: ((token: string) => void) | null) {
-  onAccessTokenUpdated = handler;
 }
 
 /**
@@ -98,10 +93,10 @@ async function refreshAccessToken(): Promise<boolean> {
     credentials: 'include',
     headers: { Accept: 'application/json' },
   });
-  const data = (await res.json().catch(() => undefined)) as { accessToken?: string } | undefined;
-  if (!res.ok || !data?.accessToken) return false;
-  setAccessToken(data.accessToken);
-  onAccessTokenUpdated?.(data.accessToken);
+  if (!res.ok) {
+    await res.json().catch(() => undefined);
+    return false;
+  }
   return true;
 }
 

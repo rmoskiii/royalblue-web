@@ -6,7 +6,7 @@ import { staffService } from '@/api/services/staff';
 import type { ApplicationStatus } from '@/api/types';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { useToast } from '@/app/providers/ToastProvider';
-import { Button, Card, Chip, PageHeader, SelectField, TextField } from '@/components/ui';
+import { Button, Card, Chip, PageHeader, SectionLoader, SelectField, TextField } from '@/components/ui';
 import { formatNaira } from '@/lib/format';
 import { openFetchedBlob } from '@/lib/openBlob';
 import { applicantName, canDecide, canRecommend, statusTone } from './staffAccess';
@@ -17,7 +17,7 @@ export function AdminCreditFilePage() {
   const { showToast } = useToast();
   const role = session?.user.role;
   const queryClient = useQueryClient();
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: queryKeys.staff.application(id),
     queryFn: () => staffService.creditFile(id),
     enabled: Boolean(id),
@@ -80,7 +80,7 @@ export function AdminCreditFilePage() {
     onSuccess: refresh,
   });
 
-  if (!data) return null;
+  if (!data) return isLoading ? <SectionLoader label="Loading credit file" rows={5} /> : null;
   const name = applicantName(data);
   const latestAssessment = data.assessments?.[0];
   const openForRecommend = canRecommend(role) && !['APPROVED', 'APPROVED_WITH_CONDITIONS', 'DECLINED', 'DISBURSED', 'ACTIVE'].includes(data.status);

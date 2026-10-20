@@ -14,6 +14,7 @@ export { PinApproval } from './PinApproval';
 export { PinPad } from './PinPad';
 export { ProgressBar } from './ProgressBar';
 export { SegmentedControl } from './SegmentedControl';
+export { SectionLoader, Skeleton } from './Skeleton';
 export { SelectField } from './SelectField';
 export { Streaks } from './Streaks';
 export { Switch } from './Switch';

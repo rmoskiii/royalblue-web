@@ -1,14 +1,16 @@
 import { Navigate, Outlet, useLocation } from 'react-router';
 import { isStaffRole, type StaffRole } from '@/api/types';
 import { homePathForRole, paths } from '@/components/layout/navigation';
+import { PageLoader } from '@/components/ui';
 import { useAuth } from './providers/AuthProvider';
 
 /**
  * Sends signed-out visitors to /login, remembering where they were going.
  */
 export function RequireAuth() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, ready } = useAuth();
   const location = useLocation();
+  if (!ready) return <PageLoader />;
   if (!isAuthenticated) {
     return (
       <Navigate
@@ -22,8 +24,9 @@ export function RequireAuth() {
 }
 
 export function RequireStaff() {
-  const { session, isAuthenticated } = useAuth();
+  const { session, isAuthenticated, ready } = useAuth();
   const location = useLocation();
+  if (!ready) return <PageLoader />;
   if (!isAuthenticated) {
     return (
       <Navigate
@@ -61,8 +64,9 @@ export function RequireStaffRole({ roles }: { roles: StaffRole[] }) {
  * page they originally asked for (e.g. a deep link like /loans), else Home.
  */
 export function RedirectIfAuthenticated() {
-  const { isAuthenticated, session } = useAuth();
+  const { isAuthenticated, session, ready } = useAuth();
   const from = (useLocation().state as { from?: string } | null)?.from;
+  if (!ready) return <PageLoader />;
   if (!isAuthenticated) return <Outlet />;
   if (from && from !== paths.home) return <Navigate to={from} replace />;
   return <Navigate to={homePathForRole(session?.user.role)} replace />;
