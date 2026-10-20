@@ -208,14 +208,18 @@ export function SignUpPage() {
         business: payload.business,
       });
       try {
-        if (pendingIdDoc) await verificationService.submitIdDocument(pendingIdDoc);
+        if (pendingIdDoc) {
+          await verificationService.submitIdDocument(pendingIdDoc);
+          showToast('Live selfie matched. You’re on Tier 2. Confirm address later for Tier 3.', 7000);
+        }
         if (pendingConfirmedAddress) await verificationService.confirmAddress(pendingConfirmedAddress);
         else if (pendingAddress) await verificationService.uploadProofOfAddress(pendingAddress);
       } catch (error) {
         showToast(
           error instanceof Error
             ? error.message
-            : 'Account opened. Finish verification in Account limits.',
+            : 'Account opened on Tier 1. Finish the live selfie in Account limits to move up.',
+          8000,
         );
       }
       establishSession(session);

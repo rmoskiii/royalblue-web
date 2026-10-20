@@ -141,6 +141,11 @@ export function VerificationPage() {
                     ? addressStepLead(Boolean(status.addressReviewPending))
                     : stepCopy[active].lead}
                 </p>
+                {active === 'id-document' && status.selfieCheck?.status === 'failed' && showForm ? (
+                  <p className="mb-4 rounded-tile bg-amber-500/10 px-4 py-3 text-[13px] text-amber-900 dark:text-amber-200">
+                    {status.selfieCheck.message}
+                  </p>
+                ) : null}
                 {!showForm ? (
                   <div className="flex min-w-0 flex-wrap items-center gap-3 rounded-tile bg-success-soft px-4 py-3">
                     <CircleCheck className="size-5 shrink-0 text-success" />
@@ -152,7 +157,10 @@ export function VerificationPage() {
                           ]
                             .filter(Boolean)
                             .join(' · ') || 'Verified'
-                        : 'Verified'}
+                        : active === 'id-document'
+                          ? (status.selfieCheck?.message ??
+                            'Live selfie matched your BVN or NIN photo. You’re on Tier 2.')
+                          : 'Verified'}
                     </span>
                     <Button variant="secondary" size="sm" onClick={() => setEditing(true)}>
                       Update

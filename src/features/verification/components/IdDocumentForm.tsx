@@ -100,7 +100,11 @@ export function IdDocumentForm({
           />
         </>
       )}
-      {submit.isError && <p className="text-[13px] text-primary-text">{submit.error.message}</p>}
+      {submit.isError && (
+        <p className="rounded-tile bg-amber-500/10 px-4 py-3 text-[13px] text-amber-900 dark:text-amber-200">
+          {submit.error.message}
+        </p>
+      )}
       <Button type="submit" className="justify-self-start" disabled={!ready || submit.isPending}>
         {submit.isPending ? 'Checking your selfie…' : persist ? 'Submit selfie' : 'Continue'}
       </Button>

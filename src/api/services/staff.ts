@@ -95,4 +95,9 @@ export const staffService = {
     const blob = await http.blob(`/staff/applications/${applicationId}/documents/${documentId}`);
     return URL.createObjectURL(blob);
   },
+
+  async kycReviewDocument(applicantId: string) {
+    const blob = await http.blob(`/staff/kyc-reviews/${applicantId}/document`);
+    return URL.createObjectURL(blob);
+  },
 };

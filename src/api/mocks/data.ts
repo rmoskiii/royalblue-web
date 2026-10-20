@@ -326,6 +326,11 @@ export const mockVerification: VerificationStatus = {
   ninMasked: '*******8901',
   identityVerified: true,
   completedSteps: ['bvn', 'id-document'],
+  selfieCheck: {
+    status: 'passed',
+    stage: 'match',
+    message: 'Live selfie matched your BVN or NIN photo. You’re on Tier 2.',
+  },
   missing: ['Confirm your residential address to unlock Tier 3 limits.'],
 };
 

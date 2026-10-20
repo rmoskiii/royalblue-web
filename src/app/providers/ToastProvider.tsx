@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react';
 
 interface ToastContextValue {
-  showToast: (message: string) => void;
+  showToast: (message: string, durationMs?: number) => void;
 }
 
 const ToastContext = createContext<ToastContextValue | null>(null);
@@ -10,10 +10,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const [message, setMessage] = useState<string | null>(null);
   const timer = useRef<number | undefined>(undefined);
 
-  const showToast = useCallback((msg: string) => {
+  const showToast = useCallback((msg: string, durationMs = 2800) => {
     setMessage(msg);
     window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setMessage(null), 2800);
+    timer.current = window.setTimeout(() => setMessage(null), durationMs);
   }, []);
 
   return (

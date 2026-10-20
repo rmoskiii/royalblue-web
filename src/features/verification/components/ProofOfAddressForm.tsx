@@ -125,6 +125,12 @@ export function ProofOfAddressForm({
           </p>
           <FileDrop value={file} onChange={setFile} />
           {submit.isError && <p className="text-[13px] text-primary-text">{submit.error.message}</p>}
+          {askedReview && persist && (
+            <p className="rounded-tile bg-amber-500/10 px-4 py-3 text-[13px] text-amber-900 dark:text-amber-200">
+              We couldn’t auto-read every bill. Staff have your file and will confirm it against NIMC.
+              You’re still on your current tier until they approve.
+            </p>
+          )}
           <Button
             type="button"
             className="justify-self-start"

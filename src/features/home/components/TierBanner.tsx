@@ -20,20 +20,39 @@ export function TierBanner() {
 
   const cap = status.limits?.dailyLimit ?? account?.dailyLimit ?? 50_000;
   const ninOnly = status.tier === 1 && !status.hasBvn;
+  const selfieFailed = status.selfieCheck?.status === 'failed';
+  const selfiePassed = status.selfieCheck?.status === 'passed';
   const title = identityPending
     ? 'Identity not confirmed'
-    : ninOnly
-      ? `Tier 1 · NIN — ${formatNaira(cap)} daily`
-      : `Finish verification · Tier ${status.tier}`;
+    : selfieFailed
+      ? 'Selfie didn’t pass'
+      : selfiePassed && status.tier === 2
+        ? 'You’re on Tier 2'
+        : ninOnly
+          ? `Tier 1 · NIN — ${formatNaira(cap)} daily`
+          : `Finish verification · Tier ${status.tier}`;
   const body = identityPending
     ? (status.missing?.[0] ??
       'We have not confirmed this identity yet. Keep using the account, then finish verification in Settings.')
-    : ninOnly
-      ? 'Add BVN to raise daily and per-transfer limits to ₦50,000. Max balance stays ₦300,000 until Tier 2.'
-      : (status.missing?.[0] ?? 'Complete ID and proof of address to raise your limits.');
-  const cta = identityPending ? 'Finish in Settings' : ninOnly ? 'Add BVN' : 'Continue verification';
-  const nextStep =
-    ninOnly || !(status.hasBvn || status.hasNin)
+    : selfieFailed
+      ? (status.selfieCheck?.message ??
+        'Your live selfie did not pass. You’re still on Tier 1. Try again in Account limits.')
+      : selfiePassed && status.tier === 2
+        ? (status.selfieCheck?.message ??
+          'Live selfie matched. Confirm your address to unlock Tier 3.')
+        : ninOnly
+          ? 'Add BVN to raise daily and per-transfer limits to ₦50,000. Max balance stays ₦300,000 until Tier 2.'
+          : (status.missing?.[0] ?? 'Complete ID and proof of address to raise your limits.');
+  const cta = identityPending
+    ? 'Finish in Settings'
+    : selfieFailed
+      ? 'Try selfie again'
+      : ninOnly
+        ? 'Add BVN'
+        : 'Continue verification';
+  const nextStep = selfieFailed
+    ? 'id-document'
+    : ninOnly || !(status.hasBvn || status.hasNin)
       ? 'bvn'
       : status.completedSteps.includes('id-document')
         ? 'proof-of-address'
