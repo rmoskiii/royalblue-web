@@ -153,6 +153,27 @@ export function AdminCreditFilePage() {
             </button>
           ))}
           {(data.documents ?? []).length === 0 && <p className="text-ink-3">No files uploaded.</p>}
+          <label className="mt-1 text-[13px] text-ink-2">
+            Attach supporting file
+            <input
+              type="file"
+              className="mt-1 block w-full text-[13px]"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                e.target.value = '';
+                if (!file) return;
+                void staffService
+                  .attachDocument(data.id, file)
+                  .then(() => {
+                    showToast('File attached. Open it with View.');
+                    refresh();
+                  })
+                  .catch((error) => {
+                    showToast(error instanceof Error ? error.message : 'Could not attach that file', 6000);
+                  });
+              }}
+            />
+          </label>
         </Card>
         {latestAssessment && (
           <Card className="grid gap-2 p-4 text-sm lg:col-span-2">

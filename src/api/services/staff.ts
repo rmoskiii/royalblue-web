@@ -96,6 +96,13 @@ export const staffService = {
     return URL.createObjectURL(blob);
   },
 
+  attachDocument(applicationId: string, file: File, documentType = 'supporting') {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('documentType', documentType);
+    return http.upload(`/staff/applications/${applicationId}/documents`, form);
+  },
+
   async kycReviewDocument(applicantId: string) {
     const blob = await http.blob(`/staff/kyc-reviews/${applicantId}/document`);
     return URL.createObjectURL(blob);
