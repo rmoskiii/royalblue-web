@@ -477,6 +477,8 @@ export function SignUpPage() {
           <Stepper completed={kycCompleted('bvn', false, false)} active="bvn" onSelect={() => undefined} />
         </div>
         <IdentityStep
+          email={state.email}
+          otp={state.otp}
           firstName={state.firstName}
           lastName={state.lastName}
           phone={state.phone}
