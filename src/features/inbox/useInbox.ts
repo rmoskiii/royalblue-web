@@ -40,9 +40,9 @@ function mergeSets(...groups: Set<string>[]) {
   return next;
 }
 
-/** Standing tier copy lives on Home/Me until Tier 3. Do not relight the bell for it. */
+/** Standing copy that comes and goes with API health. Do not relight the bell for it. */
 function countsTowardBadge(item: InboxItem) {
-  return item.kind !== 'limits';
+  return item.kind !== 'limits' && item.id !== 'account-provision';
 }
 
 export function useInbox() {
