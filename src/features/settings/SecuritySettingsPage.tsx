@@ -7,7 +7,7 @@ import { queryKeys } from '@/api/hooks';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { useToast } from '@/app/providers/ToastProvider';
 import { env } from '@/config/env';
-import { Button, Card, PageHeader, PinPad, SectionLoader, TextField } from '@/components/ui';
+import { Button, Card, PageHeader, PinPad, SectionLoader, TextField, TotpQr } from '@/components/ui';
 import { paths } from '@/components/layout/navigation';
 import { PasswordField } from '@/features/auth/components/PasswordField';
 import { CodeInput } from '@/features/auth/components/CodeInput';
@@ -106,9 +106,6 @@ export function SecuritySettingsPage() {
 
   if (!security) return <SectionLoader label="Loading security settings" />;
   const pinBlocked = Boolean(security.pinLocked || pinLock);
-  const qr = totpSetup
-    ? `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(totpSetup.otpauthUrl)}`
-    : null;
 
   return (
     <>
@@ -232,10 +229,10 @@ export function SecuritySettingsPage() {
               </p>
             </div>
           </div>
-          {qr && (
+          {totpSetup && (
             <div className="mb-3 grid justify-items-center gap-2 rounded-[16px] bg-surface-2 p-4">
-              <img src={qr} alt="" className="size-40 rounded-xl bg-white p-2" />
-              <p className="font-mono text-[13px] break-all">{totpSetup?.secret}</p>
+              <TotpQr otpauthUrl={totpSetup.otpauthUrl} />
+              <p className="font-mono text-[13px] break-all">{totpSetup.secret}</p>
             </div>
           )}
           {(totpSetup || security.totpEnabled) && (

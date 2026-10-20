@@ -57,7 +57,7 @@ export const learnArticles: LearnArticle[] = [
     slug: 'savings-and-loans',
     title: 'Savings and loans',
     summary: 'Vaults hold naira you set aside. Loan products show on Loans when you qualify.',
-    href: paths.savings,
+    href: paths.loans,
     body: [
       'Create a vault with a name and target. Interest on the calculator is illustrative until a product is booked.',
       'Loans need a complete identity file. An officer recommends, a credit manager approves, then disbursement credits your RoyalBlue account.',
