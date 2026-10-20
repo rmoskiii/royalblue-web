@@ -1,0 +1,20 @@
+---
+description: A feature is not done until lockouts, cookies, throttle, and load are checked in the same pass.
+alwaysApply: true
+---
+
+# Done means hardened
+
+Do not treat a flow as finished because the happy path works. Walk it like a hostile client (Network tab, retries, stolen session) in the same turn as the feature.
+
+Must not ship on any new or touched surface:
+
+- Unlimited PIN, OTP, login, or password tries
+- Access or refresh JWTs in `localStorage` / JS-readable storage (httpOnly cookies or memory only)
+- Unthrottled auth, OTP, identity, or money routes (Redis-backed in production)
+- Polling that hammers the API; use push, invalidation, or user-triggered refresh
+- Overlapping searches/lookups without debounce and `AbortController`
+- Missing CSP / `frame-ancestors` when adding pages or third-party scripts
+- Cross-origin API calls that make session cookies third-party; keep `/api` same-origin
+
+If Chike explicitly defers an item (e.g. Face Auth on transfers, Cloudflare until a custom domain), skip it and name the leftover in the reply. Do not wait for a frontend review to catch lockouts, stealable tokens, or polling.

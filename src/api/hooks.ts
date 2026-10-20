@@ -136,10 +136,18 @@ export const useSettlements = () =>
 // ---------- Savings ----------
 
 export const useSavingsSummary = () =>
-  useQuery({ queryKey: queryKeys.savings.summary, queryFn: savingsService.getSummary });
+  useQuery({
+    queryKey: queryKeys.savings.summary,
+    queryFn: savingsService.getSummary,
+    enabled: false,
+  });
 
 export const useVaults = () =>
-  useQuery({ queryKey: queryKeys.savings.vaults, queryFn: savingsService.listVaults });
+  useQuery({
+    queryKey: queryKeys.savings.vaults,
+    queryFn: savingsService.listVaults,
+    enabled: false,
+  });
 
 // ---------- Cards ----------
 

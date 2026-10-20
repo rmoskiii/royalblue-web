@@ -120,14 +120,14 @@ const personalNav: NavigationSet = {
     item.transfers,
     // item.payBills, // parked until BudPay airtime/data/electricity is reliable
     item.loans,
-    item.savings,
+    // item.savings, // parked until savings/vaults API ships
     // item.cards,
     item.transactions,
     // item.invest,
     item.insights,
   ],
   learnAndEarn: [item.rewards, item.refer, item.learn, item.help],
-  mobileTabs: [item.home, item.transfers, item.savings, item.loans],
+  mobileTabs: [item.home, item.transfers, item.loans, item.transactions],
   more: [
     item.loans,
     // item.payBills,
@@ -151,7 +151,7 @@ const businessNav: NavigationSet = {
     item.transfers,
     item.transactions,
     item.loans,
-    item.savings,
+    // item.savings, // parked until savings/vaults API ships
   ],
   learnAndEarn: [],
   mobileTabs: [
@@ -160,7 +160,7 @@ const businessNav: NavigationSet = {
     item.transfers,
     item.transactions,
   ],
-  more: [item.loans, item.savings, item.verification, item.help, item.settings],
+  more: [item.loans, item.verification, item.help, item.settings],
 };
 
 export const navigationFor = (profile: 'personal' | 'business') =>
@@ -201,5 +201,5 @@ export function homePathForRole(role?: string | null) {
 export const settingsNav = item.settings;
 export const adminNav = item.admin;
 
-/** Destinations parked or not built yet. Bills/cards hidden until BudPay payments are reliable. */
-export const comingSoon: (NavItem & { to: string })[] = [item.invest, item.payBills, item.cards];
+/** Destinations parked or not built yet. Bills/cards hidden until BudPay payments are reliable. Savings parked until the vaults API ships. */
+export const comingSoon: (NavItem & { to: string })[] = [item.invest, item.payBills, item.cards, item.savings];

@@ -201,13 +201,14 @@ export const router = createBrowserRouter([
           //     (m) => m.BillsPage,
           //   ),
           // },
-          {
-            path: paths.savings,
-            ...page(
-              () => import('@/features/savings/SavingsPage'),
-              (m) => m.SavingsPage,
-            ),
-          },
+          // Parked until savings/vaults API ships.
+          // {
+          //   path: paths.savings,
+          //   ...page(
+          //     () => import('@/features/savings/SavingsPage'),
+          //     (m) => m.SavingsPage,
+          //   ),
+          // },
           // {
           //   path: paths.cards,
           //   ...page(

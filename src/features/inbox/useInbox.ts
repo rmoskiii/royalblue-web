@@ -6,7 +6,6 @@ import {
   useMe,
   usePhysicalOrder,
   useTransactions,
-  useVaults,
   useVerificationStatus,
 } from '@/api/hooks';
 import { isStaffRole, type Session, type User } from '@/api/types';
@@ -63,7 +62,6 @@ export function useInbox() {
   const { data: loans } = useLoans();
   const { data: cards } = useCards();
   const { data: physicalOrder } = usePhysicalOrder();
-  const { data: vaults } = useVaults();
   const userId = inboxOwnerId(session, me);
   const email = session?.user.email ?? '';
 
@@ -72,8 +70,8 @@ export function useInbox() {
     () =>
       staff
         ? []
-        : buildInbox({ account, transactions, verification, loans, cards, physicalOrder, vaults }),
-    [staff, account, transactions, verification, loans, cards, physicalOrder, vaults],
+        : buildInbox({ account, transactions, verification, loans, cards, physicalOrder }),
+    [staff, account, transactions, verification, loans, cards, physicalOrder],
   );
 
   const [readIds, setReadIds] = useState<Set<string>>(() =>
