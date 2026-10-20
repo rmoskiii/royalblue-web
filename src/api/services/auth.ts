@@ -28,6 +28,8 @@ type NestLogin = {
 
 type SignupDraft = {
   phone: string;
+  email?: string;
+  otp?: string;
   identityType?: IdentityType;
   identityNumber?: string;
   firstName?: string;
@@ -258,6 +260,8 @@ export const authService = {
     });
     writeDraft({
       ...draft,
+      email: extras?.email ?? draft.email,
+      otp: extras?.otp ?? draft.otp,
       identityType: type,
       identityNumber: number,
       firstName: lookedUp.firstName,
