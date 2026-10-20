@@ -315,7 +315,11 @@ export interface LoanProduct {
   description: string;
   minAmount: number;
   maxAmount: number;
+  minTenorMonths: number;
+  maxTenorMonths: number;
   tenorOptions: number[];
+  /** Indicative annual rate from the catalogue; the customer may offer another. */
+  indicativeRatePA: number;
   /** Monthly interest rate, e.g. 0.02 for 2% per month */
   monthlyRate: number;
 }
@@ -606,6 +610,9 @@ export interface CreditFile {
   requestedAmount: number;
   approvedAmount?: number | null;
   tenorMonths: number;
+  offeredInterestRatePA?: number | string | null;
+  offeredEquityPercent?: number | string | null;
+  approvedEquityPercent?: number | string | null;
   purpose: string;
   nextOfKinName?: string | null;
   nextOfKinPhone?: string | null;
@@ -729,6 +736,8 @@ export interface ApplyLoanRequest {
     loanProductId: string;
     requestedAmount: number;
     tenorMonths: number;
+    offeredInterestRatePA?: number;
+    offeredEquityPercent?: number;
     purpose: string;
     ippisNumber?: string;
     nextOfKinName: string;

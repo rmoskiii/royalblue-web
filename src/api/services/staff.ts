@@ -83,7 +83,17 @@ export const staffService = {
     return http.post(`/staff/applications/${id}/recommend`, body);
   },
 
-  decide(id: string, body: { decision: ApplicationStatus; finalAmount?: number; decisionNotes: string }) {
+  decide(
+    id: string,
+    body: {
+      decision: ApplicationStatus;
+      finalAmount?: number;
+      finalTenor?: number;
+      finalInterestRatePA?: number;
+      finalEquityPercent?: number;
+      decisionNotes: string;
+    },
+  ) {
     return http.post(`/staff/applications/${id}/decide`, body);
   },
 

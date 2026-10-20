@@ -13,6 +13,8 @@ const emptyBorrower = {
   loanProductId: '',
   requestedAmount: '',
   tenorMonths: '',
+  offeredInterestRatePA: '',
+  offeredEquityPercent: '',
   purpose: '',
   ippisNumber: '',
   residentialAddress: '',
@@ -58,12 +60,16 @@ export function ApplyLoanPage() {
     const productId = params.get('product') ?? '';
     const amount = params.get('amount') ?? '';
     const tenor = params.get('tenor') ?? '';
-    if (!productId && !amount && !tenor) return;
+    const rate = params.get('rate') ?? '';
+    const equity = params.get('equity') ?? '';
+    if (!productId && !amount && !tenor && !rate && !equity) return;
     setBorrower((b) => ({
       ...b,
       loanProductId: productId || b.loanProductId,
       requestedAmount: amount || b.requestedAmount,
       tenorMonths: tenor || b.tenorMonths,
+      offeredInterestRatePA: rate || b.offeredInterestRatePA,
+      offeredEquityPercent: equity || b.offeredEquityPercent,
     }));
   }, [params]);
 
@@ -89,7 +95,18 @@ export function ApplyLoanPage() {
               label="Product"
               required
               value={borrower.loanProductId}
-              onChange={(e) => setBorrower((b) => ({ ...b, loanProductId: e.target.value }))}
+              onChange={(e) => {
+                const loanProductId = e.target.value;
+                const next = products?.find((p) => p.id === loanProductId);
+                setBorrower((b) => ({
+                  ...b,
+                  loanProductId,
+                  tenorMonths: b.tenorMonths || String(next?.maxTenorMonths ?? 12),
+                  offeredInterestRatePA:
+                    b.offeredInterestRatePA || (next ? String(next.indicativeRatePA) : ''),
+                  offeredEquityPercent: b.offeredEquityPercent === '' ? '20' : b.offeredEquityPercent,
+                }));
+              }}
               options={[
                 { value: '', label: 'Select a product' },
                 ...(products ?? []).map((p) => ({ value: p.id, label: p.name })),
@@ -103,15 +120,41 @@ export function ApplyLoanPage() {
                 value={borrower.requestedAmount}
                 onChange={(e) => setBorrower((b) => ({ ...b, requestedAmount: e.target.value }))}
               />
-              <SelectField
+              <TextField
                 label="Tenor (months)"
+                type="number"
+                min={1}
+                max={12}
                 required
                 value={borrower.tenorMonths}
                 onChange={(e) => setBorrower((b) => ({ ...b, tenorMonths: e.target.value }))}
-                options={(product?.tenorOptions ?? [3, 6, 12]).map((n) => ({
-                  value: String(n),
-                  label: `${n} months`,
-                }))}
+                hint="Maximum 12 months"
+              />
+              <TextField
+                label="Interest rate you are offering (% p.a.)"
+                type="number"
+                min={0}
+                max={60}
+                step={0.5}
+                required
+                value={borrower.offeredInterestRatePA}
+                onChange={(e) => setBorrower((b) => ({ ...b, offeredInterestRatePA: e.target.value }))}
+                hint={
+                  product
+                    ? `Catalogue indicative ${product.indicativeRatePA}% p.a. Credit may approve a different rate.`
+                    : 'Credit may approve a different rate.'
+                }
+              />
+              <TextField
+                label="Equity you will hold (%)"
+                type="number"
+                min={0}
+                max={20}
+                step={0.5}
+                required
+                value={borrower.offeredEquityPercent}
+                onChange={(e) => setBorrower((b) => ({ ...b, offeredEquityPercent: e.target.value }))}
+                hint="0% to 20% of the amount requested. Credit may change this."
               />
             </div>
             <TextField
@@ -286,6 +329,8 @@ function toRequest(
       loanProductId: borrower.loanProductId || product?.id || '',
       requestedAmount: Number(borrower.requestedAmount),
       tenorMonths: Number(borrower.tenorMonths),
+      offeredInterestRatePA: Number(borrower.offeredInterestRatePA),
+      offeredEquityPercent: Number(borrower.offeredEquityPercent),
       purpose: borrower.purpose,
       ippisNumber: borrower.ippisNumber || undefined,
       nextOfKinName: borrower.nextOfKinName,

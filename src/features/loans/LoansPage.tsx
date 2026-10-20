@@ -31,7 +31,7 @@ export function LoansPage() {
     <>
       <PageHeader
         title="Loans"
-        subtitle="Business and personal financing, from 2% per month."
+        subtitle="Propose amount, tenor (up to 12 months), rate, and equity (0–20%). Credit sets the final facility."
         action={
           <Link to={paths.loanApply} className={buttonClass({ variant: 'primary', block: true })}>
             Apply for a loan

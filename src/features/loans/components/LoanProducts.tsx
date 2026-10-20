@@ -40,7 +40,7 @@ export function LoanProducts({
               <h3 className="mt-1 text-[15px] font-semibold">{p.name}</h3>
               <p className="flex-1 text-[13px] text-ink-2">{p.description}</p>
               <p className="text-xs text-ink-3 tabular">
-                Up to {formatNaira(p.maxAmount)} · {tenorLabel(p.tenorOptions)}
+                Up to {formatNaira(p.maxAmount)} · {tenorLabel(p.tenorOptions)} · from {p.indicativeRatePA}% p.a.
               </p>
               <button
                 type="button"
