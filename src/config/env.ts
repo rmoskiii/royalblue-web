@@ -1,10 +1,8 @@
-const HOSTED_API = 'https://royalblue-api.onrender.com/api/v1';
-
 function resolveApiBase(): string {
   const raw = import.meta.env.VITE_API_BASE_URL?.trim() ?? '';
-  if (import.meta.env.PROD && (!raw || raw.startsWith('/'))) {
-    return HOSTED_API;
-  }
+  // Same-origin `/api/v1` (Vite proxy, Vercel rewrite). Calling Render from the
+  // Vercel origin makes rb.access a third-party cookie; browsers drop it, login
+  // looks like it worked, then every follow-up 401s and the app signs out.
   return raw || '/api/v1';
 }
 

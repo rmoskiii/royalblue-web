@@ -156,6 +156,7 @@ async function request<T>(
     // and this handler treated them as a dead JWT.
     const sessionExpired =
       res.status === 401 &&
+      path !== '/auth/me' &&
       !PUBLIC_AUTH_PATHS.includes(path) &&
       !/pin|unauthorized access|payout/i.test(message);
     if (sessionExpired) {
