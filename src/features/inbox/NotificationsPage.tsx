@@ -102,7 +102,7 @@ function InboxGroup({
                   to={item.href}
                   onClick={() => markRead(item)}
                   className={cn(
-                    'flex min-w-0 items-start gap-3 px-4 py-3.5 hover:bg-surface-2',
+                    'grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-x-3 px-4 py-3.5 hover:bg-surface-2',
                     unread && 'bg-surface-2/60',
                   )}
                 >
@@ -110,13 +110,11 @@ function InboxGroup({
                     className={cn('mt-1.5 size-2 shrink-0 rounded-full', kindDot[item.kind])}
                     aria-hidden
                   />
-                  <span className="min-w-0 flex-1">
-                    <span className="flex items-start justify-between gap-2">
-                      <span className={cn('min-w-0 text-sm', unread ? 'font-semibold' : 'font-medium')}>
-                        {item.title}
-                      </span>
-                      {stamp ? <span className="shrink-0 text-[11px] text-ink-3">{stamp}</span> : null}
+                  <span className="min-w-0">
+                    <span className={cn('block break-words text-sm', unread ? 'font-semibold' : 'font-medium')}>
+                      {item.title}
                     </span>
+                    {stamp ? <span className="mt-0.5 block text-[11px] text-ink-3">{stamp}</span> : null}
                     <span className="mt-0.5 block truncate text-[13px] text-ink-2">{item.body}</span>
                   </span>
                   <ArrowRight className="mt-1 size-4 shrink-0 text-ink-3" />

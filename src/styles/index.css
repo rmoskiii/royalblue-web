@@ -13,6 +13,8 @@
 
 :root {
   color-scheme: light;
+  /* Phone tab bar (icons + labels) plus the home indicator. Used by main padding and toasts. */
+  --rb-tabbar: calc(4rem + env(safe-area-inset-bottom, 0px));
 
   --rb-bg: #f3f3f7;
   --rb-surface: #ffffff;

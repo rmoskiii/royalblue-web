@@ -17,7 +17,7 @@ export function BottomTabs({ onMore, className }: { onMore: () => void; classNam
     <nav
       aria-label="Main"
       className={cn(
-        'grid border-t border-line bg-surface px-1 pt-0.5 pb-[max(4px,env(safe-area-inset-bottom))]',
+        'fixed inset-x-0 bottom-0 z-30 grid border-t border-line bg-surface px-1 pt-0.5 pb-[max(4px,env(safe-area-inset-bottom,0px))]',
         cols === 3 && 'grid-cols-3',
         cols === 4 && 'grid-cols-4',
         cols === 5 && 'grid-cols-5',
