@@ -231,6 +231,8 @@ export interface TransactionFilters {
   direction?: TransactionDirection;
   status?: TransactionStatus;
   search?: string;
+  from?: string;
+  to?: string;
 }
 
 export interface InsightsBreakdown {
