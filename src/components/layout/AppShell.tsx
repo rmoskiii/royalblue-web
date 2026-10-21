@@ -24,7 +24,7 @@ export function AppShell() {
             <Sidebar className="hidden lg:flex" />
             <div className="flex min-h-0 min-w-0 flex-1 flex-col">
               <TopBar />
-              <main className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-4 pt-4 pb-[calc(var(--rb-tabbar)+0.75rem)] lg:px-7 lg:pt-6 lg:pb-10">
+              <main className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-clip overscroll-contain pt-4 pb-[calc(var(--rb-tabbar)+0.75rem)] pl-[max(1.25rem,env(safe-area-inset-left,0px))] pr-[max(1.25rem,env(safe-area-inset-right,0px))] lg:px-7 lg:pt-6 lg:pb-10">
                 <div className="mx-auto min-w-0 max-w-[1180px]">
                   <Outlet />
                 </div>
