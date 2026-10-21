@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router';
 import { useInsights, useTransactionFeed } from '@/api/hooks';
 import type { Transaction, TransactionFilters } from '@/api/types';
 import { useToast } from '@/app/providers/ToastProvider';
-import { Button, Card, Money, PageHeader } from '@/components/ui';
+import { Button, Card, Money, PageHeader, TextField } from '@/components/ui';
 import { useDebouncedValue } from '@/lib/useDebouncedValue';
 import { ReceiptSheet } from './components/ReceiptSheet';
 import { TransactionList } from './components/TransactionList';
@@ -18,27 +18,49 @@ const filterOptions: { value: Filter; label: string }[] = [
   { value: 'pending', label: 'Pending' },
 ];
 
-function toApiFilters(filter: Filter, search: string): TransactionFilters {
+const MAX_RANGE_DAYS = 366;
+
+function isoDate(d: Date) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+const today = isoDate(new Date());
+const earliest = isoDate(new Date(Date.now() - MAX_RANGE_DAYS * 86_400_000));
+
+function toApiFilters(
+  filter: Filter,
+  search: string,
+  from: string,
+  to: string,
+): TransactionFilters {
   return {
     search: search || undefined,
     direction: filter === 'in' ? 'credit' : filter === 'out' ? 'debit' : undefined,
     status: filter === 'pending' ? 'pending' : undefined,
+    from: from || undefined,
+    to: to || undefined,
   };
 }
 
 export function TransactionsPage() {
   const [filter, setFilter] = useState<Filter>('all');
   const [search, setSearch] = useState('');
-  const debouncedSearch = useDebouncedValue(search, 400);
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
+  const debouncedQuery = useDebouncedValue({ search, from, to }, 400);
   const [selected, setSelected] = useState<Transaction | null>(null);
   const [params, setParams] = useSearchParams();
   const { showToast } = useToast();
+  const rangeInvalid = Boolean(debouncedQuery.from && debouncedQuery.to && debouncedQuery.from > debouncedQuery.to);
 
   const filters = useMemo(
-    () => toApiFilters(filter, debouncedSearch),
-    [filter, debouncedSearch],
+    () => toApiFilters(filter, debouncedQuery.search, debouncedQuery.from, debouncedQuery.to),
+    [filter, debouncedQuery],
   );
-  const feed = useTransactionFeed(filters);
+  const feed = useTransactionFeed(filters, !rangeInvalid);
   const data = feed.data?.pages.flatMap((page) => page.items);
   const { data: insights } = useInsights();
   const receiptKey = params.get('receipt');
@@ -96,6 +118,7 @@ export function TransactionsPage() {
           <span className="sr-only">Search transactions</span>
           <input
             value={search}
+            maxLength={80}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, bank or amount"
             className="w-full bg-transparent text-ink outline-none placeholder:text-ink-3"
@@ -119,6 +142,41 @@ export function TransactionsPage() {
           ))}
         </div>
       </div>
+      <div className="mb-3 grid grid-cols-2 gap-2.5 sm:flex sm:flex-wrap sm:items-end">
+        <TextField
+          label="From"
+          type="date"
+          value={from}
+          min={earliest}
+          max={to || today}
+          onChange={(e) => setFrom(e.target.value)}
+          className="min-w-0 sm:w-40"
+        />
+        <TextField
+          label="To"
+          type="date"
+          value={to}
+          min={from || earliest}
+          max={today}
+          onChange={(e) => setTo(e.target.value)}
+          className="min-w-0 sm:w-40"
+        />
+        {(from || to) && (
+          <button
+            type="button"
+            className="col-span-2 h-10.5 text-sm font-medium text-brand sm:col-span-1 sm:px-2"
+            onClick={() => {
+              setFrom('');
+              setTo('');
+            }}
+          >
+            Clear dates
+          </button>
+        )}
+      </div>
+      {rangeInvalid ? (
+        <p className="mb-3 text-[13px] text-primary-text">From date must be on or before the to date.</p>
+      ) : null}
 
       <Card className="px-2.5 py-2">
         <TransactionList transactions={data} isLoading={feed.isLoading} onSelect={setSelected} />
@@ -151,5 +209,5 @@ export function TransactionsPage() {
 }
 
 function feedRestoreKey(filters: TransactionFilters) {
-  return `rb.txn.pages:${filters.direction ?? ''}:${filters.status ?? ''}:${filters.search ?? ''}`;
+  return `rb.txn.pages:${filters.direction ?? ''}:${filters.status ?? ''}:${filters.search ?? ''}:${filters.from ?? ''}:${filters.to ?? ''}`;
 }

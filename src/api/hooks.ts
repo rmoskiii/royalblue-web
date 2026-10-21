@@ -67,18 +67,19 @@ export const useAccount = () =>
 export const useTransactions = (filters: TransactionFilters = {}) =>
   useQuery({
     queryKey: queryKeys.transactions(filters),
-    queryFn: () => transactionService.list(filters),
+    queryFn: ({ signal }) => transactionService.listPage(filters, undefined, signal).then((page) => page.items),
     placeholderData: (previous) => previous,
     staleTime: 30_000,
     refetchOnWindowFocus: false,
   });
 
-export const useTransactionFeed = (filters: TransactionFilters = {}) =>
+export const useTransactionFeed = (filters: TransactionFilters = {}, enabled = true) =>
   useInfiniteQuery({
     queryKey: [...queryKeys.transactions(filters), 'feed'] as const,
-    queryFn: ({ pageParam }) => transactionService.listPage(filters, pageParam),
+    queryFn: ({ pageParam, signal }) => transactionService.listPage(filters, pageParam, signal),
     initialPageParam: undefined as string | undefined,
     getNextPageParam: (last) => last.nextCursor ?? undefined,
+    enabled,
     staleTime: 30_000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
