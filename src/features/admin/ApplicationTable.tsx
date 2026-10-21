@@ -56,9 +56,11 @@ export function ApplicationTable({ rows }: { rows: CreditFile[] | undefined }) {
               to={`/admin/applications/${row.id}`}
               className="grid gap-1 rounded-card border border-line bg-surface px-4 py-3"
             >
-              <span className="flex items-start justify-between gap-2">
-                <span className="min-w-0 font-semibold">{applicantName(row)}</span>
-                <Chip tone={statusTone(row.status)}>{row.status.replaceAll('_', ' ')}</Chip>
+              <span className="flex min-w-0 items-start justify-between gap-2">
+                <span className="min-w-0 break-words font-semibold">{applicantName(row)}</span>
+                <Chip tone={statusTone(row.status)} className="max-w-[45%] min-w-0 overflow-hidden">
+                  {row.status.replaceAll('_', ' ')}
+                </Chip>
               </span>
               <span className="text-[13px] text-ink-2">{row.applicationNumber}</span>
               <span className="text-[13px] text-ink-3">

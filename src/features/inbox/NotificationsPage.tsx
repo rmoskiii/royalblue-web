@@ -102,7 +102,7 @@ function InboxGroup({
                   to={item.href}
                   onClick={() => markRead(item)}
                   className={cn(
-                    'flex min-w-0 items-start gap-3 px-4 py-3.5 hover:bg-surface-2',
+                    'flex min-w-0 items-start gap-3 overflow-hidden px-4 py-3.5 hover:bg-surface-2',
                     unread && 'bg-surface-2/60',
                   )}
                 >
@@ -111,11 +111,13 @@ function InboxGroup({
                     aria-hidden
                   />
                   <span className="min-w-0 flex-1">
-                    <span className="flex items-start justify-between gap-2">
-                      <span className={cn('min-w-0 text-sm', unread ? 'font-semibold' : 'font-medium')}>
+                    <span className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
+                      <span className={cn('min-w-0 break-words text-sm', unread ? 'font-semibold' : 'font-medium')}>
                         {item.title}
                       </span>
-                      {stamp ? <span className="shrink-0 text-[11px] text-ink-3">{stamp}</span> : null}
+                      {stamp ? (
+                        <span className="shrink-0 text-[11px] text-ink-3 sm:text-right">{stamp}</span>
+                      ) : null}
                     </span>
                     <span className="mt-0.5 block truncate text-[13px] text-ink-2">{item.body}</span>
                   </span>

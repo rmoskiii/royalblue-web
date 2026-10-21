@@ -22,7 +22,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div
         role="status"
         aria-live="polite"
-        className="pointer-events-none fixed inset-x-0 bottom-24 z-[60] flex justify-center px-4 lg:bottom-8"
+        className="pointer-events-none fixed inset-x-0 bottom-[calc(var(--rb-tabbar)+0.5rem)] z-[60] flex justify-center px-4 lg:bottom-8"
       >
         {message && (
           <div className="animate-sheet-up rounded-xl bg-[#16152E] px-4 py-2.5 text-center text-[13px] text-white shadow-card dark:bg-surface-3">
