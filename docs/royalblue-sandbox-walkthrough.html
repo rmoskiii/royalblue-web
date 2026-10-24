@@ -31,20 +31,33 @@
 </head>
 <body>
   <h1>RoyalBlue sandbox walkthrough</h1>
-  <p class="kicker">Hosted prototype · 23 October 2026 · staff logins only</p>
+  <p class="kicker">Hosted prototype · 24 October 2026 · MFB staff handover</p>
 
-  <p>Walk a <strong>new customer signup</strong> and the <strong>staff credit desk</strong>, then send notes. There are no saved retail demo customers anymore — open an account the same way a real person would.</p>
+  <p>Walk a <strong>new customer signup</strong>, a <strong>forced password change</strong>, the <strong>staff credit desk</strong>, and <strong>staff onboarding</strong> (invite → join, no BVN). Then send notes.</p>
 
   <p><strong>Landing:</strong> <a href="https://royalblue-web.vercel.app/welcome">https://royalblue-web.vercel.app/welcome</a><br />
   <strong>Login:</strong> <a href="https://royalblue-web.vercel.app/login">https://royalblue-web.vercel.app/login</a><br />
-  <strong>Sign up:</strong> <a href="https://royalblue-web.vercel.app/sign-up">https://royalblue-web.vercel.app/sign-up</a></p>
+  <strong>Sign up (customers):</strong> <a href="https://royalblue-web.vercel.app/sign-up">https://royalblue-web.vercel.app/sign-up</a><br />
+  <strong>Forgot password:</strong> <a href="https://royalblue-web.vercel.app/forgot">https://royalblue-web.vercel.app/forgot</a><br />
+  <strong>Staff join:</strong> <a href="https://royalblue-web.vercel.app/staff-join">https://royalblue-web.vercel.app/staff-join</a></p>
   <p>First load can take ~30–60s if the API was asleep. Login with <strong>email or Nigerian phone</strong> + password. Use a <strong>private window</strong> (or logout) when you switch roles.</p>
 
+  <h2>Passwords (everyone)</h2>
+  <p>New passwords must be <strong>12+ characters</strong> with an uppercase letter, a lowercase letter, a number, and a symbol. Examples that work: <code>RoyalBlueStaff1!</code> · <code>DeskHandover2026#</code>. <code>password123</code> does <em>not</em> meet the rule.</p>
+  <p>Every account already in this environment was flagged to change password. You do <strong>not</strong> get a session on the old password.</p>
+  <ol>
+    <li>On login, enter email + the current password (for the three desk logins below, that is still <code>password123</code> until you change it).</li>
+    <li>If the screen stays on login and says to update your password, click <strong>Forgot password</strong> on that same page. Do <strong>not</strong> reuse a code that arrived from the login attempt.</li>
+    <li>Enter the same email → <strong>Send code</strong> → use the <em>new</em> 6-digit email code → set a password that matches the checklist.</li>
+    <li>Return to login with the new password. New browsers may ask for a second email code (device trust).</li>
+  </ol>
+  <p>Forgot password does not sign you in; it only replaces the password. After a successful change, <code>password123</code> will no longer work for that inbox.</p>
+
   <h2>Staff (saved in this environment)</h2>
-  <p>These three still exist. They land on the credit desk (<code>/admin</code>), not Home. They have no customer NUBAN and no transaction PIN until they set one under Settings. OTP goes to the inbox you can actually open. The Chike <em>retail</em> Home login is <code>chikeudenze+retail@gmail.com</code> (same Gmail inbox) so the bare address can be the loan officer.</p>
+  <p>These three still exist. They land on the credit desk (<code>/admin</code>), not Home. They have no customer NUBAN. They have no transaction PIN until they set one under <strong>Me → Security</strong> (staff cannot send customer funds without a PIN). OTP goes to the inbox you can actually open. The Chike <em>retail</em> Home login is <code>chikeudenze+retail@gmail.com</code> (same Gmail inbox) so the bare address can be the loan officer.</p>
   <table>
     <thead>
-      <tr><th>Role</th><th>Email</th><th>Phone</th><th>Password</th><th>What to look at</th></tr>
+      <tr><th>Role</th><th>Email</th><th>Phone</th><th>Until you change it</th><th>What to look at</th></tr>
     </thead>
     <tbody>
       <tr>
@@ -52,37 +65,55 @@
         <td><code>product@budpay.com</code></td>
         <td><code>08011111111</code></td>
         <td><code>password123</code></td>
-        <td>Pipeline, freeze, team, recommend <strong>and</strong> decide</td>
+        <td>Pipeline, freeze, <strong>Team (invite)</strong>, recommend <strong>and</strong> decide</td>
       </tr>
       <tr>
         <td>Loan officer</td>
         <td><code>chikeudenze@gmail.com</code></td>
         <td><code>08022222222</code></td>
         <td><code>password123</code></td>
-        <td>Claim / recommend only — no freeze, no final decision</td>
+        <td>Claim / recommend only — no freeze, no final decision, no invites</td>
       </tr>
       <tr>
         <td>Credit manager</td>
         <td><code>podijones@gmail.com</code></td>
         <td><code>08033333333</code></td>
         <td><code>password123</code></td>
-        <td>Review, decide, freeze</td>
+        <td>Review, decide, freeze — no invites</td>
       </tr>
     </tbody>
   </table>
 
-  <h2>How onboarding works</h2>
-  <p>Use a <strong>new email that can receive mail</strong>. Do not reuse the old <code>customer@</code> / <code>starter@</code> accounts; they are gone. If the email is already registered, login opens instead of Home.</p>
+  <h2>Staff onboarding (no KYC)</h2>
+  <p>Desk logins are <strong>invite-only</strong>. That is so freeze, recommend, and decide are tied to a named person — not a shared inbox. There is <strong>no BVN, NIN, selfie, or address</strong> on this path. This is not a customer account and does not mint a NUBAN.</p>
+  <h3>Administrator invites</h3>
+  <ol>
+    <li>Sign in as <code>product@budpay.com</code> (after the password change above).</li>
+    <li>Open <strong>Team</strong> on the desk.</li>
+    <li>Fill <strong>first name, last name, work email, Nigerian phone, role</strong> (loan officer, credit manager, or administrator).</li>
+    <li><strong>Send invite</strong>. The email must not already be on any RoyalBlue account (staff or customer). A 6-digit code is mailed to that work inbox.</li>
+  </ol>
+  <h3>Invitee finishes</h3>
+  <ol>
+    <li>Open <a href="https://royalblue-web.vercel.app/staff-join">/staff-join</a> (also linked as “Join here” on login). Do not use customer <strong>Create account</strong>.</li>
+    <li>Enter the invited work email → <strong>Email me a code</strong> if you need another code.</li>
+    <li>Enter the 6-digit code and a password that meets the 12-character rule.</li>
+    <li>You land on the credit desk for that role. New browsers may ask for a device email code.</li>
+  </ol>
+  <p>Unfinished invites cannot log in at <code>/login</code> until this join step is done. Actions on a file show the staff member’s name from the invite, not a generic “admin”.</p>
+
+  <h2>How customer onboarding works</h2>
+  <p>Use a <strong>new email that can receive mail</strong>. Do not reuse old <code>customer@</code> / <code>starter@</code> accounts. If the email is already registered, login opens instead of Home. Customer passwords must meet the same 12-character rule from the start.</p>
   <ol>
     <li><strong>Email.</strong> We send a 6-digit code.</li>
     <li><strong>Verify email.</strong> Enter that code (not the PIN you set later).</li>
-    <li><strong>Password.</strong></li>
+    <li><strong>Password</strong> (checklist on screen).</li>
     <li><strong>Authenticator</strong> only if the API asks for it. You can usually skip this for now.</li>
     <li><strong>Personal or business.</strong> Business is a wallet (money in / send), not POS or cashiers.</li>
     <li><strong>Name and phone.</strong></li>
-    <li><strong>BVN and/or NIN.</strong> Both fields are on the same screen. Prefer both; at least one is required. There is no skip and no phone-only “starter” account.</li>
+    <li><strong>BVN and/or NIN.</strong> Both fields are on the same screen. Prefer both; at least one is required. NIN must be unique across accounts. There is no skip and no phone-only “starter” account.</li>
     <li><strong>Confirm identity (“Is this you?”).</strong> Shows the name, date of birth, and the residential address on the BVN/NIN record.</li>
-    <li><strong>Live selfie.</strong> Optional now — same step later under Account limits. Allow camera; the light should go off after you take the photo, continue, or skip.</li>
+    <li><strong>Live selfie.</strong> Optional now — same step later under Account limits. Allow camera; the light should go off after you take the photo, continue, or skip. Selfie is not required on every transfer.</li>
     <li><strong>Residential address.</strong> Prefills from the identity record. You can confirm it, upload a utility bill, or skip. Tier 3 only unlocks if the bill address matches NIMC; anything else goes to staff.</li>
     <li><strong>Business details</strong> if you chose business.</li>
     <li><strong>6-digit transaction PIN</strong> (create, then confirm). This is for sends and bills, not the email code.</li>
@@ -130,18 +161,20 @@
 
   <h2>Worth walking</h2>
   <ol>
-    <li>Sign up with a real BVN, a real NIN, and both — confirm the address on the identity screen, then check Home for a NUBAN.</li>
+    <li>Change a desk password via Forgot password, then sign in and land on <code>/admin</code>.</li>
+    <li>As administrator, invite a colleague from <strong>Team</strong>. They finish at <code>/staff-join</code> with no BVN. Confirm their name shows on a recommend / freeze / decide.</li>
+    <li>Sign up a customer with a real BVN, a real NIN, and both — confirm the address on the identity screen, then check Home for a NUBAN.</li>
     <li>Skip selfie and address, then complete them from Account limits. Try a send (needs the PIN you set).</li>
     <li>Business signup: wallet dashboard and money in, not a till.</li>
     <li>Same loan file as officer vs manager vs admin — who can claim, recommend, freeze, decide.</li>
   </ol>
 
   <div class="warn">
-    <strong>Do not use</strong> old staff inboxes (<code>admin@royalblue.ng</code>, <code>officer@royalblue.ng</code>, <code>manager@royalblue.ng</code>) or old retail logins (<code>customer@royalblue.ng</code>, <code>starter@royalblue.ng</code>, PIN <code>123456</code>). They are not in this environment. Staff passwords are all <code>password123</code>. Open a new account for Home.
+    <strong>Do not use</strong> old staff inboxes (<code>admin@royalblue.ng</code>, <code>officer@royalblue.ng</code>, <code>manager@royalblue.ng</code>) or old retail logins (<code>customer@royalblue.ng</code>, <code>starter@royalblue.ng</code>, PIN <code>123456</code>). They are not in this environment. Do not stay on <code>password123</code> after the first session. Do not open a customer account for desk work — use Team invite + <code>/staff-join</code>.
   </div>
 
   <div class="note">
-    <strong>Please ignore for now:</strong> cold starts, empty bank/bill lists on a slow API, anything that looks like FX.
+    <strong>Please ignore for now:</strong> cold starts, empty bank/bill lists on a slow API, anything that looks like FX, Face ID on send, and Cloudflare / custom domain.
   </div>
 
   <p>Send: what felt unclear, what you’d expect next, and anything that looks wrong for a Nigerian MFB. Screenshots + “I was this user” is enough.</p>
