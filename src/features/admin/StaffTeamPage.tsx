@@ -1,15 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { queryKeys } from '@/api/hooks';
-import type { StaffRole } from '@/api/types';
+import type { CreditTeamMember, StaffRole } from '@/api/types';
 import { staffService } from '@/api/services/staff';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { useToast } from '@/app/providers/ToastProvider';
 import { env } from '@/config/env';
-import { Button, Card, Chip, PageHeader, SelectField, TextField } from '@/components/ui';
+import { Button, Card, Chip, Modal, PageHeader, SelectField, TextField } from '@/components/ui';
 import { formatDate } from '@/lib/format';
 import { StaffRecordList } from './StaffRecordList';
-import { staffRoleLabel } from './staffAccess';
+import { canManageTeam, staffRoleLabel, staffRoleOptions } from './staffAccess';
 import { useStaffListParams } from './useStaffListParams';
 
 const emptyInvite = {
@@ -26,10 +26,12 @@ export function StaffTeamPage() {
   const queryClient = useQueryClient();
   const { page, pageSize, q, setQ, status, setListParams } = useStaffListParams({ status: 'all' });
   const [invite, setInvite] = useState(emptyInvite);
+  const [pendingRemove, setPendingRemove] = useState<CreditTeamMember | null>(null);
   const { data: rows, isLoading } = useQuery({
     queryKey: queryKeys.staff.team,
     queryFn: staffService.team,
   });
+  const refreshTeam = () => queryClient.invalidateQueries({ queryKey: queryKeys.staff.team });
   const add = useMutation({
     mutationFn: () => staffService.invite(invite),
     onSuccess: (result) => {
@@ -39,11 +41,29 @@ export function StaffTeamPage() {
           : result.message ?? 'Invite sent. They finish at /staff-join.',
       );
       setInvite(emptyInvite);
-      void queryClient.invalidateQueries({ queryKey: queryKeys.staff.team });
+      void refreshTeam();
     },
     onError: (error: Error) => showToast(error.message),
   });
-  const canInvite = session?.user.role === 'ADMINISTRATOR';
+  const changeRole = useMutation({
+    mutationFn: ({ id, role }: { id: string; role: StaffRole }) => staffService.updateRole(id, role),
+    onSuccess: (member) => {
+      showToast(`${member.email} is now ${staffRoleLabel[member.role]}.`);
+      void refreshTeam();
+    },
+    onError: (error: Error) => showToast(error.message),
+  });
+  const remove = useMutation({
+    mutationFn: (id: string) => staffService.remove(id),
+    onSuccess: (result) => {
+      showToast(result.message);
+      setPendingRemove(null);
+      void refreshTeam();
+    },
+    onError: (error: Error) => showToast(error.message),
+  });
+  const canEdit = canManageTeam(session?.user.role);
+  const adminCount = (rows ?? []).filter((row) => row.role === 'ADMINISTRATOR').length;
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return (rows ?? []).filter((member) => {
@@ -58,9 +78,9 @@ export function StaffTeamPage() {
     <>
       <PageHeader
         title="Credit team"
-        subtitle="Loan officers originate. Credit managers decide. Administrators invite desk logins (no BVN) so freeze and decisions show who acted."
+        subtitle="Loan officers originate. Credit managers decide. Administrators invite, change roles, and remove desk logins (no BVN) so freeze and decisions show who acted."
       />
-      {canInvite && (
+      {canEdit && (
         <Card className="mb-4 p-4">
           <h2 className="mb-3 font-semibold">Invite staff</h2>
           <form
@@ -100,11 +120,7 @@ export function StaffTeamPage() {
               label="Role"
               value={invite.role}
               onChange={(e) => setInvite((row) => ({ ...row, role: e.target.value as StaffRole }))}
-              options={[
-                { value: 'LOAN_OFFICER', label: 'Loan officer' },
-                { value: 'CREDIT_MANAGER', label: 'Credit manager' },
-                { value: 'ADMINISTRATOR', label: 'Administrator' },
-              ]}
+              options={staffRoleOptions}
             />
             <div className="flex items-end">
               <Button type="submit" disabled={add.isPending}>
@@ -129,9 +145,10 @@ export function StaffTeamPage() {
               onChange={(e) => setListParams({ status: e.target.value })}
               options={[
                 { value: 'all', label: 'All' },
-                { value: 'LOAN_OFFICER', label: 'Loan officer' },
-                { value: 'CREDIT_MANAGER', label: 'Credit manager' },
-                { value: 'ADMINISTRATOR', label: 'Administrator' },
+                ...staffRoleOptions.map(({ value, label }) => ({
+                  value,
+                  label: label.split(' — ')[0] ?? label,
+                })),
               ]}
             />
           </div>
@@ -143,26 +160,77 @@ export function StaffTeamPage() {
         empty="No team members match these filters."
         onPageChange={(next) => setListParams({ page: next }, false)}
       >
-        {paged.map((member) => (
-          <Card key={member.id} className="flex flex-wrap items-center justify-between gap-3 overflow-visible p-4">
-            <div className="min-w-0">
-              <p className="font-semibold">
-                {[member.firstName, member.lastName].filter(Boolean).join(' ') || member.email}
-              </p>
-              <p className="text-[13px] text-ink-3">
-                {member.email}
-                {member.phone ? ` · ${member.phone}` : ''} · Added {formatDate(member.createdAt)}
-              </p>
-            </div>
-            <div className="flex shrink-0 flex-wrap items-center gap-2">
-              <Chip>{staffRoleLabel[member.role]}</Chip>
-              <Chip tone={member.isEmailActive ? 'success' : 'warning'}>
-                {member.isEmailActive ? 'Active' : 'Pending email'}
-              </Chip>
-            </div>
-          </Card>
-        ))}
+        {paged.map((member) => {
+          const lastAdmin = member.role === 'ADMINISTRATOR' && adminCount < 2;
+          const self = member.id === session?.user.id;
+          return (
+            <Card key={member.id} className="flex flex-wrap items-end justify-between gap-3 overflow-visible p-4">
+              <div className="min-w-0">
+                <p className="font-semibold">
+                  {[member.firstName, member.lastName].filter(Boolean).join(' ') || member.email}
+                </p>
+                <p className="text-[13px] text-ink-3">
+                  {member.email}
+                  {member.phone ? ` · ${member.phone}` : ''} · Added {formatDate(member.createdAt)}
+                </p>
+              </div>
+              <div className="flex min-w-[220px] flex-1 flex-wrap items-end justify-end gap-2">
+                {canEdit ? (
+                  <SelectField
+                    label="Permissions"
+                    className="min-w-[220px] flex-1"
+                    value={member.role}
+                    disabled={changeRole.isPending || lastAdmin}
+                    onChange={(e) =>
+                      changeRole.mutate({ id: member.id, role: e.target.value as StaffRole })
+                    }
+                    options={staffRoleOptions}
+                  />
+                ) : (
+                  <Chip>{staffRoleLabel[member.role]}</Chip>
+                )}
+                <Chip tone={member.isEmailActive ? 'success' : 'warning'}>
+                  {member.isEmailActive ? 'Active' : 'Pending email'}
+                </Chip>
+                {canEdit && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={self || lastAdmin || remove.isPending}
+                    onClick={() => setPendingRemove(member)}
+                  >
+                    Remove
+                  </Button>
+                )}
+              </div>
+            </Card>
+          );
+        })}
       </StaffRecordList>
+      <Modal
+        open={Boolean(pendingRemove)}
+        onClose={() => setPendingRemove(null)}
+        title="Remove desk login"
+      >
+        <div className="grid gap-4 px-4 pb-4">
+          <p className="text-sm text-ink-2">
+            {pendingRemove
+              ? `${pendingRemove.email} will lose desk access immediately. Loan files assigned to them stay in the queue unassigned. You can invite this email again later.`
+              : ''}
+          </p>
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setPendingRemove(null)}>
+              Keep
+            </Button>
+            <Button
+              disabled={!pendingRemove || remove.isPending}
+              onClick={() => pendingRemove && remove.mutate(pendingRemove.id)}
+            >
+              {remove.isPending ? 'Removing…' : 'Remove'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }

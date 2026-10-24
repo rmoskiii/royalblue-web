@@ -6,6 +6,12 @@ export const staffRoleLabel: Record<StaffRole, string> = {
   ADMINISTRATOR: 'Administrator',
 };
 
+export const staffRoleOptions: { value: StaffRole; label: string }[] = [
+  { value: 'LOAN_OFFICER', label: 'Loan officer — claim and recommend' },
+  { value: 'CREDIT_MANAGER', label: 'Credit manager — review, decide, freeze' },
+  { value: 'ADMINISTRATOR', label: 'Administrator — all desk actions + team' },
+];
+
 export function canRecommend(role?: string | null) {
   return role === 'LOAN_OFFICER' || role === 'ADMINISTRATOR';
 }

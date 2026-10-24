@@ -10,6 +10,39 @@ import type {
   StaffListPage,
 } from '../types';
 
+let mockTeam: CreditTeamMember[] = [
+  {
+    id: 'usr_001',
+    email: 'product@budpay.com',
+    phone: '08011111111',
+    firstName: 'Product',
+    lastName: 'Admin',
+    role: 'ADMINISTRATOR',
+    isEmailActive: true,
+    createdAt: '2026-10-01T00:00:00.000Z',
+  },
+  {
+    id: 'staff_lo',
+    email: 'officer@example.com',
+    phone: '08022222222',
+    firstName: 'Ada',
+    lastName: 'Loan',
+    role: 'LOAN_OFFICER',
+    isEmailActive: true,
+    createdAt: '2026-10-02T00:00:00.000Z',
+  },
+  {
+    id: 'staff_cm',
+    email: 'manager@example.com',
+    phone: '08033333333',
+    firstName: 'Chidi',
+    lastName: 'Credit',
+    role: 'CREDIT_MANAGER',
+    isEmailActive: false,
+    createdAt: '2026-10-03T00:00:00.000Z',
+  },
+];
+
 export const staffService = {
   summary(): Promise<StaffSummary> {
     if (env.useMocks) {
@@ -56,7 +89,7 @@ export const staffService = {
   },
 
   team(): Promise<CreditTeamMember[]> {
-    if (env.useMocks) return mockResponse([]);
+    if (env.useMocks) return mockResponse(mockTeam);
     return http.get('/staff/team');
   },
 
@@ -67,7 +100,46 @@ export const staffService = {
     lastName: string;
     role: CreditTeamMember['role'];
   }): Promise<CreditTeamMember & { message?: string; otp?: string }> {
+    if (env.useMocks) {
+      const member: CreditTeamMember = {
+        id: `staff_${Date.now()}`,
+        email: body.email,
+        phone: body.phone,
+        firstName: body.firstName,
+        lastName: body.lastName,
+        role: body.role,
+        isEmailActive: false,
+        createdAt: new Date().toISOString(),
+      };
+      mockTeam = [...mockTeam, member];
+      return mockResponse({ ...member, message: 'Invite sent. They finish at /staff-join.', otp: '575235' });
+    }
     return http.post('/staff/team', body);
+  },
+
+  updateRole(id: string, role: CreditTeamMember['role']): Promise<CreditTeamMember> {
+    if (env.useMocks) {
+      const member = mockTeam.find((row) => row.id === id);
+      if (!member) return Promise.reject(new Error('Staff member not found'));
+      const admins = mockTeam.filter((row) => row.role === 'ADMINISTRATOR');
+      if (member.role === 'ADMINISTRATOR' && role !== 'ADMINISTRATOR' && admins.length < 2) {
+        return Promise.reject(new Error('Keep at least one administrator on the credit desk.'));
+      }
+      const next = { ...member, role };
+      mockTeam = mockTeam.map((row) => (row.id === id ? next : row));
+      return mockResponse(next);
+    }
+    return http.patch(`/staff/team/${id}`, { role });
+  },
+
+  remove(id: string): Promise<{ message: string }> {
+    if (env.useMocks) {
+      const member = mockTeam.find((row) => row.id === id);
+      if (!member) return Promise.reject(new Error('Staff member not found'));
+      mockTeam = mockTeam.filter((row) => row.id !== id);
+      return mockResponse({ message: `${member.email} was removed from the credit desk.` });
+    }
+    return http.delete(`/staff/team/${id}`);
   },
 
   creditFile(id: string): Promise<CreditFile> {
