@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { authService } from '@/api/services/auth';
 import type { MfaChallenge, PasswordChangeChallenge } from '@/api/types';
@@ -29,6 +29,7 @@ export function LoginPage() {
   const [upgradeOtp, setUpgradeOtp] = useState('');
   const [totp, setTotp] = useState('');
   const [emailOtp, setEmailOtp] = useState('');
+  const upgradeOtpSent = useRef(false);
 
   const goIn = (session: Awaited<ReturnType<typeof authService.completeLoginMfa>>) => {
     establishSession(session);
@@ -92,6 +93,14 @@ export function LoginPage() {
     e.preventDefault();
     submit.mutate();
   };
+
+  useEffect(() => {
+    if (!passwordChange || upgradeOtpSent.current) return;
+    upgradeOtpSent.current = true;
+    void authService.resendPasswordUpgradeOtp(passwordChange.challengeToken).then((result) => {
+      if (result.otp) setUpgradeOtp(result.otp);
+    });
+  }, [passwordChange]);
 
   if (passwordChange) {
     const matches = nextPassword === confirmPassword;
