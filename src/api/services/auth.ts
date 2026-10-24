@@ -7,6 +7,7 @@ import type {
   IdentityType,
   LoginRequest,
   MfaChallenge,
+  PasswordChangeChallenge,
   PhoneVerification,
   SecuritySettings,
   Session,
@@ -23,6 +24,7 @@ type NestLogin = {
     displayName?: string;
     businessName?: string | null;
     role?: Session['user']['role'];
+    mustChangePassword?: boolean;
   };
 };
 
@@ -52,8 +54,16 @@ function writeDraft(draft: SignupDraft) {
   sessionStorage.setItem(SIGNUP_KEY, JSON.stringify(draft));
 }
 
-function isMfaChallenge(data: NestLogin | MfaChallenge): data is MfaChallenge {
+function isMfaChallenge(
+  data: NestLogin | MfaChallenge | PasswordChangeChallenge,
+): data is MfaChallenge {
   return 'mfaRequired' in data && data.mfaRequired === true;
+}
+
+function isPasswordChangeChallenge(
+  data: NestLogin | MfaChallenge | PasswordChangeChallenge,
+): data is PasswordChangeChallenge {
+  return 'passwordChangeRequired' in data && data.passwordChangeRequired === true;
 }
 
 function toSession(data: NestLogin): Session {
@@ -66,6 +76,7 @@ function toSession(data: NestLogin): Session {
       displayName: data.user?.displayName,
       businessName: data.user?.businessName,
       role: data.user?.role ?? 'APPLICANT',
+      mustChangePassword: data.user?.mustChangePassword,
     },
   };
 }
@@ -77,13 +88,13 @@ export const authService = {
     return toSession({ user: data }).user;
   },
 
-  async login(body: LoginRequest): Promise<Session | MfaChallenge> {
+  async login(body: LoginRequest): Promise<Session | MfaChallenge | PasswordChangeChallenge> {
     if (env.useMocks) {
       setAccessToken('mock-token');
       return mockResponse({ user: mockUser }, 600);
     }
-    const data = await http.post<NestLogin | MfaChallenge>('/auth/login', body);
-    if (isMfaChallenge(data)) return data;
+    const data = await http.post<NestLogin | MfaChallenge | PasswordChangeChallenge>('/auth/login', body);
+    if (isMfaChallenge(data) || isPasswordChangeChallenge(data)) return data;
     return toSession(data);
   },
 
@@ -101,6 +112,36 @@ export const authService = {
       return mockResponse({ user: mockUser }, 400);
     }
     const data = await http.post<NestLogin>('/auth/login/mfa', { challengeToken, ...codes });
+    return toSession(data);
+  },
+
+  async completePasswordUpgrade(
+    challengeToken: string,
+    currentPassword: string,
+    newPassword: string,
+    otp: string,
+  ): Promise<Session | MfaChallenge> {
+    const data = await http.post<NestLogin | MfaChallenge>('/auth/login/password', {
+      challengeToken,
+      currentPassword,
+      newPassword,
+      otp,
+    });
+    if (isMfaChallenge(data)) return data;
+    return toSession(data);
+  },
+
+  resendPasswordUpgradeOtp(challengeToken: string) {
+    return http.post<{ message: string; otp?: string }>('/auth/login/password/otp', { challengeToken });
+  },
+
+  requestStaffJoinOtp(email: string) {
+    return http.post<{ email: string; message: string; otp?: string }>('/auth/staff/otp', { email });
+  },
+
+  async completeStaffJoin(email: string, otp: string, password: string): Promise<Session | MfaChallenge> {
+    const data = await http.post<NestLogin | MfaChallenge>('/auth/staff/complete', { email, otp, password });
+    if (isMfaChallenge(data)) return data;
     return toSession(data);
   },
 
@@ -147,7 +188,12 @@ export const authService = {
     return http.post('/auth/password/otp');
   },
 
-  changePassword(currentPassword: string, newPassword: string, otp: string, totpCode?: string) {
+  changePassword(
+    currentPassword: string,
+    newPassword: string,
+    otp: string,
+    totpCode?: string,
+  ): Promise<{ message: string }> {
     if (env.useMocks) return mockResponse({ message: 'Password updated. Sign in again.' });
     return http.patch('/auth/password', { currentPassword, newPassword, otp, totpCode });
   },

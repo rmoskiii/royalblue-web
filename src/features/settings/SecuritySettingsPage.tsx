@@ -9,7 +9,9 @@ import { useToast } from '@/app/providers/ToastProvider';
 import { env } from '@/config/env';
 import { Button, Card, PageHeader, PinPad, SectionLoader, TextField, TotpQr } from '@/components/ui';
 import { paths } from '@/components/layout/navigation';
+import { PasswordChecklist } from '@/features/auth/components/PasswordChecklist';
 import { PasswordField } from '@/features/auth/components/PasswordField';
+import { passwordIsValid } from '@/features/auth/lib/passwordRules';
 import { CodeInput } from '@/features/auth/components/CodeInput';
 import { SettingsBack } from './SettingsBack';
 
@@ -146,6 +148,7 @@ export function SecuritySettingsPage() {
               value={password.next}
               onChange={(e) => setPassword((p) => ({ ...p, next: e.target.value }))}
             />
+            <PasswordChecklist value={password.next} />
             <CodeInput label="Email code" value={otp} onChange={setOtp} />
             {security.totpEnabled && (
               <CodeInput label="Authenticator code" value={totpCode} onChange={setTotpCode} />
@@ -162,7 +165,7 @@ export function SecuritySettingsPage() {
               <Button
                 type="submit"
                 disabled={
-                  password.next.length < 8 ||
+                  !passwordIsValid(password.next) ||
                   otp.length !== 6 ||
                   (security.totpEnabled && totpCode.length !== 6) ||
                   savePassword.isPending
