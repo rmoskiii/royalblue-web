@@ -20,6 +20,9 @@ export function friendlyApiMessage(raw: string, status = 0, path = ''): string {
   if (/invalid credentials/i.test(message)) {
     return 'That email, phone or password is not right.';
   }
+  if (/update your password before continuing/i.test(message)) {
+    return 'Your password no longer meets RoyalBlue’s rules. Set a new one (12+ characters with upper, lower, a number, and a symbol).';
+  }
   if (/email already registered/i.test(message)) {
     return 'This email already has an account. Log in instead.';
   }

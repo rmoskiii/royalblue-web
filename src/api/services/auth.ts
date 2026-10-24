@@ -61,15 +61,31 @@ function isMfaChallenge(
 }
 
 function isPasswordChangeChallenge(
-  data: NestLogin | MfaChallenge | PasswordChangeChallenge,
+  data: unknown,
 ): data is PasswordChangeChallenge {
-  return 'passwordChangeRequired' in data && data.passwordChangeRequired === true;
+  if (!data || typeof data !== 'object') return false;
+  const row = data as { passwordChangeRequired?: unknown; challengeToken?: unknown };
+  return row.passwordChangeRequired === true && typeof row.challengeToken === 'string';
+}
+
+function passwordChangeFromError(error: unknown): PasswordChangeChallenge | null {
+  if (!(error instanceof ApiError) || error.status !== 422) return null;
+  const body = error.body;
+  if (isPasswordChangeChallenge(body)) return body;
+  if (body && typeof body === 'object' && isPasswordChangeChallenge((body as { message?: unknown }).message)) {
+    return (body as { message: PasswordChangeChallenge }).message;
+  }
+  return null;
 }
 
 function toSession(data: NestLogin): Session {
+  const id = data.user?.id ?? data.user?.sub ?? '';
+  if (!id) {
+    throw new Error('Sign in did not return a session. Try again.');
+  }
   return {
     user: {
-      id: data.user?.id ?? data.user?.sub ?? '',
+      id,
       firstName: data.user?.firstName ?? data.user?.displayName?.split(' ')[0] ?? 'RoyalBlue',
       lastName: data.user?.lastName ?? '',
       email: data.user?.email ?? '',
@@ -93,9 +109,15 @@ export const authService = {
       setAccessToken('mock-token');
       return mockResponse({ user: mockUser }, 600);
     }
-    const data = await http.post<NestLogin | MfaChallenge | PasswordChangeChallenge>('/auth/login', body);
-    if (isMfaChallenge(data) || isPasswordChangeChallenge(data)) return data;
-    return toSession(data);
+    try {
+      const data = await http.post<NestLogin | MfaChallenge | PasswordChangeChallenge>('/auth/login', body);
+      if (isMfaChallenge(data) || isPasswordChangeChallenge(data)) return data;
+      return toSession(data);
+    } catch (error) {
+      const challenge = passwordChangeFromError(error);
+      if (challenge) return challenge;
+      throw error;
+    }
   },
 
   async logout(): Promise<void> {

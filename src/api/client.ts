@@ -154,7 +154,7 @@ async function request<T>(
       !retried &&
       path !== REFRESH_PATH &&
       !PUBLIC_AUTH_PATHS.includes(path) &&
-      !/pin|unauthorized access|payout/i.test(message);
+      !/pin|unauthorized access|payout|update your password/i.test(message);
     if (canRefresh && (await refreshOnce())) {
       return request<T>(method, path, { query, json, form, signal }, true);
     }
@@ -164,7 +164,7 @@ async function request<T>(
       res.status === 401 &&
       path !== '/auth/me' &&
       !PUBLIC_AUTH_PATHS.includes(path) &&
-      !/pin|unauthorized access|payout/i.test(message);
+      !/pin|unauthorized access|payout|update your password/i.test(message);
     if (sessionExpired) {
       onUnauthorized?.();
     }
