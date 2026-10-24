@@ -60,6 +60,16 @@ export const staffService = {
     return http.get('/staff/team');
   },
 
+  invite(body: {
+    email: string;
+    phone: string;
+    firstName: string;
+    lastName: string;
+    role: CreditTeamMember['role'];
+  }): Promise<CreditTeamMember & { message?: string; otp?: string }> {
+    return http.post('/staff/team', body);
+  },
+
   creditFile(id: string): Promise<CreditFile> {
     return http.get(`/staff/applications/${id}`);
   },

@@ -28,6 +28,13 @@ export interface MfaChallenge {
   otp?: string;
 }
 
+export interface PasswordChangeChallenge {
+  passwordChangeRequired: true;
+  challengeToken: string;
+  email: string;
+  otp?: string;
+}
+
 export interface SecuritySettings {
   totpEnabled: boolean;
   pinSet: boolean;
@@ -37,6 +44,7 @@ export interface SecuritySettings {
   passwordSet: boolean;
   biometricsAvailable: boolean;
   pinLocked?: boolean;
+  mustChangePassword?: boolean;
 }
 
 /** Sign-up (PRD FR-01): phone → SMS code → BVN/NIN → confirm → login details */
@@ -105,6 +113,7 @@ export interface User {
   displayName?: string;
   businessName?: string | null;
   role?: StaffRole | 'APPLICANT';
+  mustChangePassword?: boolean;
 }
 
 export type StaffRole = 'ADMINISTRATOR' | 'LOAN_OFFICER' | 'CREDIT_MANAGER';
@@ -729,6 +738,9 @@ export interface StaffBankAccount {
 export interface CreditTeamMember {
   id: string;
   email: string;
+  phone?: string;
+  firstName?: string | null;
+  lastName?: string | null;
   role: StaffRole;
   isEmailActive: boolean;
   createdAt: ISODateString;

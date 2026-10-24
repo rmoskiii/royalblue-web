@@ -69,6 +69,8 @@ export const paths = {
   staff: '/staff', // bank operations desk uses /admin; merchant cashiers removed
   login: '/login',
   forgot: '/forgot',
+  staffJoin: '/staff-join',
+  updatePassword: '/update-password',
   /** Public website; where "/" (the bare Vercel link) lands */
   welcome: '/welcome',
   terms: '/terms',

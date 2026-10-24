@@ -47,13 +47,13 @@ VS Code will suggest the ESLint, Prettier and Tailwind extensions (see `.vscode/
 
 Hosted demo: [https://royalblue-web.vercel.app/login](https://royalblue-web.vercel.app/login) (API: `https://royalblue-api.onrender.com`).
 
-Staff and retail customers are seeded by Nest (`npx prisma db seed`) **only if they do not already exist**. Staff have **no** personal NUBAN — after login they go to `/admin`, not Home. Seeded customers skip `/sign-up` (password + PIN only, no authenticator).
+Staff and retail customers are seeded by Nest (`npx prisma db seed`) **only if they do not already exist**. Staff have **no** personal NUBAN — after login they go to `/admin`, not Home. Seeded customers skip `/sign-up` (password + PIN only, no authenticator). Passwords must be 12+ characters with upper, lower, a number, and a symbol. Seeded `password123` desk logins are sent to change password on next login. Administrators invite more desk staff from **Team** (no BVN); they finish at `/staff-join`.
 
 | Role | Email | Phone | Password | PIN | Lands on |
 | --- | --- | --- | --- | --- | --- |
-| Administrator | `product@budpay.com` | `08011111111` | `password123` | — | Desk — pipeline, freeze, team, recommend + decide |
-| Loan officer | `chikeudenze@gmail.com` | `08022222222` | `password123` | — | Desk — claim / recommend (no freeze or final decision) |
-| Credit manager | `podijones@gmail.com` | `08033333333` | `password123` | — | Desk — review, decide, freeze |
+| Administrator | `product@budpay.com` | `08011111111` | `password123` (forced change) | — | Desk — pipeline, freeze, team, recommend + decide |
+| Loan officer | `chikeudenze@gmail.com` | `08022222222` | `password123` (forced change) | — | Desk — claim / recommend (no freeze or final decision) |
+| Credit manager | `podijones@gmail.com` | `08033333333` | `password123` (forced change) | — | Desk — review, decide, freeze |
 | Customer (funded) | `customer@royalblue.ng` | `08044444444` | `RoyalBlueCustomer1!` | `123456` | Home — BVN + NIN + ID, **Tier 2**, NUBAN `8044444444`, ₦185,000. Upload proof of address for Tier 3 |
 | Starter KYC | `starter@royalblue.ng` | `08055555555` | `RoyalBlueStarter1!` | `123456` | Home — no BVN/docs (**Starter ₦50k**), NUBAN `8055555555`, ₦32,500 |
 | Customer (funded) | `chikeudenze+retail@gmail.com` | `08168034647` | `RoyalBlueCustomer1!` | `123456` | Home — BVN + NIN + ID, **Tier 2**, NUBAN `8168034647`, ₦185,000 |

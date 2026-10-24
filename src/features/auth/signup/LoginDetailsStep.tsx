@@ -1,13 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
-import { Check } from 'lucide-react';
 import { useState } from 'react';
 import { authService } from '@/api/services/auth';
 import type { Session } from '@/api/types';
 import { Button, TextField } from '@/components/ui';
 import { demo } from '@/config/demo';
-import { cn } from '@/lib/cn';
+import { PasswordChecklist } from '../components/PasswordChecklist';
 import { PasswordField } from '../components/PasswordField';
-import { passwordIsValid, passwordRules } from '../lib/passwordRules';
+import { passwordIsValid } from '../lib/passwordRules';
 
 export function LoginDetailsStep({
   signUpToken,
@@ -50,20 +49,7 @@ export function LoginDetailsStep({
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <ul className="grid grid-cols-2 gap-1.5 text-[13px]">
-        {passwordRules.map((r) => {
-          const ok = r.test(password);
-          return (
-            <li
-              key={r.label}
-              className={cn('flex items-center gap-1.5', ok ? 'text-success' : 'text-ink-3')}
-            >
-              <Check className="size-3.5 shrink-0" />
-              {r.label}
-            </li>
-          );
-        })}
-      </ul>
+      <PasswordChecklist value={password} />
       <PasswordField
         label="Confirm password"
         autoComplete="new-password"

@@ -15,7 +15,9 @@ import { IdDocumentForm } from '@/features/verification/components/IdDocumentFor
 import { ProofOfAddressForm } from '@/features/verification/components/ProofOfAddressForm';
 import { Stepper } from '@/features/verification/components/Stepper';
 import { CodeInput } from './components/CodeInput';
+import { PasswordChecklist } from './components/PasswordChecklist';
 import { PasswordField } from './components/PasswordField';
+import { passwordIsValid } from './lib/passwordRules';
 import { submitOnEnter } from './lib/submitOnEnter';
 import { PinStep } from './signup/PinStep';
 import { TotpStep } from './signup/TotpStep';
@@ -1012,7 +1014,7 @@ function PasswordStep({
         onKeyDown={submitOnEnter}
         onSubmit={(e) => {
           e.preventDefault();
-          if (password.length >= 8) onDone(password);
+          if (passwordIsValid(password)) onDone(password);
         }}
       >
         <PasswordField
@@ -1023,7 +1025,8 @@ function PasswordStep({
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button type="submit" size="lg" block disabled={password.length < 8}>
+        <PasswordChecklist value={password} />
+        <Button type="submit" size="lg" block disabled={!passwordIsValid(password)}>
           Continue
         </Button>
       </form>

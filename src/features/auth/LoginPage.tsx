@@ -2,13 +2,15 @@ import { useMutation } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { authService } from '@/api/services/auth';
-import type { MfaChallenge } from '@/api/types';
+import type { MfaChallenge, PasswordChangeChallenge } from '@/api/types';
 import { useAuth } from '@/app/providers/AuthProvider';
 import { AuthCard } from '@/components/layout/AuthCard';
 import { paths, homePathForRole } from '@/components/layout/navigation';
 import { Button, TextField } from '@/components/ui';
 import { CodeInput } from './components/CodeInput';
+import { PasswordChecklist } from './components/PasswordChecklist';
 import { PasswordField } from './components/PasswordField';
+import { passwordIsValid } from './lib/passwordRules';
 import { submitOnEnter } from './lib/submitOnEnter';
 import { demo } from '@/config/demo';
 
@@ -21,6 +23,10 @@ export function LoginPage() {
   const [identifier, setIdentifier] = useState(demo?.login.email ?? '');
   const [password, setPassword] = useState(demo?.login.password ?? '');
   const [challenge, setChallenge] = useState<MfaChallenge | null>(null);
+  const [passwordChange, setPasswordChange] = useState<PasswordChangeChallenge | null>(null);
+  const [nextPassword, setNextPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [upgradeOtp, setUpgradeOtp] = useState('');
   const [totp, setTotp] = useState('');
   const [emailOtp, setEmailOtp] = useState('');
 
@@ -36,6 +42,11 @@ export function LoginPage() {
   const submit = useMutation({
     mutationFn: async () => {
       const result = await authService.login({ identifier: identifier.trim(), password });
+      if ('passwordChangeRequired' in result && result.passwordChangeRequired) {
+        setPasswordChange(result);
+        setUpgradeOtp(result.otp ?? '');
+        return 'password' as const;
+      }
       if ('mfaRequired' in result && result.mfaRequired) {
         setChallenge(result);
         return 'mfa' as const;
@@ -45,6 +56,24 @@ export function LoginPage() {
       }
       goIn(result);
       return 'ok' as const;
+    },
+  });
+
+  const upgrade = useMutation({
+    mutationFn: () =>
+      authService.completePasswordUpgrade(
+        passwordChange!.challengeToken,
+        password,
+        nextPassword,
+        upgradeOtp,
+      ),
+    onSuccess: (result) => {
+      if ('mfaRequired' in result && result.mfaRequired) {
+        setPasswordChange(null);
+        setChallenge(result);
+        return;
+      }
+      if ('user' in result) goIn(result);
     },
   });
 
@@ -63,6 +92,60 @@ export function LoginPage() {
     e.preventDefault();
     submit.mutate();
   };
+
+  if (passwordChange) {
+    const matches = nextPassword === confirmPassword;
+    const valid = passwordIsValid(nextPassword) && matches && upgradeOtp.length === 6;
+    return (
+      <AuthCard
+        title="Update your password"
+        subtitle={`This account still uses a password that is too simple. We emailed a code to ${passwordChange.email}.`}
+      >
+        <form
+          className="grid gap-4"
+          onKeyDown={submitOnEnter}
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (valid) upgrade.mutate();
+          }}
+        >
+          <PasswordField
+            label="New password"
+            autoComplete="new-password"
+            value={nextPassword}
+            onChange={(e) => setNextPassword(e.target.value)}
+          />
+          <PasswordChecklist value={nextPassword} />
+          <PasswordField
+            label="Confirm password"
+            autoComplete="new-password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            error={confirmPassword && !matches ? 'Passwords don’t match.' : undefined}
+          />
+          <CodeInput label="Email code" value={upgradeOtp} onChange={setUpgradeOtp} />
+          <button
+            type="button"
+            className="justify-self-start text-sm font-medium text-brand"
+            onClick={() => {
+              void authService.resendPasswordUpgradeOtp(passwordChange.challengeToken).then((result) => {
+                if (result.otp) setUpgradeOtp(result.otp);
+              });
+            }}
+          >
+            Send a new code
+          </button>
+          {upgrade.isError && <p className="text-[13px] text-primary-text">{upgrade.error.message}</p>}
+          <Button type="submit" size="lg" block disabled={!valid || upgrade.isPending}>
+            {upgrade.isPending ? 'Saving…' : 'Save and continue'}
+          </Button>
+          <button type="button" className="text-sm font-medium text-ink-2" onClick={() => setPasswordChange(null)}>
+            Use a different account
+          </button>
+        </form>
+      </AuthCard>
+    );
+  }
 
   if (challenge) {
     const totpOnly = challenge.methods.includes('totp');
@@ -151,6 +234,12 @@ export function LoginPage() {
           Don’t have an account?{' '}
           <Link to={paths.signUp} className="text-primary-text">
             Create account
+          </Link>
+        </p>
+        <p className="text-center text-sm text-ink-3">
+          Credit desk invite?{' '}
+          <Link to={paths.staffJoin} className="font-medium text-brand">
+            Join here
           </Link>
         </p>
       </form>

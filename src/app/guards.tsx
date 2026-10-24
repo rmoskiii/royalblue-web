@@ -23,6 +23,17 @@ export function RequireAuth() {
   return <Outlet />;
 }
 
+/** Existing sessions after the password-policy cutover cannot use Home or the desk. */
+export function RequireStrongPassword() {
+  const { session, ready } = useAuth();
+  const location = useLocation();
+  if (!ready) return <PageLoader />;
+  if (session?.user.mustChangePassword && location.pathname !== paths.updatePassword) {
+    return <Navigate to={paths.updatePassword} replace />;
+  }
+  return <Outlet />;
+}
+
 export function RequireStaff() {
   const { session, isAuthenticated, ready } = useAuth();
   const location = useLocation();
@@ -68,6 +79,9 @@ export function RedirectIfAuthenticated() {
   const from = (useLocation().state as { from?: string } | null)?.from;
   if (!ready) return <PageLoader />;
   if (!isAuthenticated) return <Outlet />;
+  if (session?.user.mustChangePassword) {
+    return <Navigate to={paths.updatePassword} replace />;
+  }
   if (from && from !== paths.home) return <Navigate to={from} replace />;
   return <Navigate to={homePathForRole(session?.user.role)} replace />;
 }

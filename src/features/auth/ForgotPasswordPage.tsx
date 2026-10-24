@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { Check, ChevronLeft } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { authService } from '@/api/services/auth';
@@ -7,10 +7,10 @@ import { useToast } from '@/app/providers/ToastProvider';
 import { AuthCard } from '@/components/layout/AuthCard';
 import { paths } from '@/components/layout/navigation';
 import { Button, TextField } from '@/components/ui';
-import { cn } from '@/lib/cn';
 import { CodeInput } from './components/CodeInput';
+import { PasswordChecklist } from './components/PasswordChecklist';
 import { PasswordField } from './components/PasswordField';
-import { passwordIsValid, passwordRules } from './lib/passwordRules';
+import { passwordIsValid } from './lib/passwordRules';
 import { submitOnEnter } from './lib/submitOnEnter';
 
 type Step = 'email' | 'code' | 'password';
@@ -125,20 +125,7 @@ export function ForgotPasswordPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <ul className="grid grid-cols-2 gap-1.5 text-[13px]">
-            {passwordRules.map((rule) => {
-              const ok = rule.test(password);
-              return (
-                <li
-                  key={rule.label}
-                  className={cn('flex items-center gap-1.5', ok ? 'text-success' : 'text-ink-3')}
-                >
-                  <Check className="size-3.5 shrink-0" />
-                  {rule.label}
-                </li>
-              );
-            })}
-          </ul>
+          <PasswordChecklist value={password} />
           <PasswordField
             label="Confirm password"
             autoComplete="new-password"

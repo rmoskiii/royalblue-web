@@ -5,8 +5,10 @@ import { AuthLayout } from '@/components/layout/AuthLayout';
 import { comingSoon, paths } from '@/components/layout/navigation';
 import { PageLoader } from '@/components/ui';
 import { ForgotPasswordPage } from '@/features/auth/ForgotPasswordPage';
+import { ForcePasswordPage } from '@/features/auth/ForcePasswordPage';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { SignUpPage } from '@/features/auth/SignUpPage';
+import { StaffJoinPage } from '@/features/auth/StaffJoinPage';
 import { BusinessOnly } from '@/features/business/BusinessOnly';
 import { HomeRoute } from '@/features/home/HomeRoute';
 import { LandingPage } from '@/features/landing/LandingPage';
@@ -20,6 +22,7 @@ import {
   RequireAuth,
   RequireStaff,
   RequireStaffRole,
+  RequireStrongPassword,
 } from './guards';
 
 const STALE_CHUNK = 'rb.stale-chunk';
@@ -90,6 +93,7 @@ export const router = createBrowserRouter([
           { path: paths.login, element: <LoginPage /> },
           { path: paths.forgot, element: <ForgotPasswordPage /> },
           { path: paths.signUp, element: <SignUpPage /> },
+          { path: paths.staffJoin, element: <StaffJoinPage /> },
         ],
       },
     ],
@@ -98,6 +102,13 @@ export const router = createBrowserRouter([
     element: <RequireAuth />,
     hydrateFallbackElement: <PageLoader />,
     children: [
+      {
+        element: <AuthLayout />,
+        children: [{ path: paths.updatePassword, element: <ForcePasswordPage /> }],
+      },
+      {
+        element: <RequireStrongPassword />,
+        children: [
       {
         element: <AppShell />,
         children: [
@@ -329,6 +340,8 @@ export const router = createBrowserRouter([
             ],
           },
           ...comingSoon.map((item) => ({ path: item.to, element: <ComingSoonPage item={item} /> })),
+        ],
+      },
         ],
       },
     ],
