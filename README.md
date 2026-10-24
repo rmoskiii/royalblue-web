@@ -47,7 +47,7 @@ VS Code will suggest the ESLint, Prettier and Tailwind extensions (see `.vscode/
 
 Hosted demo: [https://royalblue-web.vercel.app/login](https://royalblue-web.vercel.app/login) (API: `https://royalblue-api.onrender.com`).
 
-Staff and retail customers are seeded by Nest (`npx prisma db seed`) **only if they do not already exist**. Staff have **no** personal NUBAN — after login they go to `/admin`, not Home. Seeded customers skip `/sign-up` (password + PIN only, no authenticator). Passwords must be 12+ characters with upper, lower, a number, and a symbol. Seeded `password123` desk logins are sent to change password on next login. Administrators invite more desk staff from **Team** (no BVN); they finish at `/staff-join`.
+Staff and retail customers are seeded by Nest (`npx prisma db seed`) **only if they do not already exist**. Staff have **no** personal NUBAN — after login they go to `/admin`, not Home. Seeded customers skip `/sign-up` (password + PIN only, no authenticator). Passwords must be 12+ characters with upper, lower, a number, and a symbol. Seeded `password123` desk logins are sent to change password on next login. Administrators invite more desk staff from **Team** (no BVN); they finish at `/staff-join`. Admins can change an existing person’s role or remove them from Team (not themselves, and not the last administrator).
 
 | Role | Email | Phone | Password | PIN | Lands on |
 | --- | --- | --- | --- | --- | --- |
