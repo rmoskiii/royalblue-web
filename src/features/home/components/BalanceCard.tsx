@@ -1,8 +1,10 @@
-import { ArrowDownLeft, Copy, Eye, EyeOff, Send } from 'lucide-react';
+import { ArrowDownLeft, Copy, Eye, EyeOff, Send, Zap } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router';
 import { useAccount } from '@/api/hooks';
 import { useToast } from '@/app/providers/ToastProvider';
-import { Button, Money } from '@/components/ui';
+import { paths } from '@/components/layout/navigation';
+import { Button, Money, buttonClass } from '@/components/ui';
 import { useTransfer } from '@/features/transfer/TransferProvider';
 import { copyText } from '@/lib/clipboard';
 import { formatAccountNumber } from '@/lib/format';
@@ -72,6 +74,9 @@ export function BalanceCard({ onPaymentLink }: { onPaymentLink: () => void }) {
         <Button onClick={() => openTransfer()}>
           <Send className="size-4" /> Send money
         </Button>
+        <Link to={paths.payBills} className={buttonClass({ variant: 'glass' })}>
+          <Zap className="size-4" /> Pay bills
+        </Link>
         <Button variant="glass" onClick={onPaymentLink}>
           <ArrowDownLeft className="size-4" /> Receive
         </Button>

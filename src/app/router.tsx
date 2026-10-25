@@ -204,14 +204,13 @@ export const router = createBrowserRouter([
               },
             ],
           },
-          // Parked until BudPay airtime/data/electricity is reliable.
-          // {
-          //   path: paths.payBills,
-          //   ...page(
-          //     () => import('@/features/bills/BillsPage'),
-          //     (m) => m.BillsPage,
-          //   ),
-          // },
+          {
+            path: paths.payBills,
+            ...page(
+              () => import('@/features/bills/BillsPage'),
+              (m) => m.BillsPage,
+            ),
+          },
           // Parked until savings/vaults API ships.
           // {
           //   path: paths.savings,

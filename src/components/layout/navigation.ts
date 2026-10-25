@@ -120,7 +120,7 @@ const personalNav: NavigationSet = {
   primary: [
     item.home,
     item.transfers,
-    // item.payBills, // parked until BudPay airtime/data/electricity is reliable
+    item.payBills,
     item.loans,
     // item.savings, // parked until savings/vaults API ships
     // item.cards,
@@ -129,10 +129,10 @@ const personalNav: NavigationSet = {
     item.insights,
   ],
   learnAndEarn: [item.rewards, item.refer, item.learn, item.help],
-  mobileTabs: [item.home, item.transfers, item.loans, item.transactions],
+  mobileTabs: [item.home, item.transfers, item.payBills, item.loans],
   more: [
     item.loans,
-    // item.payBills,
+    item.payBills,
     item.transactions,
     // item.invest,
     item.insights,
@@ -151,6 +151,7 @@ const businessNav: NavigationSet = {
     { ...item.home, label: 'Dashboard' },
     item.payments,
     item.transfers,
+    item.payBills,
     item.transactions,
     item.loans,
     // item.savings, // parked until savings/vaults API ships
@@ -160,9 +161,9 @@ const businessNav: NavigationSet = {
     { ...item.home, label: 'Dashboard' },
     item.payments,
     item.transfers,
-    item.transactions,
+    item.payBills,
   ],
-  more: [item.loans, item.verification, item.help, item.settings],
+  more: [item.payBills, item.loans, item.transactions, item.verification, item.help, item.settings],
 };
 
 export const navigationFor = (profile: 'personal' | 'business') =>
@@ -203,5 +204,5 @@ export function homePathForRole(role?: string | null) {
 export const settingsNav = item.settings;
 export const adminNav = item.admin;
 
-/** Destinations parked or not built yet. Bills/cards hidden until BudPay payments are reliable. Savings parked until the vaults API ships. */
-export const comingSoon: (NavItem & { to: string })[] = [item.invest, item.payBills, item.cards, item.savings];
+/** Destinations parked or not built yet. Cards hidden until payments are reliable. Savings parked until the vaults API ships. */
+export const comingSoon: (NavItem & { to: string })[] = [item.invest, item.cards, item.savings];
