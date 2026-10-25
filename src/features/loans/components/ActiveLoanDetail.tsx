@@ -17,8 +17,12 @@ export function ActiveLoanDetail({ loan }: { loan: Loan }) {
         <div className="min-w-0">
           <p className="font-semibold">{loan.productName}</p>
           <p className="text-xs text-ink-3">
-            <Money amount={loan.principal} /> at {loan.monthlyRate * 100}% per month ·{' '}
-            {loan.tenorMonths} months
+            <Money amount={loan.principal} /> · {loan.tenorMonths} months ·{' '}
+            {loan.repaymentFrequency === 'DAILY'
+              ? 'daily float'
+              : loan.repaymentFrequency === 'WEEKLY'
+                ? 'weekly float'
+                : `${(loan.monthlyRate * 100).toFixed(2)}% per month`}
           </p>
         </div>
         <Chip tone="success" className="ml-auto">

@@ -3,7 +3,7 @@ import { Card } from '@/components/ui';
 // RoyalBlue's published loan process.
 const steps = [
   ['Fund your account', 'Hold the equity you offered (0–20% of the loan) in your RoyalBlue account. Credit checks this before disbursement.'],
-  ['Apply online', 'Propose amount, tenor (up to 12 months), rate, and equity, then complete the guarantor form and documents.'],
+  ['Apply online', 'Pick a category, daily/weekly/monthly float, 3, 6 or 12 months, and the rate you want. Credit approves or declines. Then the guarantor form and documents.'],
   ['Approval then disbursement', 'The credit desk reviews and approves. Disbursement credits your RoyalBlue account; the schedule then shows here.'],
 ];
 

@@ -8,6 +8,7 @@ import { useAuth } from '@/app/providers/AuthProvider';
 import { useToast } from '@/app/providers/ToastProvider';
 import { Button, Card, Chip, PageHeader, SectionLoader, SelectField, TextField } from '@/components/ui';
 import { formatNaira } from '@/lib/format';
+import { ALLOWED_LOAN_TENORS } from '@/features/loans/lib/amortization';
 import { openFetchedBlob } from '@/lib/openBlob';
 import { applicantName, canDecide, canRecommend, statusTone } from './staffAccess';
 
@@ -101,6 +102,11 @@ export function AdminCreditFilePage() {
           <p>{data.loanProduct?.name}</p>
           <p>
             Requested {formatNaira(Number(data.requestedAmount))} · {data.tenorMonths} months
+            {data.repaymentFrequency === 'DAILY'
+              ? ' · daily float'
+              : data.repaymentFrequency === 'WEEKLY'
+                ? ' · weekly float'
+                : ' · monthly'}
             {data.offeredInterestRatePA != null
               ? ` · offered ${Number(data.offeredInterestRatePA)}% p.a.`
               : ''}
@@ -235,14 +241,14 @@ export function AdminCreditFilePage() {
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder={String(data.requestedAmount)}
               />
-              <TextField
-                label="Approved tenor (months)"
-                type="number"
-                min={1}
-                max={12}
-                value={tenor}
+              <SelectField
+                label="Approved tenor"
+                value={tenor || String(data.tenorMonths)}
                 onChange={(e) => setTenor(e.target.value)}
-                placeholder={String(data.tenorMonths)}
+                options={ALLOWED_LOAN_TENORS.map((months) => ({
+                  value: String(months),
+                  label: `${months} months`,
+                }))}
               />
               <TextField
                 label="Approved rate (% p.a.)"

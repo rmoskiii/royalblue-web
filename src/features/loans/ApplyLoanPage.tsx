@@ -2,17 +2,19 @@ import { useMutation } from '@tanstack/react-query';
 import { useEffect, useState, type FormEvent } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { loanService } from '@/api/services/loans';
-import type { ApplyLoanRequest, LoanProduct } from '@/api/types';
+import type { ApplyLoanRequest, LoanProduct, RepaymentFrequency } from '@/api/types';
 import { useLoanProducts } from '@/api/hooks';
 import { paths } from '@/components/layout/navigation';
 import { Button, Card, PageHeader, SelectField, TextField } from '@/components/ui';
+import { ALLOWED_LOAN_TENORS, LOAN_TYPES } from './lib/amortization';
 
 type Step = 'borrower' | 'guarantor' | 'docs';
 
 const emptyBorrower = {
   loanProductId: '',
   requestedAmount: '',
-  tenorMonths: '',
+  tenorMonths: '3',
+  repaymentFrequency: 'MONTHLY' as RepaymentFrequency,
   offeredInterestRatePA: '',
   offeredEquityPercent: '',
   purpose: '',
@@ -62,12 +64,17 @@ export function ApplyLoanPage() {
     const tenor = params.get('tenor') ?? '';
     const rate = params.get('rate') ?? '';
     const equity = params.get('equity') ?? '';
-    if (!productId && !amount && !tenor && !rate && !equity) return;
+    const frequency = params.get('frequency') ?? '';
+    if (!productId && !amount && !tenor && !rate && !equity && !frequency) return;
     setBorrower((b) => ({
       ...b,
       loanProductId: productId || b.loanProductId,
       requestedAmount: amount || b.requestedAmount,
       tenorMonths: tenor || b.tenorMonths,
+      repaymentFrequency:
+        frequency === 'DAILY' || frequency === 'WEEKLY' || frequency === 'MONTHLY'
+          ? frequency
+          : b.repaymentFrequency,
       offeredInterestRatePA: rate || b.offeredInterestRatePA,
       offeredEquityPercent: equity || b.offeredEquityPercent,
     }));
@@ -92,7 +99,7 @@ export function ApplyLoanPage() {
           >
             <h2 className="text-base font-semibold">1. Applicant</h2>
             <SelectField
-              label="Product"
+              label="Loan category"
               required
               value={borrower.loanProductId}
               onChange={(e) => {
@@ -101,16 +108,25 @@ export function ApplyLoanPage() {
                 setBorrower((b) => ({
                   ...b,
                   loanProductId,
-                  tenorMonths: b.tenorMonths || String(next?.maxTenorMonths ?? 12),
+                  tenorMonths: b.tenorMonths || '3',
                   offeredInterestRatePA:
                     b.offeredInterestRatePA || (next ? String(next.indicativeRatePA) : ''),
                   offeredEquityPercent: b.offeredEquityPercent === '' ? '20' : b.offeredEquityPercent,
                 }));
               }}
               options={[
-                { value: '', label: 'Select a product' },
+                { value: '', label: 'Select a category' },
                 ...(products ?? []).map((p) => ({ value: p.id, label: p.name })),
               ]}
+            />
+            <SelectField
+              label="Repayment"
+              required
+              value={borrower.repaymentFrequency}
+              onChange={(e) =>
+                setBorrower((b) => ({ ...b, repaymentFrequency: e.target.value as RepaymentFrequency }))
+              }
+              options={LOAN_TYPES}
             />
             <div className="grid gap-4 sm:grid-cols-2">
               <TextField
@@ -120,15 +136,15 @@ export function ApplyLoanPage() {
                 value={borrower.requestedAmount}
                 onChange={(e) => setBorrower((b) => ({ ...b, requestedAmount: e.target.value }))}
               />
-              <TextField
-                label="Tenor (months)"
-                type="number"
-                min={1}
-                max={12}
+              <SelectField
+                label="Tenor"
                 required
                 value={borrower.tenorMonths}
                 onChange={(e) => setBorrower((b) => ({ ...b, tenorMonths: e.target.value }))}
-                hint="Maximum 12 months"
+                options={ALLOWED_LOAN_TENORS.map((months) => ({
+                  value: String(months),
+                  label: `${months} months`,
+                }))}
               />
               <TextField
                 label="Interest rate you are offering (% p.a.)"
@@ -141,8 +157,8 @@ export function ApplyLoanPage() {
                 onChange={(e) => setBorrower((b) => ({ ...b, offeredInterestRatePA: e.target.value }))}
                 hint={
                   product
-                    ? `Catalogue indicative ${product.indicativeRatePA}% p.a. Credit may approve a different rate.`
-                    : 'Credit may approve a different rate.'
+                    ? `Catalogue for this category is ${product.indicativeRatePA}% p.a. You can offer another rate; credit approves or declines.`
+                    : `Offer any rate from 0% to 60% p.a. Credit approves or declines.`
                 }
               />
               <TextField
@@ -329,6 +345,7 @@ function toRequest(
       loanProductId: borrower.loanProductId || product?.id || '',
       requestedAmount: Number(borrower.requestedAmount),
       tenorMonths: Number(borrower.tenorMonths),
+      repaymentFrequency: borrower.repaymentFrequency,
       offeredInterestRatePA: Number(borrower.offeredInterestRatePA),
       offeredEquityPercent: Number(borrower.offeredEquityPercent),
       purpose: borrower.purpose,

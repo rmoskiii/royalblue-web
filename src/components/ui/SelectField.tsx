@@ -5,9 +5,10 @@ import { cn } from '@/lib/cn';
 export interface SelectFieldProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
   options: { value: string; label: string }[];
+  placeholder?: string;
 }
 
-export function SelectField({ label, options, id, className, ...props }: SelectFieldProps) {
+export function SelectField({ label, options, placeholder, id, className, ...props }: SelectFieldProps) {
   const autoId = useId();
   const selectId = id ?? autoId;
   return (
@@ -21,6 +22,11 @@ export function SelectField({ label, options, id, className, ...props }: SelectF
           className="h-12 w-full appearance-none rounded-field border border-transparent bg-surface-2 pr-10 pl-3.5 text-base text-ink outline-none focus:border-brand focus:ring-3 focus:ring-brand/15"
           {...props}
         >
+          {placeholder ? (
+            <option value="" disabled={props.required}>
+              {placeholder}
+            </option>
+          ) : null}
           {options.map((o) => (
             <option key={o.value} value={o.value}>
               {o.label}
