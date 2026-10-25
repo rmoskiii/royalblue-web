@@ -18,8 +18,6 @@ export function LoansPage() {
 
   const activeLoan = loans?.find((l) => l.status === 'active');
   const pipeline = loans?.filter((l) => l.status === 'pending' || l.status === 'under_review');
-  const calculatorProduct = selected ?? products?.[0];
-
   const estimate = (product: LoanProduct) => {
     setSelected(product);
     requestAnimationFrame(() =>
@@ -31,7 +29,7 @@ export function LoansPage() {
     <>
       <PageHeader
         title="Loans"
-        subtitle="Propose amount, tenor (up to 12 months), rate, and equity (0–20%). Credit sets the final facility."
+        subtitle="Daily or weekly float, or monthly, for 3, 6 or 12 months. Category sets the amount band; you offer the rate. Credit approves or declines."
         action={
           <Link to={paths.loanApply} className={buttonClass({ variant: 'primary', block: true })}>
             Apply for a loan
@@ -60,11 +58,11 @@ export function LoansPage() {
             </Card>
           )}
           {activeLoan && <ActiveLoanDetail loan={activeLoan} />}
-          {calculatorProduct && (
+          {products && products.length > 0 && (
             <LoanCalculator
-              key={calculatorProduct.id}
               ref={calculatorRef}
-              product={calculatorProduct}
+              products={products}
+              selectedProductId={selected?.id}
             />
           )}
         </div>

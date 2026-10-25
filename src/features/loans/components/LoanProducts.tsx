@@ -4,16 +4,14 @@ import { formatNaira } from '@/lib/format';
 
 function productIcon(id: string, name: string): LucideIcon {
   const key = `${id} ${name}`.toLowerCase();
-  if (key.includes('lease') || key.includes('asset')) return Truck;
-  if (key.includes('lpo')) return FileText;
-  if (key.includes('instant') || key.includes('salary') || key.includes('sal-')) return Banknote;
+  if (key.includes('wholesale')) return Truck;
+  if (key.includes('beta')) return FileText;
+  if (key.includes('sme')) return Banknote;
   return Store;
 }
 
 function tenorLabel(options: number[]) {
-  const min = Math.min(...options);
-  const max = Math.max(...options);
-  return min === max ? `${max} months` : `${min} to ${max} months`;
+  return options.length ? `${options.join(', ')} months` : '3, 6 or 12 months';
 }
 
 export function LoanProducts({
@@ -40,7 +38,8 @@ export function LoanProducts({
               <h3 className="mt-1 text-[15px] font-semibold">{p.name}</h3>
               <p className="flex-1 text-[13px] text-ink-2">{p.description}</p>
               <p className="text-xs text-ink-3 tabular">
-                Up to {formatNaira(p.maxAmount)} · {tenorLabel(p.tenorOptions)} · from {p.indicativeRatePA}% p.a.
+                {formatNaira(p.minAmount)}–{formatNaira(p.maxAmount)} · {tenorLabel(p.tenorOptions)} · catalogue{' '}
+                {p.indicativeRatePA}% p.a.
               </p>
               <button
                 type="button"

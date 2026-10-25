@@ -320,6 +320,7 @@ export interface TransferResult {
 // ---------- Loans ----------
 export type LoanStatus = 'pending' | 'active' | 'closed' | 'under_review' | 'declined';
 export type LoanProductId = string;
+export type RepaymentFrequency = 'DAILY' | 'WEEKLY' | 'MONTHLY';
 
 export interface LoanProduct {
   id: LoanProductId;
@@ -343,6 +344,7 @@ export interface Loan {
   principal: number;
   monthlyRate: number;
   tenorMonths: number;
+  repaymentFrequency?: RepaymentFrequency;
   disbursedAt: ISODateString;
   firstRepaymentAt: ISODateString;
   repaymentsMade: number;
@@ -622,6 +624,7 @@ export interface CreditFile {
   requestedAmount: number;
   approvedAmount?: number | null;
   tenorMonths: number;
+  repaymentFrequency?: RepaymentFrequency;
   offeredInterestRatePA?: number | string | null;
   offeredEquityPercent?: number | string | null;
   approvedEquityPercent?: number | string | null;
@@ -750,8 +753,9 @@ export interface ApplyLoanRequest {
   application: {
     loanProductId: string;
     requestedAmount: number;
-    tenorMonths: number;
-    offeredInterestRatePA?: number;
+      tenorMonths: number;
+      repaymentFrequency?: RepaymentFrequency;
+      offeredInterestRatePA?: number;
     offeredEquityPercent?: number;
     purpose: string;
     ippisNumber?: string;

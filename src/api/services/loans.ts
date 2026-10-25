@@ -18,18 +18,25 @@ function naira(value: number | string | null | undefined) {
   return Number(value ?? 0);
 }
 
+const CATALOGUE_TENORS = [3, 6, 12];
+
+const PRODUCT_BLURB: Record<string, string> = {
+  RETAIL: 'Stock and till float for shopkeepers.',
+  WHOLESALE: 'Inventory and distributor working capital.',
+  SME: 'General SME working capital up to ₦20m.',
+  'SME-BETA-S': 'SME facilities from ₦1m to ₦3m.',
+  'SME-BETA-L': 'Larger SME facilities from ₦3m.',
+};
+
 function mapProduct(p: NestProduct): LoanProduct {
-  const minTenorMonths = Math.max(1, p.minTenorMonths || 1);
+  const minTenorMonths = Math.max(3, p.minTenorMonths || 3);
   const maxTenorMonths = Math.min(12, p.maxTenorMonths || 12);
-  const tenorOptions =
-    minTenorMonths === maxTenorMonths
-      ? [minTenorMonths]
-      : Array.from({ length: maxTenorMonths - minTenorMonths + 1 }, (_, i) => minTenorMonths + i);
+  const tenorOptions = CATALOGUE_TENORS.filter((months) => months >= minTenorMonths && months <= maxTenorMonths);
   const indicativeRatePA = naira(p.interestRatePA);
   return {
     id: p.id,
     name: p.name,
-    description: p.code,
+    description: PRODUCT_BLURB[p.code] ?? p.name,
     minAmount: naira(p.minAmount),
     maxAmount: naira(p.maxAmount),
     minTenorMonths,
@@ -60,6 +67,7 @@ function mapLoan(row: CreditFile): Loan {
     principal: naira(row.approvedAmount ?? row.requestedAmount),
     monthlyRate: naira(row.monthlyRate) || rateFromOffer || rateFromProduct,
     tenorMonths: row.approvedTenorMonths ?? row.tenorMonths,
+    repaymentFrequency: row.repaymentFrequency ?? 'MONTHLY',
     disbursedAt: row.disbursedAt ?? row.submittedAt ?? row.createdAt,
     firstRepaymentAt: row.firstRepaymentAt ?? row.disbursedAt ?? row.createdAt,
     repaymentsMade: row.repaymentsMade ?? 0,
@@ -90,7 +98,14 @@ export const loanService = {
     return http.get(`/applications/${id}`);
   },
 
-  quote(productId: string, amount: number, tenor: number, ratePA?: number, equityPercent?: number) {
+  quote(
+    productId: string,
+    amount: number,
+    tenor: number,
+    ratePA?: number,
+    equityPercent?: number,
+    frequency?: string,
+  ) {
     return http.get<{
       monthlyPayment: number;
       totalRepayable: number;
@@ -103,6 +118,7 @@ export const loanService = {
       tenor,
       ...(ratePA != null ? { rate: ratePA } : {}),
       ...(equityPercent != null ? { equity: equityPercent } : {}),
+      ...(frequency ? { frequency } : {}),
     });
   },
 
