@@ -158,7 +158,7 @@ export function ApplyLoanPage() {
                 hint={
                   product
                     ? `Catalogue for this category is ${product.indicativeRatePA}% p.a. You can offer another rate; credit approves or declines.`
-                    : `Offer any rate from 0% to 60% p.a. Credit approves or declines.`}
+                    : `Offer any rate from 0% to 60% p.a. Credit approves or declines.`
                 }
               />
               <TextField
