@@ -1,19 +1,18 @@
-import { History, Landmark, Send, ShieldCheck, type LucideIcon } from 'lucide-react';
+import { History, Landmark, Send, ShieldCheck, Smartphone, Wifi, Zap, type LucideIcon } from 'lucide-react';
 import { Link } from 'react-router';
 import { paths } from '@/components/layout/navigation';
 import { IconTile } from '@/components/ui';
 
 // Tints come from the Figma colour variables.
 const services: { label: string; to: string; icon: LucideIcon; tint: string }[] = [
-  // {
-  //   label: 'Airtime',
-  //   to: `${paths.payBills}?type=airtime`,
-  //   icon: Smartphone,
-  //   tint: 'text-tint-airtime',
-  // },
-  // { label: 'Data', to: `${paths.payBills}?type=data`, icon: Wifi, tint: 'text-tint-data' },
-  // { label: 'Bills', to: `${paths.payBills}?type=electricity`, icon: Zap, tint: 'text-tint-bills' },
-  // { label: 'Card', to: paths.cards, icon: CreditCard, tint: 'text-tint-card' },
+  {
+    label: 'Airtime',
+    to: `${paths.payBills}?type=airtime`,
+    icon: Smartphone,
+    tint: 'text-tint-airtime',
+  },
+  { label: 'Data', to: `${paths.payBills}?type=data`, icon: Wifi, tint: 'text-tint-data' },
+  { label: 'Bills', to: `${paths.payBills}?type=electricity`, icon: Zap, tint: 'text-tint-bills' },
   { label: 'Send', to: paths.transfer, icon: Send, tint: 'text-brand' },
   { label: 'Loans', to: paths.loans, icon: Landmark, tint: 'text-tint-loans' },
   { label: 'Activity', to: paths.transactions, icon: History, tint: 'text-ink-2' },
