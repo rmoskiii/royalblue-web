@@ -80,7 +80,7 @@ export function buildInbox(input: {
       createdAt: PINNED,
       href: paths.verification,
     });
-  } else if (v?.addressReturned || ((v?.failedAddressUploads ?? 0) > 0 && !v?.addressVerified)) {
+  } else if (v && (v.addressReturned || ((v.failedAddressUploads ?? 0) > 0 && !v.addressVerified))) {
     items.push({
       id: 'limits-address-returned',
       kind: 'limits',
