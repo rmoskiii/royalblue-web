@@ -80,12 +80,14 @@ export function buildInbox(input: {
       createdAt: PINNED,
       href: paths.verification,
     });
-  } else if ((v?.failedAddressUploads ?? 0) > 0 && !v?.addressVerified) {
+  } else if (v?.addressReturned || ((v?.failedAddressUploads ?? 0) > 0 && !v?.addressVerified)) {
     items.push({
       id: 'limits-address-returned',
       kind: 'limits',
       title: 'Address check needs another bill',
-      body: 'Upload a recent utility bill or bank statement in your name, or ask staff to review it.',
+      body: v.addressReturnReason
+        ? `Staff sent this back: ${v.addressReturnReason}`
+        : 'Upload a recent utility bill or bank statement in your name that matches the address you entered.',
       createdAt: PINNED,
       href: `${paths.verification}?step=proof-of-address`,
     });

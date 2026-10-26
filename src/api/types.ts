@@ -369,6 +369,8 @@ export interface VerificationStatus {
   idDocumentVerified?: boolean;
   addressVerified?: boolean;
   addressReviewPending?: boolean;
+  addressReturned?: boolean;
+  addressReturnReason?: string | null;
   failedAddressUploads?: number;
   claimedAddress?: string | null;
   registryAddress?: string | null;

@@ -181,7 +181,12 @@ function KycReviewCard({
       {rowStatus === 'pending' ? (
         deciding ? (
           <div className="grid gap-2">
-            <TextField label="Staff notes" value={notes} onChange={(e) => onNotes(e.target.value)} />
+            <TextField
+              label="Staff notes"
+              hint="If you send this back, the customer is emailed this note."
+              value={notes}
+              onChange={(e) => onNotes(e.target.value)}
+            />
             <div className="flex flex-wrap gap-2">
               <Button size="sm" disabled={pending} onClick={() => onDecide(true)}>
                 Approve address

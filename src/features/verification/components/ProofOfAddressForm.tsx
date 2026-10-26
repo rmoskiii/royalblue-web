@@ -14,6 +14,7 @@ export function ProofOfAddressForm({
   failedUploads = 0,
   currentAddress = '',
   billName,
+  returnReason,
 }: {
   onDone: (file?: File, address?: string) => void;
   onSkip?: () => void;
@@ -23,6 +24,7 @@ export function ProofOfAddressForm({
   currentAddress?: string | null;
   lastRegistryAddress?: string | null;
   billName?: string | null;
+  returnReason?: string | null;
   onAddressConfirmed?: (address: string) => void;
 }) {
   const queryClient = useQueryClient();
@@ -94,6 +96,11 @@ export function ProofOfAddressForm({
         placeholder="Street, area, city, state"
         hint={ADDRESS_FIELD_HINT}
       />
+      {returnReason && (
+        <p className="rounded-tile bg-amber-500/10 px-4 py-3 text-[13px] text-amber-900 dark:text-amber-200">
+          Staff sent this back: {returnReason}
+        </p>
+      )}
       {billName && <p className="text-[13px] text-ink-2">Bill on file: {billName}</p>}
       <p className="text-[13px] text-ink-2">{BILL_UPLOAD_HINT}</p>
       <FileDrop value={file} onChange={setFile} />

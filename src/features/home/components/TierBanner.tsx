@@ -24,11 +24,14 @@ export function TierBanner() {
   const ninOnly = status.tier === 1 && !status.hasBvn;
   const selfieFailed = status.selfieCheck?.status === 'failed';
   const selfiePassed = status.selfieCheck?.status === 'passed';
+  const addressReturned = Boolean(status.addressReturned) && !status.addressReviewPending;
   const title = identityPending
     ? 'Identity not confirmed'
     : selfieFailed
       ? 'Selfie didn’t pass'
-      : selfiePassed && status.tier === 2
+      : addressReturned
+        ? 'Address check sent back'
+        : selfiePassed && status.tier === 2
         ? 'You’re on Tier 2'
         : ninOnly
           ? `Tier 1 · NIN — ${formatNaira(cap)} daily`
@@ -39,6 +42,9 @@ export function TierBanner() {
     : selfieFailed
       ? (status.selfieCheck?.message ??
         'Your live selfie did not pass. You’re still on Tier 1. Try again in Account limits.')
+      : addressReturned
+        ? (status.missing?.[0] ??
+          'Staff could not approve that bill. Upload a different one in Account limits.')
       : selfiePassed && status.tier === 2
         ? (status.selfieCheck?.message ??
           'Live selfie matched. Confirm your address to unlock Tier 3.')
@@ -49,7 +55,9 @@ export function TierBanner() {
     ? 'Finish in Settings'
     : selfieFailed
       ? 'Try selfie again'
-      : ninOnly
+      : addressReturned
+        ? 'Upload another bill'
+        : ninOnly
         ? 'Add BVN'
         : 'Continue verification';
   const nextStep = selfieFailed

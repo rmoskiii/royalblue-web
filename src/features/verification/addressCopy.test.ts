@@ -11,6 +11,12 @@ describe('addressStepLead', () => {
     expect(addressStepLead(false)).toBe(ADDRESS_LEAD);
     expect(addressStepLead(true)).toBe(ADDRESS_LEAD_PENDING);
   });
+
+  it('quotes the staff reason after a send-back', () => {
+    expect(addressStepLead(false, 'Bill is in another name', true)).toBe(
+      'Staff sent this back: Bill is in another name',
+    );
+  });
 });
 
 describe('billToggleLabel', () => {

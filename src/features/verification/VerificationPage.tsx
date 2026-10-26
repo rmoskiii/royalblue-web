@@ -138,7 +138,11 @@ export function VerificationPage() {
                 </h3>
                 <p className="mt-1 mb-4 text-sm text-ink-2">
                   {active === 'proof-of-address'
-                    ? addressStepLead(Boolean(status.addressReviewPending))
+                    ? addressStepLead(
+                        Boolean(status.addressReviewPending),
+                        status.addressReturnReason,
+                        Boolean(status.addressReturned),
+                      )
                     : stepCopy[active].lead}
                 </p>
                 {active === 'id-document' && status.selfieCheck?.status === 'failed' && showForm ? (
@@ -183,6 +187,7 @@ export function VerificationPage() {
                     failedUploads={status.failedAddressUploads ?? 0}
                     currentAddress={status.claimedAddress}
                     billName={status.latestBillName}
+                    returnReason={status.addressReturnReason}
                     onDone={() => finish('proof-of-address')}
                   />
                 )}
