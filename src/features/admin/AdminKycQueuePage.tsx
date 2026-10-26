@@ -167,7 +167,7 @@ function KycReviewCard({
       </div>
       {row.claimedAddress && <p className="text-[13px] text-ink">Lives at: {row.claimedAddress}</p>}
       {row.registryAddress && (
-        <p className="text-[13px] text-ink-3">Last on NIN/BVN (may be old): {row.registryAddress}</p>
+        <p className="text-[13px] text-ink-3">BVN address on file (not used for auto-unlock): {row.registryAddress}</p>
       )}
       {row.note && <p className="text-[13px] text-ink">Customer note: {row.note}</p>}
       {dojahBits.length > 0 && <p className="text-[13px] text-ink-3">Bill read: {dojahBits.join(' · ')}</p>}

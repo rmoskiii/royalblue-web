@@ -76,7 +76,7 @@ export function buildInbox(input: {
       id: 'limits-address-review',
       kind: 'limits',
       title: 'Proof of address is with staff',
-      body: 'Staff will compare the bill to NIMC and approve or send it back.',
+      body: 'Staff will compare the bill to the address you entered and approve or send it back.',
       createdAt: PINNED,
       href: paths.verification,
     });

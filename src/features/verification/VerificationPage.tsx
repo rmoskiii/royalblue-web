@@ -182,7 +182,6 @@ export function VerificationPage() {
                     reviewPending={Boolean(status.addressReviewPending)}
                     failedUploads={status.failedAddressUploads ?? 0}
                     currentAddress={status.claimedAddress}
-                    lastRegistryAddress={status.registryAddress}
                     billName={status.latestBillName}
                     onDone={() => finish('proof-of-address')}
                   />

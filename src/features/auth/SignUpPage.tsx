@@ -215,7 +215,7 @@ export function SignUpPage() {
           showToast('Live selfie matched. You’re on Tier 2. Confirm address later for Tier 3.', 7000);
         }
         if (pendingConfirmedAddress) await verificationService.confirmAddress(pendingConfirmedAddress);
-        else if (pendingAddress) await verificationService.uploadProofOfAddress(pendingAddress);
+        if (pendingAddress) await verificationService.uploadProofOfAddress(pendingAddress);
       } catch (error) {
         showToast(
           error instanceof Error
@@ -509,7 +509,7 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Is this you?"
-        subtitle="Name, date of birth, and the address on record when NIMC or NIBSS returned one."
+        subtitle="Name and date of birth from your BVN or NIN check."
         back={
           <BackButton
             onClick={() =>
@@ -660,7 +660,7 @@ export function SignUpPage() {
     return (
       <AuthCard
         title="Residential address"
-        subtitle="Upload a recent bill for Tier 3. It unlocks only if that bill address matches NIMC. Skip and finish in Account limits if you prefer."
+        subtitle="Type where you live now, then upload a bill. Tier 3 unlocks if that bill matches the address you typed. Skip and finish in Account limits if you prefer."
         back={
           <BackButton onClick={() => setState({ ...state, step: 'id-document' })} />
         }
@@ -678,22 +678,14 @@ export function SignUpPage() {
         </div>
         <ProofOfAddressForm
           persist={false}
-          currentAddress={state.identity.residentialAddress}
-          lastRegistryAddress={state.identity.residentialAddress}
           onSkip={() => {
             setPendingAddress(null);
             setPendingConfirmedAddress(null);
             afterAddress();
           }}
-          onAddressConfirmed={(line) => {
-            setPendingConfirmedAddress(line);
-            setPendingAddress(null);
-          }}
-          onDone={(file) => {
-            if (file) {
-              setPendingAddress(file);
-              setPendingConfirmedAddress(null);
-            }
+          onDone={(file, address) => {
+            setPendingConfirmedAddress(address?.trim() || null);
+            setPendingAddress(file ?? null);
             afterAddress();
           }}
         />
