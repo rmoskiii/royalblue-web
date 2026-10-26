@@ -64,7 +64,7 @@ export function BvnForm({
               ...ninLookup,
               firstName: ninLookup.firstName || next.firstName,
               lastName: ninLookup.lastName || next.lastName,
-              residentialAddress: ninLookup.residentialAddress || next.residentialAddress,
+              residentialAddress: next.residentialAddress,
               verified: Boolean(ninLookup.verified || next.verified),
               pending: Boolean(ninLookup.pending && next.pending),
             }

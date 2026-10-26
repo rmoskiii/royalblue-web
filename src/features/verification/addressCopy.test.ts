@@ -4,7 +4,6 @@ import {
   ADDRESS_LEAD_PENDING,
   addressStepLead,
   billToggleLabel,
-  lastRegistryHint,
 } from './addressCopy';
 
 describe('addressStepLead', () => {
@@ -12,25 +11,11 @@ describe('addressStepLead', () => {
     expect(addressStepLead(false)).toBe(ADDRESS_LEAD);
     expect(addressStepLead(true)).toBe(ADDRESS_LEAD_PENDING);
   });
-});
 
-describe('lastRegistryHint', () => {
-  it('hides NIN when the typed line already matches', () => {
-    expect(
-      lastRegistryHint(
-        '53A Mudashiru Eletu Way, Osapa, Lekki',
-        '53A Mudashiru Eletu Way, Osapa, Lekki',
-      ),
-    ).toBeNull();
-  });
-
-  it('keeps a stale NIN line so the customer can change it', () => {
-    expect(
-      lastRegistryHint(
-        '53A Mudashiru Eletu Way, Osapa, Lekki',
-        '13, okesuna street, lagos island',
-      ),
-    ).toBe('13, okesuna street, lagos island');
+  it('quotes the staff reason after a send-back', () => {
+    expect(addressStepLead(false, 'Bill is in another name', true)).toBe(
+      'Staff sent this back: Bill is in another name',
+    );
   });
 });
 

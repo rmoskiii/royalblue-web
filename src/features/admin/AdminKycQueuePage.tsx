@@ -167,7 +167,7 @@ function KycReviewCard({
       </div>
       {row.claimedAddress && <p className="text-[13px] text-ink">Lives at: {row.claimedAddress}</p>}
       {row.registryAddress && (
-        <p className="text-[13px] text-ink-3">Last on NIN/BVN (may be old): {row.registryAddress}</p>
+        <p className="text-[13px] text-ink-3">BVN address on file (not used for auto-unlock): {row.registryAddress}</p>
       )}
       {row.note && <p className="text-[13px] text-ink">Customer note: {row.note}</p>}
       {dojahBits.length > 0 && <p className="text-[13px] text-ink-3">Bill read: {dojahBits.join(' · ')}</p>}
@@ -181,7 +181,12 @@ function KycReviewCard({
       {rowStatus === 'pending' ? (
         deciding ? (
           <div className="grid gap-2">
-            <TextField label="Staff notes" value={notes} onChange={(e) => onNotes(e.target.value)} />
+            <TextField
+              label="Staff notes"
+              hint="If you send this back, the customer is emailed this note."
+              value={notes}
+              onChange={(e) => onNotes(e.target.value)}
+            />
             <div className="flex flex-wrap gap-2">
               <Button size="sm" disabled={pending} onClick={() => onDecide(true)}>
                 Approve address

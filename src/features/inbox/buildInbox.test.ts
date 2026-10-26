@@ -45,4 +45,18 @@ describe('buildInbox', () => {
     );
     expect(items.at(-1)?.id).toBe('txn-t1');
   });
+
+  it('shows the staff send-back reason on a returned bill', () => {
+    const items = buildInbox({
+      verification: {
+        tier: 2,
+        completedSteps: ['bvn', 'id-document'],
+        addressVerified: false,
+        addressReturned: true,
+        addressReturnReason: 'Bill is in another name',
+      },
+    });
+    const returned = items.find((row) => row.id === 'limits-address-returned');
+    expect(returned?.body).toBe('Staff sent this back: Bill is in another name');
+  });
 });

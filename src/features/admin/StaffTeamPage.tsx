@@ -26,6 +26,7 @@ export function StaffTeamPage() {
   const queryClient = useQueryClient();
   const { page, pageSize, q, setQ, status, setListParams } = useStaffListParams({ status: 'all' });
   const [invite, setInvite] = useState(emptyInvite);
+  const [grant, setGrant] = useState({ email: '', role: 'ADMINISTRATOR' as StaffRole });
   const [pendingRemove, setPendingRemove] = useState<CreditTeamMember | null>(null);
   const { data: rows, isLoading } = useQuery({
     queryKey: queryKeys.staff.team,
@@ -41,6 +42,15 @@ export function StaffTeamPage() {
           : result.message ?? 'Invite sent. They finish at /staff-join.',
       );
       setInvite(emptyInvite);
+      void refreshTeam();
+    },
+    onError: (error: Error) => showToast(error.message),
+  });
+  const promote = useMutation({
+    mutationFn: () => staffService.grantDeskAccess(grant),
+    onSuccess: (result) => {
+      showToast(result.message ?? `${result.email} is now ${staffRoleLabel[result.role]}.`);
+      setGrant({ email: '', role: 'ADMINISTRATOR' });
       void refreshTeam();
     },
     onError: (error: Error) => showToast(error.message),
@@ -78,7 +88,7 @@ export function StaffTeamPage() {
     <>
       <PageHeader
         title="Credit team"
-        subtitle="Loan officers originate. Credit managers decide. Administrators invite, change roles, and remove desk logins (no BVN) so freeze and decisions show who acted."
+        subtitle="Loan officers originate. Credit managers decide. Administrators invite new desk logins, or grant any existing account a desk role — including administrator."
       />
       {canEdit && (
         <Card className="mb-4 p-4">
@@ -125,6 +135,41 @@ export function StaffTeamPage() {
             <div className="flex items-end">
               <Button type="submit" disabled={add.isPending}>
                 {add.isPending ? 'Sending…' : 'Send invite'}
+              </Button>
+            </div>
+          </form>
+        </Card>
+      )}
+      {canEdit && (
+        <Card className="mb-4 p-4">
+          <h2 className="mb-1 font-semibold">Add an existing account</h2>
+          <p className="mb-3 text-[13px] text-ink-3">
+            Use the email they already sign in with. They keep that password and get desk access — including
+            administrator, not only loan officer or credit manager.
+          </p>
+          <form
+            className="grid gap-3 md:grid-cols-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              promote.mutate();
+            }}
+          >
+            <TextField
+              label="Existing email"
+              type="email"
+              value={grant.email}
+              onChange={(e) => setGrant((row) => ({ ...row, email: e.target.value }))}
+              required
+            />
+            <SelectField
+              label="Role"
+              value={grant.role}
+              onChange={(e) => setGrant((row) => ({ ...row, role: e.target.value as StaffRole }))}
+              options={staffRoleOptions}
+            />
+            <div className="flex items-end">
+              <Button type="submit" disabled={promote.isPending || !grant.email.trim()}>
+                {promote.isPending ? 'Updating…' : 'Grant desk access'}
               </Button>
             </div>
           </form>

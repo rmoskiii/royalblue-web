@@ -117,6 +117,33 @@ export const staffService = {
     return http.post('/staff/team', body);
   },
 
+  grantDeskAccess(body: {
+    email: string;
+    role: CreditTeamMember['role'];
+  }): Promise<CreditTeamMember & { message?: string }> {
+    if (env.useMocks) {
+      const existing = mockTeam.find((row) => row.email.toLowerCase() === body.email.toLowerCase());
+      if (existing) {
+        const next = { ...existing, role: body.role };
+        mockTeam = mockTeam.map((row) => (row.id === existing.id ? next : row));
+        return mockResponse({ ...next, message: `${next.email} is now on the credit desk.` });
+      }
+      const member: CreditTeamMember = {
+        id: `staff_${Date.now()}`,
+        email: body.email,
+        phone: '',
+        firstName: '',
+        lastName: '',
+        role: body.role,
+        isEmailActive: true,
+        createdAt: new Date().toISOString(),
+      };
+      mockTeam = [...mockTeam, member];
+      return mockResponse({ ...member, message: `${member.email} is now on the credit desk.` });
+    }
+    return http.post('/staff/team/promote', body);
+  },
+
   updateRole(id: string, role: CreditTeamMember['role']): Promise<CreditTeamMember> {
     if (env.useMocks) {
       const member = mockTeam.find((row) => row.id === id);

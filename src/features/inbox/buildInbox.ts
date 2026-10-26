@@ -76,16 +76,18 @@ export function buildInbox(input: {
       id: 'limits-address-review',
       kind: 'limits',
       title: 'Proof of address is with staff',
-      body: 'Staff will compare the bill to NIMC and approve or send it back.',
+      body: 'Staff will compare the bill to the address you entered and approve or send it back.',
       createdAt: PINNED,
       href: paths.verification,
     });
-  } else if ((v?.failedAddressUploads ?? 0) > 0 && !v?.addressVerified) {
+  } else if (v && (v.addressReturned || ((v.failedAddressUploads ?? 0) > 0 && !v.addressVerified))) {
     items.push({
       id: 'limits-address-returned',
       kind: 'limits',
       title: 'Address check needs another bill',
-      body: 'Upload a recent utility bill or bank statement in your name, or ask staff to review it.',
+      body: v.addressReturnReason
+        ? `Staff sent this back: ${v.addressReturnReason}`
+        : 'Upload a recent utility bill or bank statement in your name that matches the address you entered.',
       createdAt: PINNED,
       href: `${paths.verification}?step=proof-of-address`,
     });

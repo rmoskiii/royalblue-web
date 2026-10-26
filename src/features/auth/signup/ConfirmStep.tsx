@@ -4,7 +4,7 @@ import { Avatar, Button } from '@/components/ui';
 import { formatDate } from '@/lib/format';
 import { submitOnEnter, useEnterToSubmit } from '../lib/submitOnEnter';
 
-/** Confirmed NIMC/NIBSS match, including the address on record when the provider returned one. */
+/** Confirmed BVN or NIN match. Address is collected later from the customer, not from NIN. */
 export function ConfirmStep({
   identity,
   onConfirm,
@@ -16,8 +16,6 @@ export function ConfirmStep({
 }) {
   const verified = identity.verified === true && !identity.pending;
   const name = [identity.firstName, identity.lastName].filter(Boolean).join(' ');
-  const locality = [identity.city, identity.state].filter(Boolean).join(', ');
-  const address = identity.residentialAddress || locality || null;
   const formRef = useEnterToSubmit();
   return (
     <form
@@ -50,12 +48,6 @@ export function ConfirmStep({
             <>
               <dt className="sr-only">Date of birth</dt>
               <dd className="text-[13px] text-ink-2">Born {formatDate(identity.dateOfBirth)}</dd>
-            </>
-          ) : null}
-          {verified && address ? (
-            <>
-              <dt className="sr-only">Address on record</dt>
-              <dd className="text-[13px] text-ink-2">{address}</dd>
             </>
           ) : null}
         </dl>
