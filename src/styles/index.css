@@ -238,6 +238,37 @@
   }
 }
 
+/* Phone: never paint the 1440 Figma grid. Tailwind `lg:` can miss if CSS is stale. */
+.landing-phone-copy {
+  display: block;
+}
+
+.landing-desktop-art {
+  display: none;
+}
+
+.landing-phone-gap {
+  margin-top: 0 !important;
+}
+
+.landing-frame {
+  width: min(100%, var(--landing-w));
+}
+
+@media (min-width: 1024px) {
+  .landing-phone-copy {
+    display: none;
+  }
+
+  .landing-desktop-art {
+    display: block;
+  }
+
+  .landing-frame {
+    width: min(var(--landing-share), var(--landing-w));
+  }
+}
+
 /* Phone: hero is 1.5× the services image height (787/1270). Desktop unchanged. */
 @media (max-width: 1023px) {
   .landing-hero-art {
