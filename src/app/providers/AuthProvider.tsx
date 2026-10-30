@@ -11,6 +11,8 @@ import {
 import { authService } from '@/api/services/auth';
 import { setAccessToken, setActiveProfileId, setOnUnauthorized } from '@/api/client';
 import type { Session } from '@/api/types';
+import { useIdleLock } from '@/app/hooks/useIdleLock';
+import { markIdleLockNotice } from '@/lib/idleLock';
 import { storage } from '@/lib/storage';
 
 const SESSION_KEY = 'rb.session';
@@ -67,6 +69,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryClient.clear();
     setSession(null);
   }, [queryClient]);
+
+  const lockForIdle = useCallback(() => {
+    markIdleLockNotice();
+    logout();
+  }, [logout]);
+
+  useIdleLock(Boolean(session), lockForIdle);
 
   useEffect(() => {
     storage.remove(SESSION_KEY);

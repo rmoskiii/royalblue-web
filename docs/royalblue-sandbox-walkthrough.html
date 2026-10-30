@@ -31,7 +31,7 @@
 </head>
 <body>
   <h1>RoyalBlue sandbox walkthrough</h1>
-  <p class="kicker">Hosted prototype · 24 October 2026 · MFB staff handover</p>
+  <p class="kicker">Hosted prototype · 30 October 2026 · MFB staff handover</p>
 
   <p>Walk a <strong>new customer signup</strong>, a <strong>forced password change</strong>, the <strong>staff credit desk</strong>, and <strong>staff onboarding</strong> (invite → join, no BVN). Then send notes.</p>
 
@@ -91,7 +91,7 @@
     <li>Sign in as <code>product@budpay.com</code> (after the password change above).</li>
     <li>Open <strong>Team</strong> on the desk.</li>
     <li>Fill <strong>first name, last name, work email, Nigerian phone, role</strong> (loan officer, credit manager, or administrator).</li>
-    <li><strong>Send invite</strong>. The email must not already be on any RoyalBlue account (staff or customer). A 6-digit code is mailed to that work inbox.</li>
+    <li><strong>Send invite</strong>. A new work inbox gets a 6-digit join code. If that email is already a <em>customer</em> account, Team <strong>promotes</strong> it to the desk role instead of creating a second login.</li>
   </ol>
   <h3>Invitee finishes</h3>
   <ol>
@@ -113,10 +113,10 @@
     <li><strong>Authenticator</strong> only if the API asks for it. You can usually skip this for now.</li>
     <li><strong>Personal or business.</strong> Business is a wallet (money in / send), not POS or cashiers.</li>
     <li><strong>Name and phone.</strong></li>
-    <li><strong>BVN and/or NIN.</strong> Both fields are on the same screen. Prefer both; at least one is required. NIN must be unique across accounts. There is no skip and no phone-only “starter” account.</li>
-    <li><strong>Confirm identity (“Is this you?”).</strong> Shows the name, date of birth, and the residential address on the BVN/NIN record.</li>
+    <li><strong>BVN and/or NIN.</strong> Both fields are on the same screen. Prefer both; at least one is required. NIN is a regular NIN check (not advanced / not used for address). NIN must be unique across accounts. There is no skip and no phone-only “starter” account.</li>
+    <li><strong>Confirm identity (“Is this you?”).</strong> Shows the name and date of birth from that check.</li>
     <li><strong>Live selfie.</strong> Optional now — same step later under Account limits. Allow camera; the light should go off after you take the photo, continue, or skip. Selfie is not required on every transfer.</li>
-    <li><strong>Residential address.</strong> You type where you live now, then upload a utility bill. Tier 3 unlocks if that bill matches the address you typed; anything else goes to staff.</li>
+    <li><strong>Residential address.</strong> You type where you live <em>now</em>, then upload a utility bill. The primary action is <strong>Upload a utility bill</strong>; <strong>Send for review</strong> sits under it. Tier 3 unlocks if the bill matches the address you typed; the more common miss goes to staff.</li>
     <li><strong>Business details</strong> if you chose business.</li>
     <li><strong>6-digit transaction PIN</strong> (create, then confirm). This is for sends and bills, not the email code.</li>
   </ol>
@@ -159,16 +159,26 @@
       </tr>
     </tbody>
   </table>
-  <p>Finish selfie and address later from <strong>Account limits</strong> (Me / Settings). Staff see address files that did not auto-match.</p>
+  <p>Finish selfie and address later from <strong>Account limits</strong> (Me / Settings). If staff send a bill back, the customer is <strong>emailed</strong> the note and sees it in inbox / Account limits. They upload a different bill; they are not auto-dropped to a lower tier beyond staying where they were.</p>
+
+  <h2>Home, bills, and landing</h2>
+  <p>Home has <strong>Pay bills</strong> (balance card) and a <strong>Bills</strong> shortcut. There are no separate Airtime / Data tiles — those tabs live inside Pay bills with electricity. A bill that fails (error on screen) does <strong>not</strong> show in recent transactions.</p>
+  <p>The public <code>/welcome</code> page on a phone stacks the “Engineered for…” services and the SME copy as real text. Desktop still uses the Figma art.</p>
+
+  <h2>Session</h2>
+  <p>Access is a 15-minute httpOnly cookie. A rotating refresh cookie lasts 7 days, so closing the laptop and coming back tomorrow still works. A <strong>visible</strong> tab with no clicks, keys, or scrolling for <strong>15 minutes</strong> signs you out and asks for the password again. Switching apps or sleeping the machine does not count as idle. Sends and bills still need the 6-digit PIN (3 wrong tries lock it).</p>
 
   <h2>Worth walking</h2>
   <ol>
     <li>Change a desk password via Forgot password, then sign in and land on <code>/admin</code>.</li>
-    <li>As administrator, invite a colleague from <strong>Team</strong>. They finish at <code>/staff-join</code> with no BVN. Confirm their name shows on a recommend / freeze / decide.</li>
-    <li>Sign up a customer with a real BVN, a real NIN, and both — confirm the address on the identity screen, then check Home for a NUBAN.</li>
+    <li>As administrator, invite a colleague from <strong>Team</strong>, or grant desk access to an existing customer email. They finish at <code>/staff-join</code> if new. Confirm their name shows on a recommend / freeze / decide.</li>
+    <li>Sign up a customer with a real BVN, a real NIN, and both — confirm name/DOB, type today’s address, upload a bill. Check Home for a NUBAN.</li>
     <li>Skip selfie and address, then complete them from Account limits. Try a send (needs the PIN you set).</li>
+    <li>As staff, send a proof of address back with a note. Confirm the customer email and inbox show that note.</li>
+    <li>Pay bills: airtime, data, and electricity from one page. Confirm a failed attempt is not in recent transactions.</li>
+    <li>Leave Home in a visible tab for 15 minutes with no activity — you should land on login.</li>
     <li>Business signup: wallet dashboard and money in, not a till.</li>
-    <li>Same loan file as officer vs manager vs admin — who can claim, recommend, freeze, decide.</li>
+    <li>Same loan file as officer vs manager vs admin — who can claim, recommend, freeze, decide. Tenor is 3 / 6 / 12 months with daily or weekly float.</li>
   </ol>
 
   <div class="warn">

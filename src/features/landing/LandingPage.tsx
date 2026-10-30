@@ -1,6 +1,9 @@
 import { BrandBar, MarketingAuthButtons } from '@/components/layout/BrandBar';
+import { cn } from '@/lib/cn';
 import { HeroCtas } from './components/HeroCtas';
 import { HotspotImage } from './components/HotspotImage';
+import { ServicesGrid } from './components/ServicesGrid';
+import { SmeCapital } from './components/SmeCapital';
 import { StickyHeader } from './components/StickyHeader';
 import { DESIGN_WIDTH, sections } from './sections';
 
@@ -22,11 +25,11 @@ export function LandingPage() {
       <main>
         {sections.map((s, i) => {
           const drawWidth = s.displayWidth ?? s.width;
-          const frameWidth = `min(${(drawWidth / DESIGN_WIDTH) * 100}%, ${drawWidth}px)`;
+          const phoneHtml = s.id === 'services' || s.id === 'loans';
           return (
             <section
               key={s.srcSet}
-              className="relative w-full"
+              className={cn('relative w-full', phoneHtml && 'landing-phone-gap')}
               style={{ background: s.background, marginTop: scaled(s.gapAbove) }}
             >
               {i === 0 && (
@@ -40,18 +43,36 @@ export function LandingPage() {
                   />
                 </>
               )}
-              <div id={s.id} className="relative mx-auto scroll-mt-[72px]" style={{ width: frameWidth }}>
-                <HotspotImage
-                  srcSet={s.srcSet}
-                  alt={s.alt}
-                  width={s.width}
-                  height={s.height}
-                  hotspots={s.hotspots}
-                  anchors={s.anchors}
-                  eager={i === 0}
-                  hero={i === 0}
-                />
-                {i === 0 ? <HeroCtas /> : null}
+              <div id={s.id} className="relative mx-auto scroll-mt-[72px]">
+                {s.id === 'services' ? (
+                  <div className="landing-phone-copy">
+                    <ServicesGrid />
+                  </div>
+                ) : null}
+                {s.id === 'loans' ? (
+                  <div className="landing-phone-copy">
+                    <SmeCapital />
+                  </div>
+                ) : null}
+                <div
+                  className={cn('landing-frame mx-auto', phoneHtml && 'landing-desktop-art')}
+                  style={{
+                    ['--landing-w' as string]: `${drawWidth}px`,
+                    ['--landing-share' as string]: `${(drawWidth / DESIGN_WIDTH) * 100}%`,
+                  }}
+                >
+                  <HotspotImage
+                    srcSet={s.srcSet}
+                    alt={s.alt}
+                    width={s.width}
+                    height={s.height}
+                    hotspots={s.hotspots}
+                    anchors={s.anchors}
+                    eager={i === 0}
+                    hero={i === 0}
+                  />
+                  {i === 0 ? <HeroCtas /> : null}
+                </div>
               </div>
             </section>
           );

@@ -1,18 +1,11 @@
-import { History, Landmark, Send, ShieldCheck, Smartphone, Wifi, Zap, type LucideIcon } from 'lucide-react';
+import { History, Landmark, Send, ShieldCheck, Zap, type LucideIcon } from 'lucide-react';
 import { Link } from 'react-router';
 import { paths } from '@/components/layout/navigation';
 import { IconTile } from '@/components/ui';
 
-// Tints come from the Figma colour variables.
+// Tints come from the Figma colour variables. Airtime/data live inside Pay bills.
 const services: { label: string; to: string; icon: LucideIcon; tint: string }[] = [
-  {
-    label: 'Airtime',
-    to: `${paths.payBills}?type=airtime`,
-    icon: Smartphone,
-    tint: 'text-tint-airtime',
-  },
-  { label: 'Data', to: `${paths.payBills}?type=data`, icon: Wifi, tint: 'text-tint-data' },
-  { label: 'Bills', to: `${paths.payBills}?type=electricity`, icon: Zap, tint: 'text-tint-bills' },
+  { label: 'Bills', to: paths.payBills, icon: Zap, tint: 'text-tint-bills' },
   { label: 'Send', to: paths.transfer, icon: Send, tint: 'text-brand' },
   { label: 'Loans', to: paths.loans, icon: Landmark, tint: 'text-tint-loans' },
   { label: 'Activity', to: paths.transactions, icon: History, tint: 'text-ink-2' },
@@ -21,7 +14,7 @@ const services: { label: string; to: string; icon: LucideIcon; tint: string }[] 
 
 export function QuickServices() {
   return (
-    <nav aria-label="Quick services" className="grid grid-cols-4 gap-1 sm:gap-2">
+    <nav aria-label="Quick services" className="grid grid-cols-3 gap-1 sm:grid-cols-5 sm:gap-2">
       {services.map(({ label, to, icon, tint }) => (
         <Link
           key={label}

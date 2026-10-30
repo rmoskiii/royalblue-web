@@ -281,7 +281,9 @@ export function SecuritySettingsPage() {
           <div>
             <h2 className="font-semibold">This device</h2>
             <p className="text-[13px] text-ink-3">
-              Web session. Trusted-device lists and remote logout ship with the mobile build.
+              This browser signs you out after 15 minutes on a visible tab with no activity. Closing
+              the laptop or switching away does not count. Trusted-device lists and remote logout ship
+              with the mobile build.
             </p>
           </div>
         </Card>
