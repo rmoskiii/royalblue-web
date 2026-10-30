@@ -129,6 +129,7 @@ export const sections: ImageSection[] = [
     ],
   },
   {
+    id: 'footer',
     srcSet: footer,
     alt: 'RoyalBlue. 127 Herbert Macaulay Street, Ebute Metta, Sabo Yaba, Lagos, Nigeria. Leading provider of financial services to small and medium enterprises by helping them achieve their financial goals. Licensed by the Central Bank of Nigeria. Insured by the Nigeria Deposit Insurance Corporation.',
     width: 1270,
@@ -140,6 +141,7 @@ export const sections: ImageSection[] = [
     ],
   },
   {
+    id: 'copyright',
     srcSet: copyright,
     alt: '© 2026 RoyalBlue Microfinance Bank Ltd. All rights reserved.',
     width: 1245,
@@ -147,6 +149,7 @@ export const sections: ImageSection[] = [
     gapAbove: 100,
   },
   {
+    id: 'watermark',
     srcSet: footerWatermark,
     alt: '',
     width: 1285,

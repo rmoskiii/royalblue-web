@@ -44,22 +44,17 @@ const items: { icon: LucideIcon; title: string; body: string }[] = [
 /** Phone/tablet reading of the services PNG: stacked cards instead of a shrunk desktop grid. */
 export function ServicesGrid() {
   return (
-    <div className="px-4 pb-2 pt-8 sm:px-8">
-      <h2 className="mx-auto max-w-[16ch] text-center text-[1.85rem] font-semibold leading-[1.2] tracking-tight text-balance text-[#1B194D] sm:max-w-[20ch] sm:text-[2rem]">
+    <div className="px-5 pb-2 pt-8 sm:px-8">
+      <h2 className="font-display mx-auto max-w-[16ch] text-center text-[2rem] leading-[1.15] tracking-[-0.02em] text-[#1B194D] sm:max-w-[20ch]">
         Engineered for modern enterprise and personal growth
       </h2>
-      <ul className="mt-7 grid gap-3">
+      <ul className="mt-8 divide-y divide-[#ececf2] border-y border-[#ececf2]">
         {items.map(({ icon: Icon, title, body }) => (
-          <li
-            key={title}
-            className="flex gap-3.5 rounded-2xl border border-[#ececf2] bg-[#fafafc] px-4 py-4"
-          >
-            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-white text-primary shadow-[0_1px_0_#ececf2]">
-              <Icon className="size-5" strokeWidth={1.7} aria-hidden />
-            </span>
+          <li key={title} className="flex gap-4 py-6">
+            <Icon className="mt-0.5 size-6 shrink-0 text-primary" strokeWidth={1.6} aria-hidden />
             <div className="min-w-0">
-              <h3 className="text-[1.05rem] font-semibold leading-snug text-[#1B194D]">{title}</h3>
-              <p className="mt-1 text-[0.95rem] leading-relaxed text-[#5A5A6E]">{body}</p>
+              <h3 className="text-[0.95rem] font-medium text-[#1B194D]">{title}</h3>
+              <p className="mt-1.5 text-[0.85rem] leading-relaxed text-[#5A5A6E]">{body}</p>
             </div>
           </li>
         ))}
