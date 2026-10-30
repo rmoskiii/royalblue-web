@@ -1,8 +1,11 @@
+import '@fontsource/playfair-display/latin-400.css';
 import { BrandBar, MarketingAuthButtons } from '@/components/layout/BrandBar';
 import { cn } from '@/lib/cn';
+import { GoalsBand } from './components/GoalsBand';
 import { HeroCtas } from './components/HeroCtas';
 import { HotspotImage } from './components/HotspotImage';
 import { ServicesGrid } from './components/ServicesGrid';
+import { SiteFooter } from './components/SiteFooter';
 import { SmeCapital } from './components/SmeCapital';
 import { StickyHeader } from './components/StickyHeader';
 import { DESIGN_WIDTH, sections } from './sections';
@@ -25,11 +28,16 @@ export function LandingPage() {
       <main>
         {sections.map((s, i) => {
           const drawWidth = s.displayWidth ?? s.width;
-          const phoneHtml = s.id === 'services' || s.id === 'loans';
+          const phoneHtml =
+            s.id === 'services' || s.id === 'loans' || s.id === 'about' || s.id === 'footer';
+          const hideArtOnPhone = phoneHtml || s.id === 'copyright' || s.id === 'watermark';
           return (
             <section
               key={s.srcSet}
-              className={cn('relative w-full', phoneHtml && 'landing-phone-gap')}
+              className={cn(
+                'relative w-full',
+                (phoneHtml || s.id === 'copyright' || s.id === 'watermark') && 'landing-phone-gap',
+              )}
               style={{ background: s.background, marginTop: scaled(s.gapAbove) }}
             >
               {i === 0 && (
@@ -54,8 +62,21 @@ export function LandingPage() {
                     <SmeCapital />
                   </div>
                 ) : null}
+                {s.id === 'about' ? (
+                  <div className="landing-phone-copy">
+                    <GoalsBand />
+                  </div>
+                ) : null}
+                {s.id === 'footer' ? (
+                  <div className="landing-phone-copy">
+                    <SiteFooter />
+                  </div>
+                ) : null}
                 <div
-                  className={cn('landing-frame mx-auto', phoneHtml && 'landing-desktop-art')}
+                  className={cn(
+                    'landing-frame mx-auto',
+                    hideArtOnPhone && 'landing-desktop-art',
+                  )}
                   style={{
                     ['--landing-w' as string]: `${drawWidth}px`,
                     ['--landing-share' as string]: `${(drawWidth / DESIGN_WIDTH) * 100}%`,
