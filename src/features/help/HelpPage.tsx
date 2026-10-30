@@ -16,6 +16,10 @@ const faqs = [
     a: 'Use Forgot password on the log-in screen. We email a 6-digit code. That does not change your transfer PIN.',
   },
   {
+    q: 'I was signed out while the tab was open',
+    a: 'A visible tab with no clicks, keys, or scrolling for 15 minutes signs you out. Closing the laptop or switching apps does not. Come back on this browser within 7 days and you can sign in again with your password (and device email code if asked). Sends still need your PIN.',
+  },
+  {
     q: 'How do I raise my limit?',
     a: 'Account limits. Complete BVN and/or NIN, then selfie and address. NIN-only Tier 1 is ₦30,000 daily; BVN is ₦50,000.',
   },

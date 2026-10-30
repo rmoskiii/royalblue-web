@@ -13,6 +13,7 @@ import { PasswordField } from './components/PasswordField';
 import { passwordIsValid } from './lib/passwordRules';
 import { submitOnEnter } from './lib/submitOnEnter';
 import { demo } from '@/config/demo';
+import { consumeIdleLockNotice } from '@/lib/idleLock';
 
 export function LoginPage() {
   const { establishSession } = useAuth();
@@ -29,6 +30,7 @@ export function LoginPage() {
   const [upgradeOtp, setUpgradeOtp] = useState('');
   const [totp, setTotp] = useState('');
   const [emailOtp, setEmailOtp] = useState('');
+  const [idleNotice] = useState(() => consumeIdleLockNotice());
   const upgradeOtpSent = useRef(false);
 
   const goIn = (session: Awaited<ReturnType<typeof authService.completeLoginMfa>>) => {
@@ -235,6 +237,12 @@ export function LoginPage() {
             </Link>
           </p>
         </div>
+        {idleNotice && (
+          <p className="text-[13px] text-ink-2">
+            You were signed out after 15 minutes with no activity on this tab. Enter your password to
+            continue.
+          </p>
+        )}
         {submit.isError && <p className="text-[13px] text-primary-text">{submit.error.message}</p>}
         <Button type="submit" size="lg" block disabled={!identifier.trim() || !password || submit.isPending}>
           {submit.isPending ? 'Logging in…' : 'Log in'}
