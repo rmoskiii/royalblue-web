@@ -75,6 +75,7 @@ export function LandingPage() {
                   className={cn(
                     'landing-frame relative mx-auto',
                     hideArtOnPhone && 'landing-desktop-art',
+                    s.id === 'about' && 'landing-goals-clip',
                   )}
                   style={{
                     ['--landing-w' as string]: `${drawWidth}px`,
@@ -93,8 +94,8 @@ export function LandingPage() {
                   />
                   {i === 0 ? <HeroCtas /> : null}
                   {s.id === 'about' ? (
-                    <div className="landing-desktop-art pointer-events-none absolute inset-0 overflow-hidden">
-                      <div className="pointer-events-auto absolute top-[54.5%] left-[51.2%] h-[41.4%] w-[43.4%] overflow-hidden rounded-[22px] bg-white">
+                    <div className="landing-desktop-art pointer-events-none absolute inset-0">
+                      <div className="pointer-events-auto absolute top-[54.4%] left-[50.85%] h-[41.8%] w-[43.7%] overflow-hidden rounded-none bg-white">
                         <LandingSavingsCalculator fill className="px-7 py-5" />
                       </div>
                     </div>

@@ -271,6 +271,20 @@
   .landing-frame {
     width: min(var(--landing-share), var(--landing-w));
   }
+
+  /* Cut the painted Figma calculator out of the goals art; the live card fills that hole. */
+  .landing-goals-clip img {
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% 54.4%,
+      50.85% 54.4%,
+      50.85% 96.2%,
+      100% 96.2%,
+      100% 100%,
+      0 100%
+    );
+  }
 }
 
 /* Phone: hero is 1.5× the services image height (787/1270). Desktop unchanged. */
