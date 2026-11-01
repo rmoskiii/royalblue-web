@@ -28,16 +28,17 @@ export function LandingPage() {
       <StickyHeader />
       <main>
         {sections.map((s, i) => {
+          if (s.id === 'copyright' || s.id === 'watermark') return null;
           const drawWidth = s.displayWidth ?? s.width;
-          const phoneHtml =
-            s.id === 'services' || s.id === 'loans' || s.id === 'about' || s.id === 'footer';
-          const hideArtOnPhone = phoneHtml || s.id === 'copyright' || s.id === 'watermark';
+          const phoneHtml = s.id === 'services' || s.id === 'loans' || s.id === 'about';
+          const hideArtOnPhone = phoneHtml;
+          const htmlFooter = s.id === 'footer';
           return (
             <section
               key={s.srcSet}
               className={cn(
                 'relative w-full',
-                (phoneHtml || s.id === 'copyright' || s.id === 'watermark') && 'landing-phone-gap',
+                (phoneHtml || htmlFooter) && 'landing-phone-gap',
               )}
               style={{ background: s.background, marginTop: scaled(s.gapAbove) }}
             >
@@ -68,11 +69,8 @@ export function LandingPage() {
                     <GoalsBand />
                   </div>
                 ) : null}
-                {s.id === 'footer' ? (
-                  <div className="landing-phone-copy">
-                    <SiteFooter />
-                  </div>
-                ) : null}
+                {htmlFooter ? <SiteFooter /> : null}
+                {htmlFooter ? null : (
                 <div
                   className={cn(
                     'landing-frame relative mx-auto',
@@ -102,6 +100,7 @@ export function LandingPage() {
                     </div>
                   ) : null}
                 </div>
+                )}
               </div>
             </section>
           );

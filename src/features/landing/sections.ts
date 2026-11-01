@@ -131,7 +131,7 @@ export const sections: ImageSection[] = [
   {
     id: 'footer',
     srcSet: footer,
-    alt: 'RoyalBlue. 127 Herbert Macaulay Street, Ebute Metta, Sabo Yaba, Lagos, Nigeria. Leading provider of financial services to small and medium enterprises by helping them achieve their financial goals. Licensed by the Central Bank of Nigeria. Insured by the Nigeria Deposit Insurance Corporation.',
+    alt: 'RoyalBlue. E-Centre, 1-11 Commercial Ave, Yaba, Lagos. Leading provider of financial services to small and medium enterprises by helping them achieve their financial goals. Licensed by the Central Bank of Nigeria. Insured by the Nigeria Deposit Insurance Corporation.',
     width: 1270,
     height: 105,
     gapAbove: 96,

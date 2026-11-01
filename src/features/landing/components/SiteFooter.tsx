@@ -10,7 +10,7 @@ export function SiteFooter() {
         <Logo onDark className="h-10" />
       </Link>
       <p className="mt-5 max-w-[34ch] text-[0.85rem] leading-relaxed text-white/75">
-        127 Herbert Macaulay Street, Ebute Metta, Sabo Yaba, Lagos, Nigeria.
+        E-Centre, 1-11 Commercial Ave, Yaba, Lagos
       </p>
       <p className="mt-3 max-w-[42ch] text-[0.85rem] leading-relaxed text-white/75">
         Leading provider of financial services to small and medium enterprises by helping them
