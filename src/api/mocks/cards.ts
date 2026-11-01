@@ -21,7 +21,7 @@ export const mockCardSecrets: Record<string, CardSecrets> = {
 export const mockPhysicalOrder: { current: PhysicalCardOrder | null } = { current: null };
 
 export const mockAddresses: AddressSuggestion[] = [
-  { id: 'adr_1', line1: '127 Herbert Macaulay Street, Ebute-Metta', city: 'Yaba', state: 'Lagos' },
+  { id: 'adr_1', line1: 'E-Centre, 1-11 Commercial Ave', city: 'Yaba', state: 'Lagos' },
   { id: 'adr_2', line1: '14 Admiralty Way, Lekki Phase 1', city: 'Lekki', state: 'Lagos' },
   { id: 'adr_3', line1: '22 Allen Avenue', city: 'Ikeja', state: 'Lagos' },
   {
