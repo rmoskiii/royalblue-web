@@ -249,8 +249,10 @@
   display: none;
 }
 
-.landing-phone-gap {
-  margin-top: 0 !important;
+@media (max-width: 1023px) {
+  .landing-phone-gap {
+    margin-top: 0 !important;
+  }
 }
 
 .landing-frame {
