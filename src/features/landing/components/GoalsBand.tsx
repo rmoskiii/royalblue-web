@@ -47,7 +47,7 @@ export function GoalsBand() {
           Open an Account
         </Link>
       </div>
-      <div className="mt-6 rounded-[22px] bg-white px-5 py-7 text-[#1B194D] shadow-[0_12px_40px_rgba(27,25,77,0.08)]">
+      <div className="mt-6 rounded-none bg-white px-5 py-7 text-[#1B194D]">
         <LandingSavingsCalculator />
       </div>
     </div>
