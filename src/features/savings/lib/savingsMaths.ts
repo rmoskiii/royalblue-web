@@ -16,3 +16,22 @@ export function projectSavings(monthly: number, months: number, annualRate: numb
   const contributed = monthly * months;
   return { contributed, interest: total - contributed, total };
 }
+
+/**
+ * Indicative Nigerian MFB term-deposit rates (simple interest, not a special/promo yield).
+ * Typical market band is ~8–12% p.a. by tenor.
+ */
+export const MFB_TERM_RATES = {
+  3: 0.08,
+  6: 0.1,
+  12: 0.12,
+} as const;
+
+export type MfbTermMonths = keyof typeof MFB_TERM_RATES;
+
+/** Lump-sum fixed deposit: interest = principal × rate × (months / 12). */
+export function projectTermDeposit(principal: number, months: MfbTermMonths) {
+  const annualRate = MFB_TERM_RATES[months];
+  const interest = principal * annualRate * (months / 12);
+  return { principal, annualRate, interest, total: principal + interest };
+}

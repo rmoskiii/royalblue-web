@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { paths } from '@/components/layout/navigation';
+import { LandingSavingsCalculator } from './LandingSavingsCalculator';
 
 const features = [
   {
@@ -45,6 +46,9 @@ export function GoalsBand() {
         >
           Open an Account
         </Link>
+      </div>
+      <div className="mt-6 rounded-[22px] bg-white px-5 py-7 text-[#1B194D] shadow-[0_12px_40px_rgba(27,25,77,0.08)]">
+        <LandingSavingsCalculator />
       </div>
     </div>
   );

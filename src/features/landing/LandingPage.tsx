@@ -3,6 +3,7 @@ import { BrandBar, MarketingAuthButtons } from '@/components/layout/BrandBar';
 import { cn } from '@/lib/cn';
 import { GoalsBand } from './components/GoalsBand';
 import { HeroCtas } from './components/HeroCtas';
+import { LandingSavingsCalculator } from './components/LandingSavingsCalculator';
 import { HotspotImage } from './components/HotspotImage';
 import { ServicesGrid } from './components/ServicesGrid';
 import { SiteFooter } from './components/SiteFooter';
@@ -74,7 +75,7 @@ export function LandingPage() {
                 ) : null}
                 <div
                   className={cn(
-                    'landing-frame mx-auto',
+                    'landing-frame relative mx-auto',
                     hideArtOnPhone && 'landing-desktop-art',
                   )}
                   style={{
@@ -93,6 +94,11 @@ export function LandingPage() {
                     hero={i === 0}
                   />
                   {i === 0 ? <HeroCtas /> : null}
+                  {s.id === 'about' ? (
+                    <div className="landing-desktop-art pointer-events-none absolute inset-0">
+                      <LandingSavingsCalculator className="pointer-events-auto absolute top-[54.4%] right-[5.55%] bottom-[1.7%] left-[51.35%] flex h-auto flex-col overflow-hidden rounded-[22px] bg-white px-8 py-6 shadow-[0_12px_40px_rgba(27,25,77,0.08)]" />
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </section>

@@ -134,7 +134,7 @@ export const sections: ImageSection[] = [
     alt: 'RoyalBlue. 127 Herbert Macaulay Street, Ebute Metta, Sabo Yaba, Lagos, Nigeria. Leading provider of financial services to small and medium enterprises by helping them achieve their financial goals. Licensed by the Central Bank of Nigeria. Insured by the Nigeria Deposit Insurance Corporation.',
     width: 1270,
     height: 105,
-    gapAbove: 68,
+    gapAbove: 96,
     hotspots: [
       { label: 'Terms of service', x: 440, y: -6, w: 108, h: 28, to: paths.terms, shape: 'text' },
       { label: 'Privacy policy', x: 608, y: -6, w: 92, h: 28, to: paths.privacy, shape: 'text' },
