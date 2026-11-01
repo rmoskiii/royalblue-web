@@ -95,8 +95,10 @@ export function LandingPage() {
                   />
                   {i === 0 ? <HeroCtas /> : null}
                   {s.id === 'about' ? (
-                    <div className="landing-desktop-art pointer-events-none absolute inset-0">
-                      <LandingSavingsCalculator className="pointer-events-auto absolute top-[54.4%] right-[5.55%] bottom-[1.7%] left-[51.35%] flex h-auto flex-col overflow-hidden rounded-[22px] bg-white px-8 py-6 shadow-[0_12px_40px_rgba(27,25,77,0.08)]" />
+                    <div className="landing-desktop-art pointer-events-none absolute inset-0 overflow-hidden">
+                      <div className="pointer-events-auto absolute top-[54.5%] left-[51.2%] h-[41.4%] w-[43.4%] overflow-hidden rounded-[22px] bg-white">
+                        <LandingSavingsCalculator fill className="px-7 py-5" />
+                      </div>
                     </div>
                   ) : null}
                 </div>

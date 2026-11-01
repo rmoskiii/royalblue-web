@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { cn } from '@/lib/cn';
 import { formatNaira } from '@/lib/format';
 import { type MfbTermMonths, projectTermDeposit } from '@/features/savings/lib/savingsMaths';
 
@@ -11,21 +12,28 @@ const TENURES: MfbTermMonths[] = [3, 6, 12];
  * Welcome-page term-deposit calculator. Matches the Figma card: lump sum + tenor,
  * simple interest at regular MFB rates (8 / 10 / 12% p.a.).
  */
-export function LandingSavingsCalculator({ className }: { className?: string }) {
+export function LandingSavingsCalculator({
+  className,
+  fill,
+}: {
+  className?: string;
+  /** Pin controls to the bottom of a fixed-height Figma card. */
+  fill?: boolean;
+}) {
   const [principal, setPrincipal] = useState(1_000_000);
   const [months, setMonths] = useState<MfbTermMonths>(6);
   const { interest, total, annualRate } = projectTermDeposit(principal, months);
 
   return (
-    <div className={`flex h-full flex-col ${className ?? ''}`}>
+    <div className={cn('flex min-h-0 flex-col', fill && 'h-full', className)}>
       <p className="inline-flex w-fit items-center self-start rounded-full border border-[#1B194D]/10 bg-white px-3 py-1 text-[11px] font-medium text-[#1B194D]/70">
         Savings Calculator
       </p>
-      <h2 className="font-display mt-3 max-w-[16ch] text-[1.85rem] leading-[1.12] tracking-[-0.02em] text-[#1B194D] lg:text-[2rem]">
+      <h2 className="font-display mt-3 max-w-[16ch] text-[1.75rem] leading-[1.12] tracking-[-0.02em] text-[#1B194D] lg:text-[1.9rem]">
         See how fast your savings grow
       </h2>
 
-      <div className="mt-auto flex items-end justify-between gap-4 pt-6">
+      <div className={cn('flex items-end justify-between gap-4', fill ? 'mt-auto pt-4' : 'mt-6')}>
         <label className="min-w-0 flex-1">
           <span className="text-[11px] font-medium tracking-wide text-[#1B194D]/45 uppercase">
             Deposit Amount
