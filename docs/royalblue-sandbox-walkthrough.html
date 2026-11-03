@@ -31,16 +31,57 @@
 </head>
 <body>
   <h1>RoyalBlue sandbox walkthrough</h1>
-  <p class="kicker">Hosted prototype · 30 October 2026 · MFB staff handover</p>
+  <p class="kicker">Hosted prototype · 2 November 2026 · MFB staff handover</p>
 
   <p>Walk a <strong>new customer signup</strong>, a <strong>forced password change</strong>, the <strong>staff credit desk</strong>, and <strong>staff onboarding</strong> (invite → join, no BVN). Then send notes.</p>
 
-  <p><strong>Landing:</strong> <a href="https://royalblue-web.vercel.app/welcome">https://royalblue-web.vercel.app/welcome</a><br />
-  <strong>Login:</strong> <a href="https://royalblue-web.vercel.app/login">https://royalblue-web.vercel.app/login</a><br />
-  <strong>Sign up (customers):</strong> <a href="https://royalblue-web.vercel.app/sign-up">https://royalblue-web.vercel.app/sign-up</a><br />
-  <strong>Forgot password:</strong> <a href="https://royalblue-web.vercel.app/forgot">https://royalblue-web.vercel.app/forgot</a><br />
-  <strong>Staff join:</strong> <a href="https://royalblue-web.vercel.app/staff-join">https://royalblue-web.vercel.app/staff-join</a></p>
-  <p>First load can take ~30–60s if the API was asleep. Login with <strong>email or Nigerian phone</strong> + password. Use a <strong>private window</strong> (or logout) when you switch roles.</p>
+  <p><strong>Landing:</strong> <a href="https://www.royalblue-mfb.com/welcome">https://www.royalblue-mfb.com/welcome</a><br />
+  <strong>Login:</strong> <a href="https://www.royalblue-mfb.com/login">https://www.royalblue-mfb.com/login</a><br />
+  <strong>Sign up (customers):</strong> <a href="https://www.royalblue-mfb.com/sign-up">https://www.royalblue-mfb.com/sign-up</a><br />
+  <strong>Forgot password:</strong> <a href="https://www.royalblue-mfb.com/forgot">https://www.royalblue-mfb.com/forgot</a><br />
+  <strong>Staff join:</strong> <a href="https://www.royalblue-mfb.com/staff-join">https://www.royalblue-mfb.com/staff-join</a></p>
+  <p>Same app on Vercel: <a href="https://royalblue-web.vercel.app/welcome">royalblue-web.vercel.app</a>. Login with <strong>email or Nigerian phone</strong> + password. Use a <strong>private window</strong> (or logout) when you switch roles. The paid API does not spin down; a slow first hit is a deploy or network, not a free-tier sleep.</p>
+
+  <h2>Hosting (lean live)</h2>
+  <p>Company bill is Render workspace <strong>Product's workspace</strong>, login <code>product@budpay.com</code> (USD card). Do not look for these boxes while signed in as Gmail — that is a different account. Put API + Postgres + Redis in the <strong>same Render project</strong>. Production deploys from <strong>main</strong>; <code>pair-program</code> and other branches are for work in progress.</p>
+  <table>
+    <thead>
+      <tr><th>Box</th><th>Dashboard name</th><th>Plan</th><th>~USD / mo</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>API</td>
+        <td><code>master-backend</code></td>
+        <td>Starter · 0.5 CPU · 512 MB (does not sleep)</td>
+        <td>$7</td>
+      </tr>
+      <tr>
+        <td>Postgres</td>
+        <td><code>royalblue-db</code></td>
+        <td>Paid <code>0.1c-256mb</code> · 1 GB disk · no expiry</td>
+        <td>$6</td>
+      </tr>
+      <tr>
+        <td>Redis (Key Value)</td>
+        <td><code>royalblue-redis</code></td>
+        <td>Starter · 256 MB · <code>noeviction</code></td>
+        <td>$10</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Workspace stays <strong>Hobby</strong> ($0). Do not upgrade to Render Pro ($25) for go-live: it only stretches point-in-time recovery from 3 days to 7 and adds seats/logs. Compute does not change. High availability is <strong>off</strong> — it needs ≥1 CPU (~$40 for the DB, billed twice for the standby). Small traffic does not need that.</p>
+  <h3>Confirm the database will not vanish</h3>
+  <ol>
+    <li>Dashboard as <code>product@budpay.com</code> → <code>royalblue-db</code> → Info.</li>
+    <li>Compute must read <strong>0.1 CPU / 256 MB</strong> (or Basic 256 MB), not Free.</li>
+    <li>There must be <strong>no “Expires on …”</strong> banner. Free instances expire after 30 days; the old Gmail sandbox DB expires <strong>3 November 2026</strong> — that is not this box.</li>
+    <li>Billing shows Postgres compute, and the USD card is on this workspace.</li>
+  </ol>
+  <h3>PITR (not HA)</h3>
+  <p><strong>Point-in-time recovery</strong> rebuilds a <em>new</em> database as it looked at a clock time you pick (for example after a dropped table). Hobby keeps the last <strong>3 days</strong>. Restore is a new instance + new <code>DATABASE_URL</code>, not seconds of failover. You cannot restore to a time in the last ~10 minutes. Free Postgres has no PITR; this paid one does (<code>royalblue-db</code> → Recovery).</p>
+  <p>Logical exports (Create export / <code>pg_dump</code>) are kept 7 days on Hobby. Prefer PITR for “undo”; dump to S3 if you need older copies. Never <strong>delete</strong> <code>royalblue-db</code> — Render drops backups with the instance.</p>
+  <p>Without HA, a node/zone failure means the API is down until Render brings that same instance back (minutes in a host blip). Money risk is covered by webhook retries, payout GET confirm, and startup reconcile — not by a standby. Redis is also a single box; balances live in Postgres.</p>
+  <p>API env: internal <code>DATABASE_URL</code> from <code>royalblue-db</code>, internal <code>REDIS_URL</code> from <code>royalblue-redis</code>. Production will not stay up if either is missing. Copy BudPay / Dojah / mail / AWS secrets from the old live API in the dashboard; do not paste them into chat or this PDF.</p>
 
   <h2>Passwords (everyone)</h2>
   <p>New passwords must be <strong>12+ characters</strong> with an uppercase letter, a lowercase letter, a number, and a symbol. Examples that work: <code>RoyalBlueStaff1!</code> · <code>DeskHandover2026#</code>. <code>password123</code> does <em>not</em> meet the rule.</p>
@@ -95,7 +136,7 @@
   </ol>
   <h3>Invitee finishes</h3>
   <ol>
-    <li>Open <a href="https://royalblue-web.vercel.app/staff-join">/staff-join</a> (also linked as “Join here” on login). Do not use customer <strong>Create account</strong>.</li>
+    <li>Open <a href="https://www.royalblue-mfb.com/staff-join">/staff-join</a> (also linked as “Join here” on login). Do not use customer <strong>Create account</strong>.</li>
     <li>Enter the invited work email → <strong>Email me a code</strong> if you need another code.</li>
     <li>Enter the 6-digit code and a password that meets the 12-character rule.</li>
     <li>You land on the credit desk for that role. New browsers may ask for a device email code.</li>
@@ -186,7 +227,7 @@
   </div>
 
   <div class="note">
-    <strong>Please ignore for now:</strong> cold starts, empty bank/bill lists on a slow API, anything that looks like FX, Face ID on send, and Cloudflare / custom domain.
+    <strong>Please ignore for now:</strong> empty bank/bill lists on a slow API, anything that looks like FX, Face ID on send, Cloudflare in front of the domain, and Render Pro / Postgres HA (lean live stays Hobby + 0.1 CPU DB).
   </div>
 
   <p>Send: what felt unclear, what you’d expect next, and anything that looks wrong for a Nigerian MFB. Screenshots + “I was this user” is enough.</p>

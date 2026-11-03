@@ -27,7 +27,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://royalblue-api.onrender.com/api/:path*"
+      "destination": "https://master-backend-3ucj.onrender.com/api/:path*"
     },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
