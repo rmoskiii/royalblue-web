@@ -27,7 +27,17 @@
   "rewrites": [
     {
       "source": "/api/:path*",
+      "has": [{ "type": "host", "value": "www.royalblue-mfb.com" }],
       "destination": "https://master-backend-3ucj.onrender.com/api/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "has": [{ "type": "host", "value": "royalblue-mfb.com" }],
+      "destination": "https://master-backend-3ucj.onrender.com/api/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://royalblue-api.onrender.com/api/:path*"
     },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
