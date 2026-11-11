@@ -180,7 +180,8 @@ export const http = {
   patch: <T>(path: string, json?: unknown) => request<T>('PATCH', path, { json }),
   put: <T>(path: string, json?: unknown) => request<T>('PUT', path, { json }),
   delete: <T>(path: string) => request<T>('DELETE', path),
-  upload: <T>(path: string, form: FormData) => request<T>('POST', path, { form }),
+  upload: <T>(path: string, form: FormData, signal?: AbortSignal) =>
+    request<T>('POST', path, { form, signal }),
   async blob(path: string) {
     const url = new URL(`${env.apiBaseUrl}${path}`, window.location.origin);
     const res = await fetch(url, {
