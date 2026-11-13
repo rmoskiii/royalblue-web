@@ -49,11 +49,11 @@ export const verificationService = {
     return http.upload<void>('/verification/id-document', form);
   },
 
-  uploadProofOfAddress(file: File) {
+  uploadProofOfAddress(file: File, signal?: AbortSignal) {
     if (env.useMocks) return mockResponse({ addressVerified: true } as VerificationStatus, 900);
     const form = new FormData();
     form.append('file', file);
-    return http.upload<VerificationStatus>('/verification/proof-of-address', form);
+    return http.upload<VerificationStatus>('/verification/proof-of-address', form, signal);
   },
 
   requestAddressReview(note?: string) {

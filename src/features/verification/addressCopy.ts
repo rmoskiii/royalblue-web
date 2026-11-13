@@ -11,7 +11,7 @@ export const ADDRESS_FIELD_HINT =
   'Street, area, city, and state — the same line that should appear on your bill.';
 
 export const BILL_UPLOAD_HINT =
-  'Utility bill or bank statement from the last 3 months, in your name. We read the address on the file and compare it to the line above.';
+  'Utility bill or bank statement from the last 3 months, in your name. Choosing a file sends it for review — you do not need a second submit.';
 
 export function addressStepLead(
   reviewPending: boolean,

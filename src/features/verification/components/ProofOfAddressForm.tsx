@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { queryKeys } from '@/api/hooks';
 import { verificationService } from '@/api/services/verification';
 import { Button, TextField } from '@/components/ui';
@@ -37,13 +37,21 @@ export function ProofOfAddressForm({
   const [askedReview, setAskedReview] = useState(reviewPending);
   const line = address.trim();
   const canSaveAddress = line.length >= 8;
+  const sentKey = useRef('');
+  const uploadAbort = useRef<AbortController | null>(null);
 
   const submit = useMutation({
     mutationFn: async () => {
       const next = file as File;
       if (!persist) return { file: next, queued: false, verified: false };
+      uploadAbort.current?.abort();
+      const ac = new AbortController();
+      uploadAbort.current = ac;
       if (canSaveAddress) await verificationService.confirmAddress(line);
-      const status = await verificationService.uploadProofOfAddress(next);
+      const status = await verificationService.uploadProofOfAddress(next, ac.signal);
+      if (note.trim()) {
+        await verificationService.requestAddressReview(note);
+      }
       return {
         file: next,
         queued: Boolean(status.addressReviewPending) && !status.addressVerified,
@@ -59,27 +67,21 @@ export function ProofOfAddressForm({
       onDone(next, line);
       if (verified) queryClient.invalidateQueries({ queryKey: queryKeys.verification });
     },
-  });
-  const review = useMutation({
-    mutationFn: async () => {
-      if (!persist) return;
-      if (canSaveAddress) await verificationService.confirmAddress(line);
-      if (file) {
-        const status = await verificationService.uploadProofOfAddress(file);
-        if (status.addressVerified) return status;
-      }
-      return verificationService.requestAddressReview(note);
-    },
-    onSuccess: (status) => {
-      if (!persist) {
-        onDone(file ?? undefined, line);
-        return;
-      }
-      setAskedReview(!status?.addressVerified);
-      queryClient.invalidateQueries({ queryKey: queryKeys.verification });
-      if (status?.addressVerified) onDone(file ?? undefined, line);
+    onError: (error: Error) => {
+      if (error.name === 'AbortError') return;
+      sentKey.current = '';
     },
   });
+
+  useEffect(() => {
+    if (!persist || !file || !canSaveAddress) return;
+    const key = `${file.name}:${file.size}:${file.lastModified}`;
+    if (sentKey.current === key) return;
+    sentKey.current = key;
+    submit.mutate();
+    // Choosing a file (once the address is filled) is the submit.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [file, canSaveAddress, persist]);
 
   return (
     <form
@@ -103,22 +105,33 @@ export function ProofOfAddressForm({
       )}
       {billName && <p className="text-[13px] text-ink-2">Bill on file: {billName}</p>}
       <p className="text-[13px] text-ink-2">{BILL_UPLOAD_HINT}</p>
-      <FileDrop value={file} onChange={setFile} />
+      <FileDrop
+        value={file}
+        onChange={(next) => {
+          setAskedReview(false);
+          setFile(next);
+        }}
+      />
       {submit.isError && <p className="text-[13px] text-primary-text">{submit.error.message}</p>}
+      {submit.isPending && persist && (
+        <p className="text-[13px] text-ink-2">Sending that file for review…</p>
+      )}
       {askedReview && persist && (
         <p className="rounded-tile bg-amber-500/10 px-4 py-3 text-[13px] text-amber-900 dark:text-amber-200">
           Staff have your file and will confirm it against the address you entered. You’re still on
           your current tier until they approve.
         </p>
       )}
-      <Button
-        type="submit"
-        size="lg"
-        className="justify-self-stretch sm:justify-self-start disabled:opacity-80"
-        disabled={!file || !canSaveAddress || submit.isPending}
-      >
-        {submit.isPending ? 'Uploading…' : persist ? 'Upload a utility bill' : 'Continue with this bill'}
-      </Button>
+      {!persist && (
+        <Button
+          type="submit"
+          size="lg"
+          className="justify-self-stretch sm:justify-self-start disabled:opacity-80"
+          disabled={!file || !canSaveAddress}
+        >
+          Continue with this bill
+        </Button>
+      )}
       <div className="grid gap-2">
         {(failedUploads > 0 || askedReview || persist) && (
           <label className="grid gap-1 text-[13px] text-ink-2">
@@ -131,16 +144,27 @@ export function ProofOfAddressForm({
             />
           </label>
         )}
-        <Button
-          type="button"
-          variant="secondary"
-          className="justify-self-start"
-          disabled={!canSaveAddress || (!file && !billName) || review.isPending || askedReview}
-          onClick={() => review.mutate()}
-        >
-          {askedReview ? 'Sent for review' : review.isPending ? 'Sending…' : 'Send for review'}
-        </Button>
-        {review.isError && <p className="text-[13px] text-primary-text">{review.error.message}</p>}
+        {persist && askedReview && note.trim() && (
+          <Button
+            type="button"
+            variant="secondary"
+            className="justify-self-start"
+            disabled={submit.isPending}
+            onClick={() => submit.mutate()}
+          >
+            Attach this note
+          </Button>
+        )}
+        {submit.isError && persist && (
+          <Button
+            type="submit"
+            variant="secondary"
+            className="justify-self-start"
+            disabled={!file || !canSaveAddress || submit.isPending}
+          >
+            Try sending again
+          </Button>
+        )}
       </div>
       {onSkip && (
         <button type="button" className="justify-self-start text-sm font-medium text-ink-2" onClick={onSkip}>

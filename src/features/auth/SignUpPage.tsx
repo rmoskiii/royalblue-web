@@ -209,22 +209,44 @@ export function SignUpPage() {
         entityType: payload.entityType,
         business: payload.business,
       });
-      try {
-        if (pendingIdDoc) {
-          await verificationService.submitIdDocument(pendingIdDoc);
-          showToast('Live selfie matched. You’re on Tier 2. Confirm address later for Tier 3.', 7000);
-        }
-        if (pendingConfirmedAddress) await verificationService.confirmAddress(pendingConfirmedAddress);
-        if (pendingAddress) await verificationService.uploadProofOfAddress(pendingAddress);
-      } catch (error) {
-        showToast(
-          error instanceof Error
-            ? error.message
-            : 'Account opened on Tier 1. Finish the live selfie in Account limits to move up.',
-          8000,
-        );
-      }
       establishSession(session);
+      // Address must not depend on live match. A failed selfie used to skip the bill entirely.
+      if (pendingConfirmedAddress) {
+        try {
+          await verificationService.confirmAddress(pendingConfirmedAddress);
+        } catch (error) {
+          showToast(
+            error instanceof Error ? error.message : 'Could not save the address. Finish it in Account limits.',
+            8000,
+          );
+        }
+      }
+      if (pendingAddress) {
+        try {
+          await verificationService.uploadProofOfAddress(pendingAddress);
+          showToast('Utility bill sent for review. Staff will confirm it against the address you typed.', 7000);
+        } catch (error) {
+          showToast(
+            error instanceof Error
+              ? error.message
+              : 'Account opened, but the bill did not go through. Upload it again in Account limits.',
+            8000,
+          );
+        }
+      }
+      if (pendingIdDoc) {
+        try {
+          await verificationService.submitIdDocument(pendingIdDoc);
+          showToast('Live selfie matched. You’re on Tier 2.', 7000);
+        } catch (error) {
+          showToast(
+            error instanceof Error
+              ? error.message
+              : 'Account opened. Finish the live selfie in Account limits to move up.',
+            8000,
+          );
+        }
+      }
     },
     onSuccess: () => navigate(paths.home, { replace: true }),
     onError: (error) => {
