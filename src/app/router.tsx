@@ -204,12 +204,10 @@ export const router = createBrowserRouter([
               },
             ],
           },
+          // Parked until BudPay airtime/data/electricity rails work.
           {
             path: paths.payBills,
-            ...page(
-              () => import('@/features/bills/BillsPage'),
-              (m) => m.BillsPage,
-            ),
+            element: <Navigate to={paths.home} replace />,
           },
           // Parked until savings/vaults API ships.
           // {

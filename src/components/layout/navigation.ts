@@ -120,8 +120,8 @@ const personalNav: NavigationSet = {
   primary: [
     item.home,
     item.transfers,
-    item.payBills,
     item.loans,
+    // item.payBills, // parked until BudPay airtime/data/electricity rails work
     // item.savings, // parked until savings/vaults API ships
     // item.cards,
     item.transactions,
@@ -129,10 +129,9 @@ const personalNav: NavigationSet = {
     item.insights,
   ],
   learnAndEarn: [item.rewards, item.refer, item.learn, item.help],
-  mobileTabs: [item.home, item.transfers, item.payBills, item.loans],
+  mobileTabs: [item.home, item.transfers, item.loans, item.transactions],
   more: [
     item.loans,
-    item.payBills,
     item.transactions,
     // item.invest,
     item.insights,
@@ -151,7 +150,6 @@ const businessNav: NavigationSet = {
     { ...item.home, label: 'Dashboard' },
     item.payments,
     item.transfers,
-    item.payBills,
     item.transactions,
     item.loans,
     // item.savings, // parked until savings/vaults API ships
@@ -161,9 +159,9 @@ const businessNav: NavigationSet = {
     { ...item.home, label: 'Dashboard' },
     item.payments,
     item.transfers,
-    item.payBills,
+    item.loans,
   ],
-  more: [item.payBills, item.loans, item.transactions, item.verification, item.help, item.settings],
+  more: [item.loans, item.transactions, item.verification, item.help, item.settings],
 };
 
 export const navigationFor = (profile: 'personal' | 'business') =>

@@ -1,11 +1,9 @@
-import { History, Landmark, Send, ShieldCheck, Zap, type LucideIcon } from 'lucide-react';
+import { History, Landmark, Send, ShieldCheck, type LucideIcon } from 'lucide-react';
 import { Link } from 'react-router';
 import { paths } from '@/components/layout/navigation';
 import { IconTile } from '@/components/ui';
 
-// Tints come from the Figma colour variables. Airtime/data live inside Pay bills.
 const services: { label: string; to: string; icon: LucideIcon; tint: string }[] = [
-  { label: 'Bills', to: paths.payBills, icon: Zap, tint: 'text-tint-bills' },
   { label: 'Send', to: paths.transfer, icon: Send, tint: 'text-brand' },
   { label: 'Loans', to: paths.loans, icon: Landmark, tint: 'text-tint-loans' },
   { label: 'Activity', to: paths.transactions, icon: History, tint: 'text-ink-2' },
