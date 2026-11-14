@@ -6,13 +6,30 @@ import { Button, Money } from '@/components/ui';
 import { useTransfer } from '@/features/transfer/TransferProvider';
 import { copyText } from '@/lib/clipboard';
 import { formatAccountNumber } from '@/lib/format';
+import { storage } from '@/lib/storage';
+
+const BALANCE_HIDDEN_KEY = 'rb.balanceHidden';
+
+function readBalanceHidden() {
+  const saved = storage.get(BALANCE_HIDDEN_KEY);
+  if (saved === '0') return false;
+  return true;
+}
 
 /** PRD View 1: balance with a one-tap privacy toggle, then quick actions (2×2 on phones). */
 export function BalanceCard({ onPaymentLink }: { onPaymentLink: () => void }) {
   const { data: account, isLoading } = useAccount();
-  const [hidden, setHidden] = useState(false);
+  const [hidden, setHidden] = useState(readBalanceHidden);
   const { showToast } = useToast();
   const { openTransfer } = useTransfer();
+
+  const toggleHidden = () => {
+    setHidden((current) => {
+      const next = !current;
+      storage.set(BALANCE_HIDDEN_KEY, next ? '1' : '0');
+      return next;
+    });
+  };
 
   const copyAccountNumber = async () => {
     if (!account) return;
@@ -29,7 +46,7 @@ export function BalanceCard({ onPaymentLink }: { onPaymentLink: () => void }) {
         Total balance
         <button
           type="button"
-          onClick={() => setHidden((h) => !h)}
+          onClick={toggleHidden}
           aria-label={hidden ? 'Show balance' : 'Hide balance'}
           className="grid p-0.5 text-white/70 hover:text-white"
         >
